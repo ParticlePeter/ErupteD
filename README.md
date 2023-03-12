@@ -6,6 +6,10 @@ ErupteD
 
 Automatically-generated D bindings for the [Vulkan API](https://www.khronos.org/Vulkan/) based on [D-Vulkan](https://github.com/ColonelThirtyTwo/dvulkan). Acquiring Vulkan functions is based on Intel [API without Secrets](https://software.intel.com/en-us/api-without-secrets-introduction-to-vulkan-part-1).  
 
+Note For devs
+----------------------
+
+To gain access to validation layers, you MUST install the Vulkan SDK. This can be downloaded [here.](https://vulkan.lunarg.com/)
 
 
 Release note v2.x.x
