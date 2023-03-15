@@ -35,7 +35,7 @@ version( X86_64 ) {
 }
 
 
-deprecated( "These defines have been derecated, use VK_MAKE_API_VERSION and VK_API_ variants instead!" ) {
+deprecated( "These defines have been deprecated, use VK_MAKE_API_VERSION and VK_API_ variants instead!" ) {
     // version functions / macros
     pure {
         uint VK_MAKE_VERSION( uint major, uint minor, uint patch ) { return ( major << 22 ) | ( minor << 12 ) | ( patch ); }
