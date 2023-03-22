@@ -24,9 +24,9 @@ alias int64_t   = long;
 
 enum VK_NULL_HANDLE = null;
 
-enum VK_DEFINE_HANDLE( string name ) = "struct " ~ name ~ "_handle; alias " ~ name ~ " = " ~ name ~ "_handle*;";
+enum VK_DEFINE_HANDLE( string name ) = "struct " ~ name ~ "_T; alias " ~ name ~ " = " ~ name ~ "_T*;";
 
-version( X86_64 ) {
+version( D_LP64 ) {
     alias VK_DEFINE_NON_DISPATCHABLE_HANDLE( string name ) = VK_DEFINE_HANDLE!name;
     enum VK_NULL_ND_HANDLE = null;
 } else {
