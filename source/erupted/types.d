@@ -55,7 +55,7 @@ pure {
 enum VK_API_VERSION_1_0 = VK_MAKE_API_VERSION( 0, 1, 0, 0 );	// Patch version should always be set to 0
 
 // Version of this file (corresponding c header)
-enum VK_HEADER_VERSION = 248;
+enum VK_HEADER_VERSION = 249;
 
 // Complete version of this file (corresponding c header)
 enum VK_HEADER_VERSION_COMPLETE = VK_MAKE_API_VERSION( 0, 1, 3, VK_HEADER_VERSION );
@@ -982,6 +982,7 @@ enum VkStructureType {
     VK_STRUCTURE_TYPE_OPTICAL_FLOW_SESSION_CREATE_PRIVATE_DATA_INFO_NV                           = 1000464010,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_LEGACY_DITHERING_FEATURES_EXT                              = 1000465000,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_PROTECTED_ACCESS_FEATURES_EXT                     = 1000466000,
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_POSITION_FETCH_FEATURES_KHR                    = 1000481000,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_OBJECT_FEATURES_EXT                                 = 1000482000,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_OBJECT_PROPERTIES_EXT                               = 1000482001,
     VK_STRUCTURE_TYPE_SHADER_CREATE_INFO_EXT                                                     = 1000482002,
@@ -1922,6 +1923,7 @@ enum VK_STRUCTURE_TYPE_OPTICAL_FLOW_EXECUTE_INFO_NV                             
 enum VK_STRUCTURE_TYPE_OPTICAL_FLOW_SESSION_CREATE_PRIVATE_DATA_INFO_NV                          = VkStructureType.VK_STRUCTURE_TYPE_OPTICAL_FLOW_SESSION_CREATE_PRIVATE_DATA_INFO_NV;
 enum VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_LEGACY_DITHERING_FEATURES_EXT                             = VkStructureType.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_LEGACY_DITHERING_FEATURES_EXT;
 enum VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_PROTECTED_ACCESS_FEATURES_EXT                    = VkStructureType.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_PROTECTED_ACCESS_FEATURES_EXT;
+enum VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_POSITION_FETCH_FEATURES_KHR                   = VkStructureType.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_POSITION_FETCH_FEATURES_KHR;
 enum VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_OBJECT_FEATURES_EXT                                = VkStructureType.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_OBJECT_FEATURES_EXT;
 enum VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_OBJECT_PROPERTIES_EXT                              = VkStructureType.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_OBJECT_PROPERTIES_EXT;
 enum VK_STRUCTURE_TYPE_SHADER_CREATE_INFO_EXT                                                    = VkStructureType.VK_STRUCTURE_TYPE_SHADER_CREATE_INFO_EXT;
@@ -10208,11 +10210,11 @@ struct VkVideoDecodeH265SessionParametersCreateInfoKHR {
 }
 
 struct VkVideoDecodeH265PictureInfoKHR {
-    VkStructureType                 sType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_PICTURE_INFO_KHR;
-    const( void )*                  pNext;
-    StdVideoDecodeH265PictureInfo*  pStdPictureInfo;
-    uint32_t                        sliceSegmentCount;
-    const( uint32_t )*              pSliceSegmentOffsets;
+    VkStructureType                          sType = VK_STRUCTURE_TYPE_VIDEO_DECODE_H265_PICTURE_INFO_KHR;
+    const( void )*                           pNext;
+    const( StdVideoDecodeH265PictureInfo )*  pStdPictureInfo;
+    uint32_t                                 sliceSegmentCount;
+    const( uint32_t )*                       pSliceSegmentOffsets;
 }
 
 struct VkVideoDecodeH265DpbSlotInfoKHR {
@@ -10822,6 +10824,19 @@ alias VkPhysicalDeviceMaintenance4FeaturesKHR = VkPhysicalDeviceMaintenance4Feat
 alias VkPhysicalDeviceMaintenance4PropertiesKHR = VkPhysicalDeviceMaintenance4Properties;
 alias VkDeviceBufferMemoryRequirementsKHR = VkDeviceBufferMemoryRequirements;
 alias VkDeviceImageMemoryRequirementsKHR = VkDeviceImageMemoryRequirements;
+
+
+// - VK_KHR_ray_tracing_position_fetch -
+enum VK_KHR_ray_tracing_position_fetch = 1;
+
+enum VK_KHR_RAY_TRACING_POSITION_FETCH_SPEC_VERSION = 1;
+enum const( char )* VK_KHR_RAY_TRACING_POSITION_FETCH_EXTENSION_NAME = "VK_KHR_ray_tracing_position_fetch";
+
+struct VkPhysicalDeviceRayTracingPositionFetchFeaturesKHR {
+    VkStructureType  sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_POSITION_FETCH_FEATURES_KHR;
+    void*            pNext;
+    VkBool32         rayTracingPositionFetch;
+}
 
 
 // - VK_EXT_debug_report -
@@ -12610,6 +12625,7 @@ enum VkBuildAccelerationStructureFlagBitsKHR : VkBuildAccelerationStructureFlags
     VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_DISABLE_OPACITY_MICROMAPS_EXT          = 0x00000080,
     VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_OPACITY_MICROMAP_DATA_UPDATE_EXT       = 0x00000100,
     VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_DISPLACEMENT_MICROMAP_UPDATE_NV        = 0x00000200,
+    VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_DATA_ACCESS_KHR                        = 0x00000800,
     VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_NV                          = VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_KHR,
     VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_NV                      = VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_KHR,
     VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_NV                     = VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR,
@@ -12628,6 +12644,7 @@ enum VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_OPACITY_MICROMAP_UPDATE_EXT          
 enum VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_DISABLE_OPACITY_MICROMAPS_EXT         = VkBuildAccelerationStructureFlagBitsKHR.VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_DISABLE_OPACITY_MICROMAPS_EXT;
 enum VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_OPACITY_MICROMAP_DATA_UPDATE_EXT      = VkBuildAccelerationStructureFlagBitsKHR.VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_OPACITY_MICROMAP_DATA_UPDATE_EXT;
 enum VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_DISPLACEMENT_MICROMAP_UPDATE_NV       = VkBuildAccelerationStructureFlagBitsKHR.VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_DISPLACEMENT_MICROMAP_UPDATE_NV;
+enum VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_DATA_ACCESS_KHR                       = VkBuildAccelerationStructureFlagBitsKHR.VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_DATA_ACCESS_KHR;
 enum VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_NV                         = VkBuildAccelerationStructureFlagBitsKHR.VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_NV;
 enum VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_NV                     = VkBuildAccelerationStructureFlagBitsKHR.VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_NV;
 enum VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_NV                    = VkBuildAccelerationStructureFlagBitsKHR.VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_NV;
