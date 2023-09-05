@@ -332,6 +332,12 @@ struct DispatchDevice {
         // VK_KHR_ray_tracing_maintenance1
         vkCmdTraceRaysIndirect2KHR                               = cast( PFN_vkCmdTraceRaysIndirect2KHR                               ) vkGetDeviceProcAddr( device, "vkCmdTraceRaysIndirect2KHR" );
 
+        // VK_KHR_maintenance5
+        vkCmdBindIndexBuffer2KHR                                 = cast( PFN_vkCmdBindIndexBuffer2KHR                                 ) vkGetDeviceProcAddr( device, "vkCmdBindIndexBuffer2KHR" );
+        vkGetRenderingAreaGranularityKHR                         = cast( PFN_vkGetRenderingAreaGranularityKHR                         ) vkGetDeviceProcAddr( device, "vkGetRenderingAreaGranularityKHR" );
+        vkGetDeviceImageSubresourceLayoutKHR                     = cast( PFN_vkGetDeviceImageSubresourceLayoutKHR                     ) vkGetDeviceProcAddr( device, "vkGetDeviceImageSubresourceLayoutKHR" );
+        vkGetImageSubresourceLayout2KHR                          = cast( PFN_vkGetImageSubresourceLayout2KHR                          ) vkGetDeviceProcAddr( device, "vkGetImageSubresourceLayout2KHR" );
+
         // VK_EXT_debug_marker
         vkDebugMarkerSetObjectTagEXT                             = cast( PFN_vkDebugMarkerSetObjectTagEXT                             ) vkGetDeviceProcAddr( device, "vkDebugMarkerSetObjectTagEXT" );
         vkDebugMarkerSetObjectNameEXT                            = cast( PFN_vkDebugMarkerSetObjectNameEXT                            ) vkGetDeviceProcAddr( device, "vkDebugMarkerSetObjectNameEXT" );
@@ -471,7 +477,6 @@ struct DispatchDevice {
         vkCopyImageToMemoryEXT                                   = cast( PFN_vkCopyImageToMemoryEXT                                   ) vkGetDeviceProcAddr( device, "vkCopyImageToMemoryEXT" );
         vkCopyImageToImageEXT                                    = cast( PFN_vkCopyImageToImageEXT                                    ) vkGetDeviceProcAddr( device, "vkCopyImageToImageEXT" );
         vkTransitionImageLayoutEXT                               = cast( PFN_vkTransitionImageLayoutEXT                               ) vkGetDeviceProcAddr( device, "vkTransitionImageLayoutEXT" );
-        vkGetImageSubresourceLayout2EXT                          = cast( PFN_vkGetImageSubresourceLayout2EXT                          ) vkGetDeviceProcAddr( device, "vkGetImageSubresourceLayout2EXT" );
 
         // VK_EXT_swapchain_maintenance1
         vkReleaseSwapchainImagesEXT                              = cast( PFN_vkReleaseSwapchainImagesEXT                              ) vkGetDeviceProcAddr( device, "vkReleaseSwapchainImagesEXT" );
@@ -945,6 +950,12 @@ struct DispatchDevice {
     // VK_KHR_ray_tracing_maintenance1
     void      CmdTraceRaysIndirect2KHR( VkDeviceAddress indirectDeviceAddress ) { vkCmdTraceRaysIndirect2KHR( commandBuffer, indirectDeviceAddress ); }
 
+    // VK_KHR_maintenance5
+    void      CmdBindIndexBuffer2KHR( VkBuffer buffer, VkDeviceSize offset, VkDeviceSize size, VkIndexType indexType ) { vkCmdBindIndexBuffer2KHR( commandBuffer, buffer, offset, size, indexType ); }
+    void      GetRenderingAreaGranularityKHR( const( VkRenderingAreaInfoKHR )* pRenderingAreaInfo, VkExtent2D* pGranularity ) { vkGetRenderingAreaGranularityKHR( vkDevice, pRenderingAreaInfo, pGranularity ); }
+    void      GetDeviceImageSubresourceLayoutKHR( const( VkDeviceImageSubresourceInfoKHR )* pInfo, VkSubresourceLayout2KHR* pLayout ) { vkGetDeviceImageSubresourceLayoutKHR( vkDevice, pInfo, pLayout ); }
+    void      GetImageSubresourceLayout2KHR( VkImage image, const( VkImageSubresource2KHR )* pSubresource, VkSubresourceLayout2KHR* pLayout ) { vkGetImageSubresourceLayout2KHR( vkDevice, image, pSubresource, pLayout ); }
+
     // VK_EXT_debug_marker
     VkResult  DebugMarkerSetObjectTagEXT( const( VkDebugMarkerObjectTagInfoEXT )* pTagInfo ) { return vkDebugMarkerSetObjectTagEXT( vkDevice, pTagInfo ); }
     VkResult  DebugMarkerSetObjectNameEXT( const( VkDebugMarkerObjectNameInfoEXT )* pNameInfo ) { return vkDebugMarkerSetObjectNameEXT( vkDevice, pNameInfo ); }
@@ -1079,7 +1090,6 @@ struct DispatchDevice {
     VkResult  CopyImageToMemoryEXT( const( VkCopyImageToMemoryInfoEXT )* pCopyImageToMemoryInfo ) { return vkCopyImageToMemoryEXT( vkDevice, pCopyImageToMemoryInfo ); }
     VkResult  CopyImageToImageEXT( const( VkCopyImageToImageInfoEXT )* pCopyImageToImageInfo ) { return vkCopyImageToImageEXT( vkDevice, pCopyImageToImageInfo ); }
     VkResult  TransitionImageLayoutEXT( uint32_t transitionCount, const( VkHostImageLayoutTransitionInfoEXT )* pTransitions ) { return vkTransitionImageLayoutEXT( vkDevice, transitionCount, pTransitions ); }
-    void      GetImageSubresourceLayout2EXT( VkImage image, const( VkImageSubresource2EXT )* pSubresource, VkSubresourceLayout2EXT* pLayout ) { vkGetImageSubresourceLayout2EXT( vkDevice, image, pSubresource, pLayout ); }
 
     // VK_EXT_swapchain_maintenance1
     VkResult  ReleaseSwapchainImagesEXT( const( VkReleaseSwapchainImagesInfoEXT )* pReleaseInfo ) { return vkReleaseSwapchainImagesEXT( vkDevice, pReleaseInfo ); }
@@ -1368,6 +1378,9 @@ struct DispatchDevice {
     alias CmdSetStencilTestEnableEXT                                   = CmdSetStencilTestEnable;
     alias CmdSetStencilOpEXT                                           = CmdSetStencilOp;
 
+    // VK_EXT_host_image_copy
+    alias GetImageSubresourceLayout2EXT                                = GetImageSubresourceLayout2KHR;
+
     // VK_EXT_private_data
     alias CreatePrivateDataSlotEXT                                     = CreatePrivateDataSlot;
     alias DestroyPrivateDataSlotEXT                                    = DestroyPrivateDataSlot;
@@ -1655,6 +1668,12 @@ struct DispatchDevice {
     // VK_KHR_ray_tracing_maintenance1
     PFN_vkCmdTraceRaysIndirect2KHR                               vkCmdTraceRaysIndirect2KHR;
 
+    // VK_KHR_maintenance5
+    PFN_vkCmdBindIndexBuffer2KHR                                 vkCmdBindIndexBuffer2KHR;
+    PFN_vkGetRenderingAreaGranularityKHR                         vkGetRenderingAreaGranularityKHR;
+    PFN_vkGetDeviceImageSubresourceLayoutKHR                     vkGetDeviceImageSubresourceLayoutKHR;
+    PFN_vkGetImageSubresourceLayout2KHR                          vkGetImageSubresourceLayout2KHR;
+
     // VK_EXT_debug_marker
     PFN_vkDebugMarkerSetObjectTagEXT                             vkDebugMarkerSetObjectTagEXT;
     PFN_vkDebugMarkerSetObjectNameEXT                            vkDebugMarkerSetObjectNameEXT;
@@ -1794,7 +1813,6 @@ struct DispatchDevice {
     PFN_vkCopyImageToMemoryEXT                                   vkCopyImageToMemoryEXT;
     PFN_vkCopyImageToImageEXT                                    vkCopyImageToImageEXT;
     PFN_vkTransitionImageLayoutEXT                               vkTransitionImageLayoutEXT;
-    PFN_vkGetImageSubresourceLayout2EXT                          vkGetImageSubresourceLayout2EXT;
 
     // VK_EXT_swapchain_maintenance1
     PFN_vkReleaseSwapchainImagesEXT                              vkReleaseSwapchainImagesEXT;
@@ -2083,6 +2101,9 @@ struct DispatchDevice {
     alias vkCmdSetDepthBoundsTestEnableEXT                               = vkCmdSetDepthBoundsTestEnable;
     alias vkCmdSetStencilTestEnableEXT                                   = vkCmdSetStencilTestEnable;
     alias vkCmdSetStencilOpEXT                                           = vkCmdSetStencilOp;
+
+    // VK_EXT_host_image_copy
+    alias vkGetImageSubresourceLayout2EXT                                = vkGetImageSubresourceLayout2KHR;
 
     // VK_EXT_private_data
     alias vkCreatePrivateDataSlotEXT                                     = vkCreatePrivateDataSlot;

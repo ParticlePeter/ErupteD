@@ -30,6 +30,7 @@ enum EXT_acquire_xlib_display;
 enum MVK_ios_surface;
 enum MVK_macos_surface;
 enum ANDROID_external_memory_android_hardware_buffer;
+enum AMDX_shader_enqueue;
 enum GGP_frame_token;
 enum FUCHSIA_imagepipe_surface;
 enum EXT_metal_surface;
@@ -52,7 +53,7 @@ alias USE_PLATFORM_XCB_KHR         = AliasSeq!( KHR_xcb_surface );
 alias USE_PLATFORM_WAYLAND_KHR     = AliasSeq!( KHR_wayland_surface );
 alias USE_PLATFORM_ANDROID_KHR     = AliasSeq!( KHR_android_surface, ANDROID_external_memory_android_hardware_buffer );
 alias USE_PLATFORM_WIN32_KHR       = AliasSeq!( KHR_win32_surface, KHR_external_memory_win32, KHR_win32_keyed_mutex, KHR_external_semaphore_win32, KHR_external_fence_win32, NV_external_memory_win32, NV_win32_keyed_mutex, EXT_full_screen_exclusive, NV_acquire_winrt_display );
-alias ENABLE_BETA_EXTENSIONS       = AliasSeq!( KHR_portability_subset, KHR_video_encode_queue, EXT_video_encode_h264, EXT_video_encode_h265, NV_displacement_micromap );
+alias ENABLE_BETA_EXTENSIONS       = AliasSeq!( KHR_portability_subset, KHR_video_encode_queue, EXT_video_encode_h264, EXT_video_encode_h265, AMDX_shader_enqueue, NV_displacement_micromap );
 alias USE_PLATFORM_GGP             = AliasSeq!( GGP_stream_descriptor_surface, GGP_frame_token );
 alias USE_PLATFORM_VI_NN           = AliasSeq!( NN_vi_surface );
 alias USE_PLATFORM_XLIB_XRANDR_EXT = AliasSeq!( EXT_acquire_xlib_display );
@@ -1271,6 +1272,82 @@ mixin template Platform_Extensions( extensions... ) {
             alias PFN_vkGetMemoryAndroidHardwareBufferANDROID                           = VkResult  function( VkDevice device, const( VkMemoryGetAndroidHardwareBufferInfoANDROID )* pInfo, AHardwareBuffer pBuffer );
         }
 
+        // VK_AMDX_shader_enqueue : types and function pointer type aliases
+        else static if( __traits( isSame, extension, AMDX_shader_enqueue )) {
+            enum VK_AMDX_shader_enqueue = 1;
+
+            enum VK_AMDX_SHADER_ENQUEUE_SPEC_VERSION = 1;
+            enum const( char )* VK_AMDX_SHADER_ENQUEUE_EXTENSION_NAME = "VK_AMDX_shader_enqueue";
+            enum VK_SHADER_INDEX_UNUSED_AMDX = (~0U);
+            
+            struct VkPhysicalDeviceShaderEnqueueFeaturesAMDX {
+                VkStructureType  sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ENQUEUE_FEATURES_AMDX;
+                void*            pNext;
+                VkBool32         shaderEnqueue;
+            }
+            
+            struct VkPhysicalDeviceShaderEnqueuePropertiesAMDX {
+                VkStructureType  sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ENQUEUE_PROPERTIES_AMDX;
+                void*            pNext;
+                uint32_t         maxExecutionGraphDepth;
+                uint32_t         maxExecutionGraphShaderOutputNodes;
+                uint32_t         maxExecutionGraphShaderPayloadSize;
+                uint32_t         maxExecutionGraphShaderPayloadCount;
+                uint32_t         executionGraphDispatchAddressAlignment;
+            }
+            
+            struct VkExecutionGraphPipelineScratchSizeAMDX {
+                VkStructureType  sType = VK_STRUCTURE_TYPE_EXECUTION_GRAPH_PIPELINE_SCRATCH_SIZE_AMDX;
+                void*            pNext;
+                VkDeviceSize     size;
+            }
+            
+            struct VkExecutionGraphPipelineCreateInfoAMDX {
+                VkStructureType                            sType = VK_STRUCTURE_TYPE_EXECUTION_GRAPH_PIPELINE_CREATE_INFO_AMDX;
+                const( void )*                             pNext;
+                VkPipelineCreateFlags                      flags;
+                uint32_t                                   stageCount;
+                const( VkPipelineShaderStageCreateInfo )*  pStages;
+                const( VkPipelineLibraryCreateInfoKHR )*   pLibraryInfo;
+                VkPipelineLayout                           layout;
+                VkPipeline                                 basePipelineHandle;
+                int32_t                                    basePipelineIndex;
+            }
+            
+            union VkDeviceOrHostAddressConstAMDX {
+                VkDeviceAddress  deviceAddress;
+                const( void )*   hostAddress;
+            }
+            
+            struct VkDispatchGraphInfoAMDX {
+                uint32_t                        nodeIndex;
+                uint32_t                        payloadCount;
+                VkDeviceOrHostAddressConstAMDX  payloads;
+                uint64_t                        payloadStride;
+            }
+            
+            struct VkDispatchGraphCountInfoAMDX {
+                uint32_t                        count;
+                VkDeviceOrHostAddressConstAMDX  infos;
+                uint64_t                        stride;
+            }
+            
+            struct VkPipelineShaderStageNodeCreateInfoAMDX {
+                VkStructureType  sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_NODE_CREATE_INFO_AMDX;
+                const( void )*   pNext;
+                const( char )*   pName;
+                uint32_t         index;
+            }
+            
+            alias PFN_vkCreateExecutionGraphPipelinesAMDX                               = VkResult  function( VkDevice device, VkPipelineCache pipelineCache, uint32_t createInfoCount, const( VkExecutionGraphPipelineCreateInfoAMDX )* pCreateInfos, const( VkAllocationCallbacks )* pAllocator, VkPipeline* pPipelines );
+            alias PFN_vkGetExecutionGraphPipelineScratchSizeAMDX                        = VkResult  function( VkDevice device, VkPipeline executionGraph, VkExecutionGraphPipelineScratchSizeAMDX* pSizeInfo );
+            alias PFN_vkGetExecutionGraphPipelineNodeIndexAMDX                          = VkResult  function( VkDevice device, VkPipeline executionGraph, const( VkPipelineShaderStageNodeCreateInfoAMDX )* pNodeInfo, uint32_t* pNodeIndex );
+            alias PFN_vkCmdInitializeGraphScratchMemoryAMDX                             = void      function( VkCommandBuffer commandBuffer, VkDeviceAddress scratch );
+            alias PFN_vkCmdDispatchGraphAMDX                                            = void      function( VkCommandBuffer commandBuffer, VkDeviceAddress scratch, const( VkDispatchGraphCountInfoAMDX )* pCountInfo );
+            alias PFN_vkCmdDispatchGraphIndirectAMDX                                    = void      function( VkCommandBuffer commandBuffer, VkDeviceAddress scratch, const( VkDispatchGraphCountInfoAMDX )* pCountInfo );
+            alias PFN_vkCmdDispatchGraphIndirectCountAMDX                               = void      function( VkCommandBuffer commandBuffer, VkDeviceAddress scratch, VkDeviceAddress countInfo );
+        }
+
         // VK_GGP_frame_token : types and function pointer type aliases
         else static if( __traits( isSame, extension, GGP_frame_token )) {
             enum VK_GGP_frame_token = 1;
@@ -1908,6 +1985,17 @@ mixin template Platform_Extensions( extensions... ) {
                 PFN_vkGetMemoryAndroidHardwareBufferANDROID                           vkGetMemoryAndroidHardwareBufferANDROID;
             }
 
+            // VK_AMDX_shader_enqueue : function pointer decelerations
+            else static if( __traits( isSame, extension, AMDX_shader_enqueue )) {
+                PFN_vkCreateExecutionGraphPipelinesAMDX                               vkCreateExecutionGraphPipelinesAMDX;
+                PFN_vkGetExecutionGraphPipelineScratchSizeAMDX                        vkGetExecutionGraphPipelineScratchSizeAMDX;
+                PFN_vkGetExecutionGraphPipelineNodeIndexAMDX                          vkGetExecutionGraphPipelineNodeIndexAMDX;
+                PFN_vkCmdInitializeGraphScratchMemoryAMDX                             vkCmdInitializeGraphScratchMemoryAMDX;
+                PFN_vkCmdDispatchGraphAMDX                                            vkCmdDispatchGraphAMDX;
+                PFN_vkCmdDispatchGraphIndirectAMDX                                    vkCmdDispatchGraphIndirectAMDX;
+                PFN_vkCmdDispatchGraphIndirectCountAMDX                               vkCmdDispatchGraphIndirectCountAMDX;
+            }
+
             // VK_FUCHSIA_imagepipe_surface : function pointer decelerations
             else static if( __traits( isSame, extension, FUCHSIA_imagepipe_surface )) {
                 PFN_vkCreateImagePipeSurfaceFUCHSIA                                   vkCreateImagePipeSurfaceFUCHSIA;
@@ -2139,6 +2227,17 @@ mixin template Platform_Extensions( extensions... ) {
                 vkGetMemoryAndroidHardwareBufferANDROID                  = cast( PFN_vkGetMemoryAndroidHardwareBufferANDROID                  ) vkGetInstanceProcAddr( instance, "vkGetMemoryAndroidHardwareBufferANDROID" );
             }
 
+            // VK_AMDX_shader_enqueue : load instance based device level function definitions
+            else static if( __traits( isSame, extension, AMDX_shader_enqueue )) {
+                vkCreateExecutionGraphPipelinesAMDX                      = cast( PFN_vkCreateExecutionGraphPipelinesAMDX                      ) vkGetInstanceProcAddr( instance, "vkCreateExecutionGraphPipelinesAMDX" );
+                vkGetExecutionGraphPipelineScratchSizeAMDX               = cast( PFN_vkGetExecutionGraphPipelineScratchSizeAMDX               ) vkGetInstanceProcAddr( instance, "vkGetExecutionGraphPipelineScratchSizeAMDX" );
+                vkGetExecutionGraphPipelineNodeIndexAMDX                 = cast( PFN_vkGetExecutionGraphPipelineNodeIndexAMDX                 ) vkGetInstanceProcAddr( instance, "vkGetExecutionGraphPipelineNodeIndexAMDX" );
+                vkCmdInitializeGraphScratchMemoryAMDX                    = cast( PFN_vkCmdInitializeGraphScratchMemoryAMDX                    ) vkGetInstanceProcAddr( instance, "vkCmdInitializeGraphScratchMemoryAMDX" );
+                vkCmdDispatchGraphAMDX                                   = cast( PFN_vkCmdDispatchGraphAMDX                                   ) vkGetInstanceProcAddr( instance, "vkCmdDispatchGraphAMDX" );
+                vkCmdDispatchGraphIndirectAMDX                           = cast( PFN_vkCmdDispatchGraphIndirectAMDX                           ) vkGetInstanceProcAddr( instance, "vkCmdDispatchGraphIndirectAMDX" );
+                vkCmdDispatchGraphIndirectCountAMDX                      = cast( PFN_vkCmdDispatchGraphIndirectCountAMDX                      ) vkGetInstanceProcAddr( instance, "vkCmdDispatchGraphIndirectCountAMDX" );
+            }
+
             // VK_EXT_full_screen_exclusive : load instance based device level function definitions
             else static if( __traits( isSame, extension, EXT_full_screen_exclusive )) {
                 vkAcquireFullScreenExclusiveModeEXT                      = cast( PFN_vkAcquireFullScreenExclusiveModeEXT                      ) vkGetInstanceProcAddr( instance, "vkAcquireFullScreenExclusiveModeEXT" );
@@ -2224,6 +2323,17 @@ mixin template Platform_Extensions( extensions... ) {
             else static if( __traits( isSame, extension, ANDROID_external_memory_android_hardware_buffer )) {
                 vkGetAndroidHardwareBufferPropertiesANDROID              = cast( PFN_vkGetAndroidHardwareBufferPropertiesANDROID              ) vkGetDeviceProcAddr( device, "vkGetAndroidHardwareBufferPropertiesANDROID" );
                 vkGetMemoryAndroidHardwareBufferANDROID                  = cast( PFN_vkGetMemoryAndroidHardwareBufferANDROID                  ) vkGetDeviceProcAddr( device, "vkGetMemoryAndroidHardwareBufferANDROID" );
+            }
+
+            // VK_AMDX_shader_enqueue : load device based device level function definitions
+            else static if( __traits( isSame, extension, AMDX_shader_enqueue )) {
+                vkCreateExecutionGraphPipelinesAMDX                      = cast( PFN_vkCreateExecutionGraphPipelinesAMDX                      ) vkGetDeviceProcAddr( device, "vkCreateExecutionGraphPipelinesAMDX" );
+                vkGetExecutionGraphPipelineScratchSizeAMDX               = cast( PFN_vkGetExecutionGraphPipelineScratchSizeAMDX               ) vkGetDeviceProcAddr( device, "vkGetExecutionGraphPipelineScratchSizeAMDX" );
+                vkGetExecutionGraphPipelineNodeIndexAMDX                 = cast( PFN_vkGetExecutionGraphPipelineNodeIndexAMDX                 ) vkGetDeviceProcAddr( device, "vkGetExecutionGraphPipelineNodeIndexAMDX" );
+                vkCmdInitializeGraphScratchMemoryAMDX                    = cast( PFN_vkCmdInitializeGraphScratchMemoryAMDX                    ) vkGetDeviceProcAddr( device, "vkCmdInitializeGraphScratchMemoryAMDX" );
+                vkCmdDispatchGraphAMDX                                   = cast( PFN_vkCmdDispatchGraphAMDX                                   ) vkGetDeviceProcAddr( device, "vkCmdDispatchGraphAMDX" );
+                vkCmdDispatchGraphIndirectAMDX                           = cast( PFN_vkCmdDispatchGraphIndirectAMDX                           ) vkGetDeviceProcAddr( device, "vkCmdDispatchGraphIndirectAMDX" );
+                vkCmdDispatchGraphIndirectCountAMDX                      = cast( PFN_vkCmdDispatchGraphIndirectCountAMDX                      ) vkGetDeviceProcAddr( device, "vkCmdDispatchGraphIndirectCountAMDX" );
             }
 
             // VK_EXT_full_screen_exclusive : load device based device level function definitions
@@ -2329,6 +2439,17 @@ mixin template Platform_Extensions( extensions... ) {
                     vkGetMemoryAndroidHardwareBufferANDROID                  = cast( PFN_vkGetMemoryAndroidHardwareBufferANDROID                  ) vkGetDeviceProcAddr( device, "vkGetMemoryAndroidHardwareBufferANDROID" );
                 }
 
+                // VK_AMDX_shader_enqueue : load dispatch device member function definitions
+                else static if( __traits( isSame, extension, AMDX_shader_enqueue )) {
+                    vkCreateExecutionGraphPipelinesAMDX                      = cast( PFN_vkCreateExecutionGraphPipelinesAMDX                      ) vkGetDeviceProcAddr( device, "vkCreateExecutionGraphPipelinesAMDX" );
+                    vkGetExecutionGraphPipelineScratchSizeAMDX               = cast( PFN_vkGetExecutionGraphPipelineScratchSizeAMDX               ) vkGetDeviceProcAddr( device, "vkGetExecutionGraphPipelineScratchSizeAMDX" );
+                    vkGetExecutionGraphPipelineNodeIndexAMDX                 = cast( PFN_vkGetExecutionGraphPipelineNodeIndexAMDX                 ) vkGetDeviceProcAddr( device, "vkGetExecutionGraphPipelineNodeIndexAMDX" );
+                    vkCmdInitializeGraphScratchMemoryAMDX                    = cast( PFN_vkCmdInitializeGraphScratchMemoryAMDX                    ) vkGetDeviceProcAddr( device, "vkCmdInitializeGraphScratchMemoryAMDX" );
+                    vkCmdDispatchGraphAMDX                                   = cast( PFN_vkCmdDispatchGraphAMDX                                   ) vkGetDeviceProcAddr( device, "vkCmdDispatchGraphAMDX" );
+                    vkCmdDispatchGraphIndirectAMDX                           = cast( PFN_vkCmdDispatchGraphIndirectAMDX                           ) vkGetDeviceProcAddr( device, "vkCmdDispatchGraphIndirectAMDX" );
+                    vkCmdDispatchGraphIndirectCountAMDX                      = cast( PFN_vkCmdDispatchGraphIndirectCountAMDX                      ) vkGetDeviceProcAddr( device, "vkCmdDispatchGraphIndirectCountAMDX" );
+                }
+
                 // VK_EXT_full_screen_exclusive : load dispatch device member function definitions
                 else static if( __traits( isSame, extension, EXT_full_screen_exclusive )) {
                     vkAcquireFullScreenExclusiveModeEXT                      = cast( PFN_vkAcquireFullScreenExclusiveModeEXT                      ) vkGetDeviceProcAddr( device, "vkAcquireFullScreenExclusiveModeEXT" );
@@ -2406,6 +2527,17 @@ mixin template Platform_Extensions( extensions... ) {
             else static if( __traits( isSame, extension, ANDROID_external_memory_android_hardware_buffer )) {
                 VkResult  GetAndroidHardwareBufferPropertiesANDROID( const( AHardwareBuffer )* buffer, VkAndroidHardwareBufferPropertiesANDROID* pProperties ) { return vkGetAndroidHardwareBufferPropertiesANDROID( vkDevice, buffer, pProperties ); }
                 VkResult  GetMemoryAndroidHardwareBufferANDROID( const( VkMemoryGetAndroidHardwareBufferInfoANDROID )* pInfo, AHardwareBuffer pBuffer ) { return vkGetMemoryAndroidHardwareBufferANDROID( vkDevice, pInfo, pBuffer ); }
+            }
+
+            // VK_AMDX_shader_enqueue : dispatch device convenience member functions
+            else static if( __traits( isSame, extension, AMDX_shader_enqueue )) {
+                VkResult  CreateExecutionGraphPipelinesAMDX( VkPipelineCache pipelineCache, uint32_t createInfoCount, const( VkExecutionGraphPipelineCreateInfoAMDX )* pCreateInfos, VkPipeline* pPipelines ) { return vkCreateExecutionGraphPipelinesAMDX( vkDevice, pipelineCache, createInfoCount, pCreateInfos, pAllocator, pPipelines ); }
+                VkResult  GetExecutionGraphPipelineScratchSizeAMDX( VkPipeline executionGraph, VkExecutionGraphPipelineScratchSizeAMDX* pSizeInfo ) { return vkGetExecutionGraphPipelineScratchSizeAMDX( vkDevice, executionGraph, pSizeInfo ); }
+                VkResult  GetExecutionGraphPipelineNodeIndexAMDX( VkPipeline executionGraph, const( VkPipelineShaderStageNodeCreateInfoAMDX )* pNodeInfo, uint32_t* pNodeIndex ) { return vkGetExecutionGraphPipelineNodeIndexAMDX( vkDevice, executionGraph, pNodeInfo, pNodeIndex ); }
+                void      CmdInitializeGraphScratchMemoryAMDX( VkDeviceAddress scratch ) { vkCmdInitializeGraphScratchMemoryAMDX( commandBuffer, scratch ); }
+                void      CmdDispatchGraphAMDX( VkDeviceAddress scratch, const( VkDispatchGraphCountInfoAMDX )* pCountInfo ) { vkCmdDispatchGraphAMDX( commandBuffer, scratch, pCountInfo ); }
+                void      CmdDispatchGraphIndirectAMDX( VkDeviceAddress scratch, const( VkDispatchGraphCountInfoAMDX )* pCountInfo ) { vkCmdDispatchGraphIndirectAMDX( commandBuffer, scratch, pCountInfo ); }
+                void      CmdDispatchGraphIndirectCountAMDX( VkDeviceAddress scratch, VkDeviceAddress countInfo ) { vkCmdDispatchGraphIndirectCountAMDX( commandBuffer, scratch, countInfo ); }
             }
 
             // VK_EXT_full_screen_exclusive : dispatch device convenience member functions
@@ -2539,6 +2671,17 @@ mixin template Platform_Extensions( extensions... ) {
             else static if( __traits( isSame, extension, ANDROID_external_memory_android_hardware_buffer )) {
                 PFN_vkGetAndroidHardwareBufferPropertiesANDROID                       vkGetAndroidHardwareBufferPropertiesANDROID;
                 PFN_vkGetMemoryAndroidHardwareBufferANDROID                           vkGetMemoryAndroidHardwareBufferANDROID;
+            }
+
+            // VK_AMDX_shader_enqueue : dispatch device member function pointer decelerations
+            else static if( __traits( isSame, extension, AMDX_shader_enqueue )) {
+                PFN_vkCreateExecutionGraphPipelinesAMDX                               vkCreateExecutionGraphPipelinesAMDX;
+                PFN_vkGetExecutionGraphPipelineScratchSizeAMDX                        vkGetExecutionGraphPipelineScratchSizeAMDX;
+                PFN_vkGetExecutionGraphPipelineNodeIndexAMDX                          vkGetExecutionGraphPipelineNodeIndexAMDX;
+                PFN_vkCmdInitializeGraphScratchMemoryAMDX                             vkCmdInitializeGraphScratchMemoryAMDX;
+                PFN_vkCmdDispatchGraphAMDX                                            vkCmdDispatchGraphAMDX;
+                PFN_vkCmdDispatchGraphIndirectAMDX                                    vkCmdDispatchGraphIndirectAMDX;
+                PFN_vkCmdDispatchGraphIndirectCountAMDX                               vkCmdDispatchGraphIndirectCountAMDX;
             }
 
             // VK_FUCHSIA_imagepipe_surface : dispatch device member function pointer decelerations

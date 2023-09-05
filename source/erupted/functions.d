@@ -350,6 +350,12 @@ extern( System ) {
     // VK_KHR_ray_tracing_maintenance1
     alias PFN_vkCmdTraceRaysIndirect2KHR                                        = void      function( VkCommandBuffer commandBuffer, VkDeviceAddress indirectDeviceAddress );
 
+    // VK_KHR_maintenance5
+    alias PFN_vkCmdBindIndexBuffer2KHR                                          = void      function( VkCommandBuffer commandBuffer, VkBuffer buffer, VkDeviceSize offset, VkDeviceSize size, VkIndexType indexType );
+    alias PFN_vkGetRenderingAreaGranularityKHR                                  = void      function( VkDevice device, const( VkRenderingAreaInfoKHR )* pRenderingAreaInfo, VkExtent2D* pGranularity );
+    alias PFN_vkGetDeviceImageSubresourceLayoutKHR                              = void      function( VkDevice device, const( VkDeviceImageSubresourceInfoKHR )* pInfo, VkSubresourceLayout2KHR* pLayout );
+    alias PFN_vkGetImageSubresourceLayout2KHR                                   = void      function( VkDevice device, VkImage image, const( VkImageSubresource2KHR )* pSubresource, VkSubresourceLayout2KHR* pLayout );
+
     // VK_KHR_cooperative_matrix
     alias PFN_vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR                 = VkResult  function( VkPhysicalDevice physicalDevice, uint32_t* pPropertyCount, VkCooperativeMatrixPropertiesKHR* pProperties );
 
@@ -520,7 +526,6 @@ extern( System ) {
     alias PFN_vkCopyImageToMemoryEXT                                            = VkResult  function( VkDevice device, const( VkCopyImageToMemoryInfoEXT )* pCopyImageToMemoryInfo );
     alias PFN_vkCopyImageToImageEXT                                             = VkResult  function( VkDevice device, const( VkCopyImageToImageInfoEXT )* pCopyImageToImageInfo );
     alias PFN_vkTransitionImageLayoutEXT                                        = VkResult  function( VkDevice device, uint32_t transitionCount, const( VkHostImageLayoutTransitionInfoEXT )* pTransitions );
-    alias PFN_vkGetImageSubresourceLayout2EXT                                   = void      function( VkDevice device, VkImage image, const( VkImageSubresource2EXT )* pSubresource, VkSubresourceLayout2EXT* pLayout );
 
     // VK_EXT_swapchain_maintenance1
     alias PFN_vkReleaseSwapchainImagesEXT                                       = VkResult  function( VkDevice device, const( VkReleaseSwapchainImagesInfoEXT )* pReleaseInfo );
@@ -1054,6 +1059,12 @@ __gshared {
     // VK_KHR_ray_tracing_maintenance1
     PFN_vkCmdTraceRaysIndirect2KHR                                        vkCmdTraceRaysIndirect2KHR;
 
+    // VK_KHR_maintenance5
+    PFN_vkCmdBindIndexBuffer2KHR                                          vkCmdBindIndexBuffer2KHR;
+    PFN_vkGetRenderingAreaGranularityKHR                                  vkGetRenderingAreaGranularityKHR;
+    PFN_vkGetDeviceImageSubresourceLayoutKHR                              vkGetDeviceImageSubresourceLayoutKHR;
+    PFN_vkGetImageSubresourceLayout2KHR                                   vkGetImageSubresourceLayout2KHR;
+
     // VK_KHR_cooperative_matrix
     PFN_vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR                 vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR;
 
@@ -1224,7 +1235,6 @@ __gshared {
     PFN_vkCopyImageToMemoryEXT                                            vkCopyImageToMemoryEXT;
     PFN_vkCopyImageToImageEXT                                             vkCopyImageToImageEXT;
     PFN_vkTransitionImageLayoutEXT                                        vkTransitionImageLayoutEXT;
-    PFN_vkGetImageSubresourceLayout2EXT                                   vkGetImageSubresourceLayout2EXT;
 
     // VK_EXT_swapchain_maintenance1
     PFN_vkReleaseSwapchainImagesEXT                                       vkReleaseSwapchainImagesEXT;
@@ -1542,6 +1552,9 @@ __gshared {
     alias vkCmdSetDepthBoundsTestEnableEXT                                        = vkCmdSetDepthBoundsTestEnable;
     alias vkCmdSetStencilTestEnableEXT                                            = vkCmdSetStencilTestEnable;
     alias vkCmdSetStencilOpEXT                                                    = vkCmdSetStencilOp;
+
+    // VK_EXT_host_image_copy
+    alias vkGetImageSubresourceLayout2EXT                                         = vkGetImageSubresourceLayout2KHR;
 
     // VK_EXT_private_data
     alias vkCreatePrivateDataSlotEXT                                              = vkCreatePrivateDataSlot;
@@ -1971,6 +1984,12 @@ void loadDeviceLevelFunctions( VkInstance instance ) {
     // VK_KHR_ray_tracing_maintenance1
     vkCmdTraceRaysIndirect2KHR                               = cast( PFN_vkCmdTraceRaysIndirect2KHR                               ) vkGetInstanceProcAddr( instance, "vkCmdTraceRaysIndirect2KHR" );
 
+    // VK_KHR_maintenance5
+    vkCmdBindIndexBuffer2KHR                                 = cast( PFN_vkCmdBindIndexBuffer2KHR                                 ) vkGetInstanceProcAddr( instance, "vkCmdBindIndexBuffer2KHR" );
+    vkGetRenderingAreaGranularityKHR                         = cast( PFN_vkGetRenderingAreaGranularityKHR                         ) vkGetInstanceProcAddr( instance, "vkGetRenderingAreaGranularityKHR" );
+    vkGetDeviceImageSubresourceLayoutKHR                     = cast( PFN_vkGetDeviceImageSubresourceLayoutKHR                     ) vkGetInstanceProcAddr( instance, "vkGetDeviceImageSubresourceLayoutKHR" );
+    vkGetImageSubresourceLayout2KHR                          = cast( PFN_vkGetImageSubresourceLayout2KHR                          ) vkGetInstanceProcAddr( instance, "vkGetImageSubresourceLayout2KHR" );
+
     // VK_EXT_debug_marker
     vkDebugMarkerSetObjectTagEXT                             = cast( PFN_vkDebugMarkerSetObjectTagEXT                             ) vkGetInstanceProcAddr( instance, "vkDebugMarkerSetObjectTagEXT" );
     vkDebugMarkerSetObjectNameEXT                            = cast( PFN_vkDebugMarkerSetObjectNameEXT                            ) vkGetInstanceProcAddr( instance, "vkDebugMarkerSetObjectNameEXT" );
@@ -2110,7 +2129,6 @@ void loadDeviceLevelFunctions( VkInstance instance ) {
     vkCopyImageToMemoryEXT                                   = cast( PFN_vkCopyImageToMemoryEXT                                   ) vkGetInstanceProcAddr( instance, "vkCopyImageToMemoryEXT" );
     vkCopyImageToImageEXT                                    = cast( PFN_vkCopyImageToImageEXT                                    ) vkGetInstanceProcAddr( instance, "vkCopyImageToImageEXT" );
     vkTransitionImageLayoutEXT                               = cast( PFN_vkTransitionImageLayoutEXT                               ) vkGetInstanceProcAddr( instance, "vkTransitionImageLayoutEXT" );
-    vkGetImageSubresourceLayout2EXT                          = cast( PFN_vkGetImageSubresourceLayout2EXT                          ) vkGetInstanceProcAddr( instance, "vkGetImageSubresourceLayout2EXT" );
 
     // VK_EXT_swapchain_maintenance1
     vkReleaseSwapchainImagesEXT                              = cast( PFN_vkReleaseSwapchainImagesEXT                              ) vkGetInstanceProcAddr( instance, "vkReleaseSwapchainImagesEXT" );
@@ -2581,6 +2599,12 @@ void loadDeviceLevelFunctions( VkDevice device ) {
     // VK_KHR_ray_tracing_maintenance1
     vkCmdTraceRaysIndirect2KHR                               = cast( PFN_vkCmdTraceRaysIndirect2KHR                               ) vkGetDeviceProcAddr( device, "vkCmdTraceRaysIndirect2KHR" );
 
+    // VK_KHR_maintenance5
+    vkCmdBindIndexBuffer2KHR                                 = cast( PFN_vkCmdBindIndexBuffer2KHR                                 ) vkGetDeviceProcAddr( device, "vkCmdBindIndexBuffer2KHR" );
+    vkGetRenderingAreaGranularityKHR                         = cast( PFN_vkGetRenderingAreaGranularityKHR                         ) vkGetDeviceProcAddr( device, "vkGetRenderingAreaGranularityKHR" );
+    vkGetDeviceImageSubresourceLayoutKHR                     = cast( PFN_vkGetDeviceImageSubresourceLayoutKHR                     ) vkGetDeviceProcAddr( device, "vkGetDeviceImageSubresourceLayoutKHR" );
+    vkGetImageSubresourceLayout2KHR                          = cast( PFN_vkGetImageSubresourceLayout2KHR                          ) vkGetDeviceProcAddr( device, "vkGetImageSubresourceLayout2KHR" );
+
     // VK_EXT_debug_marker
     vkDebugMarkerSetObjectTagEXT                             = cast( PFN_vkDebugMarkerSetObjectTagEXT                             ) vkGetDeviceProcAddr( device, "vkDebugMarkerSetObjectTagEXT" );
     vkDebugMarkerSetObjectNameEXT                            = cast( PFN_vkDebugMarkerSetObjectNameEXT                            ) vkGetDeviceProcAddr( device, "vkDebugMarkerSetObjectNameEXT" );
@@ -2720,7 +2744,6 @@ void loadDeviceLevelFunctions( VkDevice device ) {
     vkCopyImageToMemoryEXT                                   = cast( PFN_vkCopyImageToMemoryEXT                                   ) vkGetDeviceProcAddr( device, "vkCopyImageToMemoryEXT" );
     vkCopyImageToImageEXT                                    = cast( PFN_vkCopyImageToImageEXT                                    ) vkGetDeviceProcAddr( device, "vkCopyImageToImageEXT" );
     vkTransitionImageLayoutEXT                               = cast( PFN_vkTransitionImageLayoutEXT                               ) vkGetDeviceProcAddr( device, "vkTransitionImageLayoutEXT" );
-    vkGetImageSubresourceLayout2EXT                          = cast( PFN_vkGetImageSubresourceLayout2EXT                          ) vkGetDeviceProcAddr( device, "vkGetImageSubresourceLayout2EXT" );
 
     // VK_EXT_swapchain_maintenance1
     vkReleaseSwapchainImagesEXT                              = cast( PFN_vkReleaseSwapchainImagesEXT                              ) vkGetDeviceProcAddr( device, "vkReleaseSwapchainImagesEXT" );
