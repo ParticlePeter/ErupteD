@@ -1716,7 +1716,7 @@ mixin template Platform_Extensions( extensions... ) {
         else static if( __traits( isSame, extension, NV_displacement_micromap )) {
             enum VK_NV_displacement_micromap = 1;
 
-            enum VK_NV_DISPLACEMENT_MICROMAP_SPEC_VERSION = 1;
+            enum VK_NV_DISPLACEMENT_MICROMAP_SPEC_VERSION = 2;
             enum const( char )* VK_NV_DISPLACEMENT_MICROMAP_EXTENSION_NAME = "VK_NV_displacement_micromap";
             
             enum VkDisplacementMicromapFormatNV {

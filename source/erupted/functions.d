@@ -515,6 +515,13 @@ extern( System ) {
     // VK_EXT_line_rasterization
     alias PFN_vkCmdSetLineStippleEXT                                            = void      function( VkCommandBuffer commandBuffer, uint32_t lineStippleFactor, uint16_t lineStipplePattern );
 
+    // VK_EXT_host_image_copy
+    alias PFN_vkCopyMemoryToImageEXT                                            = VkResult  function( VkDevice device, const( VkCopyMemoryToImageInfoEXT )* pCopyMemoryToImageInfo );
+    alias PFN_vkCopyImageToMemoryEXT                                            = VkResult  function( VkDevice device, const( VkCopyImageToMemoryInfoEXT )* pCopyImageToMemoryInfo );
+    alias PFN_vkCopyImageToImageEXT                                             = VkResult  function( VkDevice device, const( VkCopyImageToImageInfoEXT )* pCopyImageToImageInfo );
+    alias PFN_vkTransitionImageLayoutEXT                                        = VkResult  function( VkDevice device, uint32_t transitionCount, const( VkHostImageLayoutTransitionInfoEXT )* pTransitions );
+    alias PFN_vkGetImageSubresourceLayout2EXT                                   = void      function( VkDevice device, VkImage image, const( VkImageSubresource2EXT )* pSubresource, VkSubresourceLayout2EXT* pLayout );
+
     // VK_EXT_swapchain_maintenance1
     alias PFN_vkReleaseSwapchainImagesEXT                                       = VkResult  function( VkDevice device, const( VkReleaseSwapchainImagesInfoEXT )* pReleaseInfo );
 
@@ -548,9 +555,6 @@ extern( System ) {
 
     // VK_NV_fragment_shading_rate_enums
     alias PFN_vkCmdSetFragmentShadingRateEnumNV                                 = void      function( VkCommandBuffer commandBuffer, VkFragmentShadingRateNV shadingRate, const VkFragmentShadingRateCombinerOpKHR[2] combinerOps );
-
-    // VK_EXT_image_compression_control
-    alias PFN_vkGetImageSubresourceLayout2EXT                                   = void      function( VkDevice device, VkImage image, const( VkImageSubresource2EXT )* pSubresource, VkSubresourceLayout2EXT* pLayout );
 
     // VK_EXT_device_fault
     alias PFN_vkGetDeviceFaultInfoEXT                                           = VkResult  function( VkDevice device, VkDeviceFaultCountsEXT* pFaultCounts, VkDeviceFaultInfoEXT* pFaultInfo );
@@ -616,6 +620,11 @@ extern( System ) {
     // VK_NV_memory_decompression
     alias PFN_vkCmdDecompressMemoryNV                                           = void      function( VkCommandBuffer commandBuffer, uint32_t decompressRegionCount, const( VkDecompressMemoryRegionNV )* pDecompressMemoryRegions );
     alias PFN_vkCmdDecompressMemoryIndirectCountNV                              = void      function( VkCommandBuffer commandBuffer, VkDeviceAddress indirectCommandsAddress, VkDeviceAddress indirectCommandsCountAddress, uint32_t stride );
+
+    // VK_NV_device_generated_commands_compute
+    alias PFN_vkGetPipelineIndirectMemoryRequirementsNV                         = void      function( VkDevice device, const( VkComputePipelineCreateInfo )* pCreateInfo, VkMemoryRequirements2* pMemoryRequirements );
+    alias PFN_vkCmdUpdatePipelineIndirectBuffer                                 = void      function( VkCommandBuffer commandBuffer, VkPipelineBindPoint pipelineBindPoint, VkPipeline pipeline );
+    alias PFN_vkGetPipelineIndirectDeviceAddressNV                              = VkDeviceAddress  function( VkDevice device, const( VkPipelineIndirectDeviceAddressInfoNV )* pInfo );
 
     // VK_EXT_extended_dynamic_state3
     alias PFN_vkCmdSetTessellationDomainOriginEXT                               = void      function( VkCommandBuffer commandBuffer, VkTessellationDomainOrigin domainOrigin );
@@ -1210,6 +1219,13 @@ __gshared {
     // VK_EXT_line_rasterization
     PFN_vkCmdSetLineStippleEXT                                            vkCmdSetLineStippleEXT;
 
+    // VK_EXT_host_image_copy
+    PFN_vkCopyMemoryToImageEXT                                            vkCopyMemoryToImageEXT;
+    PFN_vkCopyImageToMemoryEXT                                            vkCopyImageToMemoryEXT;
+    PFN_vkCopyImageToImageEXT                                             vkCopyImageToImageEXT;
+    PFN_vkTransitionImageLayoutEXT                                        vkTransitionImageLayoutEXT;
+    PFN_vkGetImageSubresourceLayout2EXT                                   vkGetImageSubresourceLayout2EXT;
+
     // VK_EXT_swapchain_maintenance1
     PFN_vkReleaseSwapchainImagesEXT                                       vkReleaseSwapchainImagesEXT;
 
@@ -1243,9 +1259,6 @@ __gshared {
 
     // VK_NV_fragment_shading_rate_enums
     PFN_vkCmdSetFragmentShadingRateEnumNV                                 vkCmdSetFragmentShadingRateEnumNV;
-
-    // VK_EXT_image_compression_control
-    PFN_vkGetImageSubresourceLayout2EXT                                   vkGetImageSubresourceLayout2EXT;
 
     // VK_EXT_device_fault
     PFN_vkGetDeviceFaultInfoEXT                                           vkGetDeviceFaultInfoEXT;
@@ -1311,6 +1324,11 @@ __gshared {
     // VK_NV_memory_decompression
     PFN_vkCmdDecompressMemoryNV                                           vkCmdDecompressMemoryNV;
     PFN_vkCmdDecompressMemoryIndirectCountNV                              vkCmdDecompressMemoryIndirectCountNV;
+
+    // VK_NV_device_generated_commands_compute
+    PFN_vkGetPipelineIndirectMemoryRequirementsNV                         vkGetPipelineIndirectMemoryRequirementsNV;
+    PFN_vkCmdUpdatePipelineIndirectBuffer                                 vkCmdUpdatePipelineIndirectBuffer;
+    PFN_vkGetPipelineIndirectDeviceAddressNV                              vkGetPipelineIndirectDeviceAddressNV;
 
     // VK_EXT_extended_dynamic_state3
     PFN_vkCmdSetTessellationDomainOriginEXT                               vkCmdSetTessellationDomainOriginEXT;
@@ -2087,6 +2105,13 @@ void loadDeviceLevelFunctions( VkInstance instance ) {
     // VK_EXT_line_rasterization
     vkCmdSetLineStippleEXT                                   = cast( PFN_vkCmdSetLineStippleEXT                                   ) vkGetInstanceProcAddr( instance, "vkCmdSetLineStippleEXT" );
 
+    // VK_EXT_host_image_copy
+    vkCopyMemoryToImageEXT                                   = cast( PFN_vkCopyMemoryToImageEXT                                   ) vkGetInstanceProcAddr( instance, "vkCopyMemoryToImageEXT" );
+    vkCopyImageToMemoryEXT                                   = cast( PFN_vkCopyImageToMemoryEXT                                   ) vkGetInstanceProcAddr( instance, "vkCopyImageToMemoryEXT" );
+    vkCopyImageToImageEXT                                    = cast( PFN_vkCopyImageToImageEXT                                    ) vkGetInstanceProcAddr( instance, "vkCopyImageToImageEXT" );
+    vkTransitionImageLayoutEXT                               = cast( PFN_vkTransitionImageLayoutEXT                               ) vkGetInstanceProcAddr( instance, "vkTransitionImageLayoutEXT" );
+    vkGetImageSubresourceLayout2EXT                          = cast( PFN_vkGetImageSubresourceLayout2EXT                          ) vkGetInstanceProcAddr( instance, "vkGetImageSubresourceLayout2EXT" );
+
     // VK_EXT_swapchain_maintenance1
     vkReleaseSwapchainImagesEXT                              = cast( PFN_vkReleaseSwapchainImagesEXT                              ) vkGetInstanceProcAddr( instance, "vkReleaseSwapchainImagesEXT" );
 
@@ -2116,9 +2141,6 @@ void loadDeviceLevelFunctions( VkInstance instance ) {
 
     // VK_NV_fragment_shading_rate_enums
     vkCmdSetFragmentShadingRateEnumNV                        = cast( PFN_vkCmdSetFragmentShadingRateEnumNV                        ) vkGetInstanceProcAddr( instance, "vkCmdSetFragmentShadingRateEnumNV" );
-
-    // VK_EXT_image_compression_control
-    vkGetImageSubresourceLayout2EXT                          = cast( PFN_vkGetImageSubresourceLayout2EXT                          ) vkGetInstanceProcAddr( instance, "vkGetImageSubresourceLayout2EXT" );
 
     // VK_EXT_device_fault
     vkGetDeviceFaultInfoEXT                                  = cast( PFN_vkGetDeviceFaultInfoEXT                                  ) vkGetInstanceProcAddr( instance, "vkGetDeviceFaultInfoEXT" );
@@ -2184,6 +2206,11 @@ void loadDeviceLevelFunctions( VkInstance instance ) {
     // VK_NV_memory_decompression
     vkCmdDecompressMemoryNV                                  = cast( PFN_vkCmdDecompressMemoryNV                                  ) vkGetInstanceProcAddr( instance, "vkCmdDecompressMemoryNV" );
     vkCmdDecompressMemoryIndirectCountNV                     = cast( PFN_vkCmdDecompressMemoryIndirectCountNV                     ) vkGetInstanceProcAddr( instance, "vkCmdDecompressMemoryIndirectCountNV" );
+
+    // VK_NV_device_generated_commands_compute
+    vkGetPipelineIndirectMemoryRequirementsNV                = cast( PFN_vkGetPipelineIndirectMemoryRequirementsNV                ) vkGetInstanceProcAddr( instance, "vkGetPipelineIndirectMemoryRequirementsNV" );
+    vkCmdUpdatePipelineIndirectBuffer                        = cast( PFN_vkCmdUpdatePipelineIndirectBuffer                        ) vkGetInstanceProcAddr( instance, "vkCmdUpdatePipelineIndirectBuffer" );
+    vkGetPipelineIndirectDeviceAddressNV                     = cast( PFN_vkGetPipelineIndirectDeviceAddressNV                     ) vkGetInstanceProcAddr( instance, "vkGetPipelineIndirectDeviceAddressNV" );
 
     // VK_EXT_extended_dynamic_state3
     vkCmdSetTessellationDomainOriginEXT                      = cast( PFN_vkCmdSetTessellationDomainOriginEXT                      ) vkGetInstanceProcAddr( instance, "vkCmdSetTessellationDomainOriginEXT" );
@@ -2688,6 +2715,13 @@ void loadDeviceLevelFunctions( VkDevice device ) {
     // VK_EXT_line_rasterization
     vkCmdSetLineStippleEXT                                   = cast( PFN_vkCmdSetLineStippleEXT                                   ) vkGetDeviceProcAddr( device, "vkCmdSetLineStippleEXT" );
 
+    // VK_EXT_host_image_copy
+    vkCopyMemoryToImageEXT                                   = cast( PFN_vkCopyMemoryToImageEXT                                   ) vkGetDeviceProcAddr( device, "vkCopyMemoryToImageEXT" );
+    vkCopyImageToMemoryEXT                                   = cast( PFN_vkCopyImageToMemoryEXT                                   ) vkGetDeviceProcAddr( device, "vkCopyImageToMemoryEXT" );
+    vkCopyImageToImageEXT                                    = cast( PFN_vkCopyImageToImageEXT                                    ) vkGetDeviceProcAddr( device, "vkCopyImageToImageEXT" );
+    vkTransitionImageLayoutEXT                               = cast( PFN_vkTransitionImageLayoutEXT                               ) vkGetDeviceProcAddr( device, "vkTransitionImageLayoutEXT" );
+    vkGetImageSubresourceLayout2EXT                          = cast( PFN_vkGetImageSubresourceLayout2EXT                          ) vkGetDeviceProcAddr( device, "vkGetImageSubresourceLayout2EXT" );
+
     // VK_EXT_swapchain_maintenance1
     vkReleaseSwapchainImagesEXT                              = cast( PFN_vkReleaseSwapchainImagesEXT                              ) vkGetDeviceProcAddr( device, "vkReleaseSwapchainImagesEXT" );
 
@@ -2717,9 +2751,6 @@ void loadDeviceLevelFunctions( VkDevice device ) {
 
     // VK_NV_fragment_shading_rate_enums
     vkCmdSetFragmentShadingRateEnumNV                        = cast( PFN_vkCmdSetFragmentShadingRateEnumNV                        ) vkGetDeviceProcAddr( device, "vkCmdSetFragmentShadingRateEnumNV" );
-
-    // VK_EXT_image_compression_control
-    vkGetImageSubresourceLayout2EXT                          = cast( PFN_vkGetImageSubresourceLayout2EXT                          ) vkGetDeviceProcAddr( device, "vkGetImageSubresourceLayout2EXT" );
 
     // VK_EXT_device_fault
     vkGetDeviceFaultInfoEXT                                  = cast( PFN_vkGetDeviceFaultInfoEXT                                  ) vkGetDeviceProcAddr( device, "vkGetDeviceFaultInfoEXT" );
@@ -2785,6 +2816,11 @@ void loadDeviceLevelFunctions( VkDevice device ) {
     // VK_NV_memory_decompression
     vkCmdDecompressMemoryNV                                  = cast( PFN_vkCmdDecompressMemoryNV                                  ) vkGetDeviceProcAddr( device, "vkCmdDecompressMemoryNV" );
     vkCmdDecompressMemoryIndirectCountNV                     = cast( PFN_vkCmdDecompressMemoryIndirectCountNV                     ) vkGetDeviceProcAddr( device, "vkCmdDecompressMemoryIndirectCountNV" );
+
+    // VK_NV_device_generated_commands_compute
+    vkGetPipelineIndirectMemoryRequirementsNV                = cast( PFN_vkGetPipelineIndirectMemoryRequirementsNV                ) vkGetDeviceProcAddr( device, "vkGetPipelineIndirectMemoryRequirementsNV" );
+    vkCmdUpdatePipelineIndirectBuffer                        = cast( PFN_vkCmdUpdatePipelineIndirectBuffer                        ) vkGetDeviceProcAddr( device, "vkCmdUpdatePipelineIndirectBuffer" );
+    vkGetPipelineIndirectDeviceAddressNV                     = cast( PFN_vkGetPipelineIndirectDeviceAddressNV                     ) vkGetDeviceProcAddr( device, "vkGetPipelineIndirectDeviceAddressNV" );
 
     // VK_EXT_extended_dynamic_state3
     vkCmdSetTessellationDomainOriginEXT                      = cast( PFN_vkCmdSetTessellationDomainOriginEXT                      ) vkGetDeviceProcAddr( device, "vkCmdSetTessellationDomainOriginEXT" );

@@ -466,6 +466,13 @@ struct DispatchDevice {
         // VK_EXT_line_rasterization
         vkCmdSetLineStippleEXT                                   = cast( PFN_vkCmdSetLineStippleEXT                                   ) vkGetDeviceProcAddr( device, "vkCmdSetLineStippleEXT" );
 
+        // VK_EXT_host_image_copy
+        vkCopyMemoryToImageEXT                                   = cast( PFN_vkCopyMemoryToImageEXT                                   ) vkGetDeviceProcAddr( device, "vkCopyMemoryToImageEXT" );
+        vkCopyImageToMemoryEXT                                   = cast( PFN_vkCopyImageToMemoryEXT                                   ) vkGetDeviceProcAddr( device, "vkCopyImageToMemoryEXT" );
+        vkCopyImageToImageEXT                                    = cast( PFN_vkCopyImageToImageEXT                                    ) vkGetDeviceProcAddr( device, "vkCopyImageToImageEXT" );
+        vkTransitionImageLayoutEXT                               = cast( PFN_vkTransitionImageLayoutEXT                               ) vkGetDeviceProcAddr( device, "vkTransitionImageLayoutEXT" );
+        vkGetImageSubresourceLayout2EXT                          = cast( PFN_vkGetImageSubresourceLayout2EXT                          ) vkGetDeviceProcAddr( device, "vkGetImageSubresourceLayout2EXT" );
+
         // VK_EXT_swapchain_maintenance1
         vkReleaseSwapchainImagesEXT                              = cast( PFN_vkReleaseSwapchainImagesEXT                              ) vkGetDeviceProcAddr( device, "vkReleaseSwapchainImagesEXT" );
 
@@ -495,9 +502,6 @@ struct DispatchDevice {
 
         // VK_NV_fragment_shading_rate_enums
         vkCmdSetFragmentShadingRateEnumNV                        = cast( PFN_vkCmdSetFragmentShadingRateEnumNV                        ) vkGetDeviceProcAddr( device, "vkCmdSetFragmentShadingRateEnumNV" );
-
-        // VK_EXT_image_compression_control
-        vkGetImageSubresourceLayout2EXT                          = cast( PFN_vkGetImageSubresourceLayout2EXT                          ) vkGetDeviceProcAddr( device, "vkGetImageSubresourceLayout2EXT" );
 
         // VK_EXT_device_fault
         vkGetDeviceFaultInfoEXT                                  = cast( PFN_vkGetDeviceFaultInfoEXT                                  ) vkGetDeviceProcAddr( device, "vkGetDeviceFaultInfoEXT" );
@@ -563,6 +567,11 @@ struct DispatchDevice {
         // VK_NV_memory_decompression
         vkCmdDecompressMemoryNV                                  = cast( PFN_vkCmdDecompressMemoryNV                                  ) vkGetDeviceProcAddr( device, "vkCmdDecompressMemoryNV" );
         vkCmdDecompressMemoryIndirectCountNV                     = cast( PFN_vkCmdDecompressMemoryIndirectCountNV                     ) vkGetDeviceProcAddr( device, "vkCmdDecompressMemoryIndirectCountNV" );
+
+        // VK_NV_device_generated_commands_compute
+        vkGetPipelineIndirectMemoryRequirementsNV                = cast( PFN_vkGetPipelineIndirectMemoryRequirementsNV                ) vkGetDeviceProcAddr( device, "vkGetPipelineIndirectMemoryRequirementsNV" );
+        vkCmdUpdatePipelineIndirectBuffer                        = cast( PFN_vkCmdUpdatePipelineIndirectBuffer                        ) vkGetDeviceProcAddr( device, "vkCmdUpdatePipelineIndirectBuffer" );
+        vkGetPipelineIndirectDeviceAddressNV                     = cast( PFN_vkGetPipelineIndirectDeviceAddressNV                     ) vkGetDeviceProcAddr( device, "vkGetPipelineIndirectDeviceAddressNV" );
 
         // VK_EXT_extended_dynamic_state3
         vkCmdSetTessellationDomainOriginEXT                      = cast( PFN_vkCmdSetTessellationDomainOriginEXT                      ) vkGetDeviceProcAddr( device, "vkCmdSetTessellationDomainOriginEXT" );
@@ -1065,6 +1074,13 @@ struct DispatchDevice {
     // VK_EXT_line_rasterization
     void      CmdSetLineStippleEXT( uint32_t lineStippleFactor, uint16_t lineStipplePattern ) { vkCmdSetLineStippleEXT( commandBuffer, lineStippleFactor, lineStipplePattern ); }
 
+    // VK_EXT_host_image_copy
+    VkResult  CopyMemoryToImageEXT( const( VkCopyMemoryToImageInfoEXT )* pCopyMemoryToImageInfo ) { return vkCopyMemoryToImageEXT( vkDevice, pCopyMemoryToImageInfo ); }
+    VkResult  CopyImageToMemoryEXT( const( VkCopyImageToMemoryInfoEXT )* pCopyImageToMemoryInfo ) { return vkCopyImageToMemoryEXT( vkDevice, pCopyImageToMemoryInfo ); }
+    VkResult  CopyImageToImageEXT( const( VkCopyImageToImageInfoEXT )* pCopyImageToImageInfo ) { return vkCopyImageToImageEXT( vkDevice, pCopyImageToImageInfo ); }
+    VkResult  TransitionImageLayoutEXT( uint32_t transitionCount, const( VkHostImageLayoutTransitionInfoEXT )* pTransitions ) { return vkTransitionImageLayoutEXT( vkDevice, transitionCount, pTransitions ); }
+    void      GetImageSubresourceLayout2EXT( VkImage image, const( VkImageSubresource2EXT )* pSubresource, VkSubresourceLayout2EXT* pLayout ) { vkGetImageSubresourceLayout2EXT( vkDevice, image, pSubresource, pLayout ); }
+
     // VK_EXT_swapchain_maintenance1
     VkResult  ReleaseSwapchainImagesEXT( const( VkReleaseSwapchainImagesInfoEXT )* pReleaseInfo ) { return vkReleaseSwapchainImagesEXT( vkDevice, pReleaseInfo ); }
 
@@ -1094,9 +1110,6 @@ struct DispatchDevice {
 
     // VK_NV_fragment_shading_rate_enums
     void      CmdSetFragmentShadingRateEnumNV( VkFragmentShadingRateNV shadingRate, const VkFragmentShadingRateCombinerOpKHR[2] combinerOps ) { vkCmdSetFragmentShadingRateEnumNV( commandBuffer, shadingRate, combinerOps ); }
-
-    // VK_EXT_image_compression_control
-    void      GetImageSubresourceLayout2EXT( VkImage image, const( VkImageSubresource2EXT )* pSubresource, VkSubresourceLayout2EXT* pLayout ) { vkGetImageSubresourceLayout2EXT( vkDevice, image, pSubresource, pLayout ); }
 
     // VK_EXT_device_fault
     VkResult  GetDeviceFaultInfoEXT( VkDeviceFaultCountsEXT* pFaultCounts, VkDeviceFaultInfoEXT* pFaultInfo ) { return vkGetDeviceFaultInfoEXT( vkDevice, pFaultCounts, pFaultInfo ); }
@@ -1162,6 +1175,11 @@ struct DispatchDevice {
     // VK_NV_memory_decompression
     void      CmdDecompressMemoryNV( uint32_t decompressRegionCount, const( VkDecompressMemoryRegionNV )* pDecompressMemoryRegions ) { vkCmdDecompressMemoryNV( commandBuffer, decompressRegionCount, pDecompressMemoryRegions ); }
     void      CmdDecompressMemoryIndirectCountNV( VkDeviceAddress indirectCommandsAddress, VkDeviceAddress indirectCommandsCountAddress, uint32_t stride ) { vkCmdDecompressMemoryIndirectCountNV( commandBuffer, indirectCommandsAddress, indirectCommandsCountAddress, stride ); }
+
+    // VK_NV_device_generated_commands_compute
+    void      GetPipelineIndirectMemoryRequirementsNV( const( VkComputePipelineCreateInfo )* pCreateInfo, VkMemoryRequirements2* pMemoryRequirements ) { vkGetPipelineIndirectMemoryRequirementsNV( vkDevice, pCreateInfo, pMemoryRequirements ); }
+    void      CmdUpdatePipelineIndirectBuffer( VkPipelineBindPoint pipelineBindPoint, VkPipeline pipeline ) { vkCmdUpdatePipelineIndirectBuffer( commandBuffer, pipelineBindPoint, pipeline ); }
+    VkDeviceAddress  GetPipelineIndirectDeviceAddressNV( const( VkPipelineIndirectDeviceAddressInfoNV )* pInfo ) { return vkGetPipelineIndirectDeviceAddressNV( vkDevice, pInfo ); }
 
     // VK_EXT_extended_dynamic_state3
     void      CmdSetTessellationDomainOriginEXT( VkTessellationDomainOrigin domainOrigin ) { vkCmdSetTessellationDomainOriginEXT( commandBuffer, domainOrigin ); }
@@ -1771,6 +1789,13 @@ struct DispatchDevice {
     // VK_EXT_line_rasterization
     PFN_vkCmdSetLineStippleEXT                                   vkCmdSetLineStippleEXT;
 
+    // VK_EXT_host_image_copy
+    PFN_vkCopyMemoryToImageEXT                                   vkCopyMemoryToImageEXT;
+    PFN_vkCopyImageToMemoryEXT                                   vkCopyImageToMemoryEXT;
+    PFN_vkCopyImageToImageEXT                                    vkCopyImageToImageEXT;
+    PFN_vkTransitionImageLayoutEXT                               vkTransitionImageLayoutEXT;
+    PFN_vkGetImageSubresourceLayout2EXT                          vkGetImageSubresourceLayout2EXT;
+
     // VK_EXT_swapchain_maintenance1
     PFN_vkReleaseSwapchainImagesEXT                              vkReleaseSwapchainImagesEXT;
 
@@ -1800,9 +1825,6 @@ struct DispatchDevice {
 
     // VK_NV_fragment_shading_rate_enums
     PFN_vkCmdSetFragmentShadingRateEnumNV                        vkCmdSetFragmentShadingRateEnumNV;
-
-    // VK_EXT_image_compression_control
-    PFN_vkGetImageSubresourceLayout2EXT                          vkGetImageSubresourceLayout2EXT;
 
     // VK_EXT_device_fault
     PFN_vkGetDeviceFaultInfoEXT                                  vkGetDeviceFaultInfoEXT;
@@ -1868,6 +1890,11 @@ struct DispatchDevice {
     // VK_NV_memory_decompression
     PFN_vkCmdDecompressMemoryNV                                  vkCmdDecompressMemoryNV;
     PFN_vkCmdDecompressMemoryIndirectCountNV                     vkCmdDecompressMemoryIndirectCountNV;
+
+    // VK_NV_device_generated_commands_compute
+    PFN_vkGetPipelineIndirectMemoryRequirementsNV                vkGetPipelineIndirectMemoryRequirementsNV;
+    PFN_vkCmdUpdatePipelineIndirectBuffer                        vkCmdUpdatePipelineIndirectBuffer;
+    PFN_vkGetPipelineIndirectDeviceAddressNV                     vkGetPipelineIndirectDeviceAddressNV;
 
     // VK_EXT_extended_dynamic_state3
     PFN_vkCmdSetTessellationDomainOriginEXT                      vkCmdSetTessellationDomainOriginEXT;
