@@ -373,7 +373,7 @@ mixin template Platform_Extensions( extensions... ) {
         else static if( __traits( isSame, extension, KHR_video_encode_queue )) {
             enum VK_KHR_video_encode_queue = 1;
 
-            enum VK_KHR_VIDEO_ENCODE_QUEUE_SPEC_VERSION = 9;
+            enum VK_KHR_VIDEO_ENCODE_QUEUE_SPEC_VERSION = 10;
             enum const( char )* VK_KHR_VIDEO_ENCODE_QUEUE_EXTENSION_NAME = "VK_KHR_video_encode_queue";
             
             enum VkVideoEncodeTuningModeKHR {
@@ -396,12 +396,14 @@ mixin template Platform_Extensions( extensions... ) {
             
             alias VkVideoEncodeCapabilityFlagsKHR = VkFlags;
             enum VkVideoEncodeCapabilityFlagBitsKHR : VkVideoEncodeCapabilityFlagsKHR {
-                VK_VIDEO_ENCODE_CAPABILITY_PRECEDING_EXTERNALLY_ENCODED_BYTES_BIT_KHR        = 0x00000001,
-                VK_VIDEO_ENCODE_CAPABILITY_FLAG_BITS_MAX_ENUM_KHR                            = 0x7FFFFFFF
+                VK_VIDEO_ENCODE_CAPABILITY_PRECEDING_EXTERNALLY_ENCODED_BYTES_BIT_KHR                = 0x00000001,
+                VK_VIDEO_ENCODE_CAPABILITY_INSUFFICIENT_BITSTREAM_BUFFER_RANGE_DETECTION_BIT_KHR     = 0x00000002,
+                VK_VIDEO_ENCODE_CAPABILITY_FLAG_BITS_MAX_ENUM_KHR                                    = 0x7FFFFFFF
             }
             
-            enum VK_VIDEO_ENCODE_CAPABILITY_PRECEDING_EXTERNALLY_ENCODED_BYTES_BIT_KHR       = VkVideoEncodeCapabilityFlagBitsKHR.VK_VIDEO_ENCODE_CAPABILITY_PRECEDING_EXTERNALLY_ENCODED_BYTES_BIT_KHR;
-            enum VK_VIDEO_ENCODE_CAPABILITY_FLAG_BITS_MAX_ENUM_KHR                           = VkVideoEncodeCapabilityFlagBitsKHR.VK_VIDEO_ENCODE_CAPABILITY_FLAG_BITS_MAX_ENUM_KHR;
+            enum VK_VIDEO_ENCODE_CAPABILITY_PRECEDING_EXTERNALLY_ENCODED_BYTES_BIT_KHR               = VkVideoEncodeCapabilityFlagBitsKHR.VK_VIDEO_ENCODE_CAPABILITY_PRECEDING_EXTERNALLY_ENCODED_BYTES_BIT_KHR;
+            enum VK_VIDEO_ENCODE_CAPABILITY_INSUFFICIENT_BITSTREAM_BUFFER_RANGE_DETECTION_BIT_KHR    = VkVideoEncodeCapabilityFlagBitsKHR.VK_VIDEO_ENCODE_CAPABILITY_INSUFFICIENT_BITSTREAM_BUFFER_RANGE_DETECTION_BIT_KHR;
+            enum VK_VIDEO_ENCODE_CAPABILITY_FLAG_BITS_MAX_ENUM_KHR                                   = VkVideoEncodeCapabilityFlagBitsKHR.VK_VIDEO_ENCODE_CAPABILITY_FLAG_BITS_MAX_ENUM_KHR;
             
             alias VkVideoEncodeRateControlModeFlagsKHR = VkFlags;
             enum VkVideoEncodeRateControlModeFlagBitsKHR : VkVideoEncodeRateControlModeFlagsKHR {
@@ -565,7 +567,7 @@ mixin template Platform_Extensions( extensions... ) {
         else static if( __traits( isSame, extension, EXT_video_encode_h264 )) {
             enum VK_EXT_video_encode_h264 = 1;
 
-            enum VK_EXT_VIDEO_ENCODE_H264_SPEC_VERSION = 11;
+            enum VK_EXT_VIDEO_ENCODE_H264_SPEC_VERSION = 12;
             enum const( char )* VK_EXT_VIDEO_ENCODE_H264_EXTENSION_NAME = "VK_EXT_video_encode_h264";
             
             alias VkVideoEncodeH264CapabilityFlagsEXT = VkFlags;
@@ -613,6 +615,8 @@ mixin template Platform_Extensions( extensions... ) {
                 VK_VIDEO_ENCODE_H264_STD_DEBLOCKING_FILTER_DISABLED_BIT_EXT                  = 0x00008000,
                 VK_VIDEO_ENCODE_H264_STD_DEBLOCKING_FILTER_ENABLED_BIT_EXT                   = 0x00010000,
                 VK_VIDEO_ENCODE_H264_STD_DEBLOCKING_FILTER_PARTIAL_BIT_EXT                   = 0x00020000,
+                VK_VIDEO_ENCODE_H264_STD_SLICE_QP_DELTA_BIT_EXT                              = 0x00080000,
+                VK_VIDEO_ENCODE_H264_STD_DIFFERENT_SLICE_QP_DELTA_BIT_EXT                    = 0x00100000,
                 VK_VIDEO_ENCODE_H2_64_STD_FLAG_BITS_MAX_ENUM_EXT                             = 0x7FFFFFFF
             }
             
@@ -634,6 +638,8 @@ mixin template Platform_Extensions( extensions... ) {
             enum VK_VIDEO_ENCODE_H264_STD_DEBLOCKING_FILTER_DISABLED_BIT_EXT                 = VkVideoEncodeH264StdFlagBitsEXT.VK_VIDEO_ENCODE_H264_STD_DEBLOCKING_FILTER_DISABLED_BIT_EXT;
             enum VK_VIDEO_ENCODE_H264_STD_DEBLOCKING_FILTER_ENABLED_BIT_EXT                  = VkVideoEncodeH264StdFlagBitsEXT.VK_VIDEO_ENCODE_H264_STD_DEBLOCKING_FILTER_ENABLED_BIT_EXT;
             enum VK_VIDEO_ENCODE_H264_STD_DEBLOCKING_FILTER_PARTIAL_BIT_EXT                  = VkVideoEncodeH264StdFlagBitsEXT.VK_VIDEO_ENCODE_H264_STD_DEBLOCKING_FILTER_PARTIAL_BIT_EXT;
+            enum VK_VIDEO_ENCODE_H264_STD_SLICE_QP_DELTA_BIT_EXT                             = VkVideoEncodeH264StdFlagBitsEXT.VK_VIDEO_ENCODE_H264_STD_SLICE_QP_DELTA_BIT_EXT;
+            enum VK_VIDEO_ENCODE_H264_STD_DIFFERENT_SLICE_QP_DELTA_BIT_EXT                   = VkVideoEncodeH264StdFlagBitsEXT.VK_VIDEO_ENCODE_H264_STD_DIFFERENT_SLICE_QP_DELTA_BIT_EXT;
             enum VK_VIDEO_ENCODE_H2_64_STD_FLAG_BITS_MAX_ENUM_EXT                            = VkVideoEncodeH264StdFlagBitsEXT.VK_VIDEO_ENCODE_H2_64_STD_FLAG_BITS_MAX_ENUM_EXT;
             
             alias VkVideoEncodeH264RateControlFlagsEXT = VkFlags;
@@ -801,7 +807,7 @@ mixin template Platform_Extensions( extensions... ) {
         else static if( __traits( isSame, extension, EXT_video_encode_h265 )) {
             enum VK_EXT_video_encode_h265 = 1;
 
-            enum VK_EXT_VIDEO_ENCODE_H265_SPEC_VERSION = 11;
+            enum VK_EXT_VIDEO_ENCODE_H265_SPEC_VERSION = 12;
             enum const( char )* VK_EXT_VIDEO_ENCODE_H265_EXTENSION_NAME = "VK_EXT_video_encode_h265";
             
             alias VkVideoEncodeH265CapabilityFlagsEXT = VkFlags;
@@ -852,6 +858,8 @@ mixin template Platform_Extensions( extensions... ) {
                 VK_VIDEO_ENCODE_H265_STD_DEBLOCKING_FILTER_OVERRIDE_ENABLED_FLAG_SET_BIT_EXT         = 0x00010000,
                 VK_VIDEO_ENCODE_H265_STD_DEPENDENT_SLICE_SEGMENTS_ENABLED_FLAG_SET_BIT_EXT           = 0x00020000,
                 VK_VIDEO_ENCODE_H265_STD_DEPENDENT_SLICE_SEGMENT_FLAG_SET_BIT_EXT                    = 0x00040000,
+                VK_VIDEO_ENCODE_H265_STD_SLICE_QP_DELTA_BIT_EXT                                      = 0x00080000,
+                VK_VIDEO_ENCODE_H265_STD_DIFFERENT_SLICE_QP_DELTA_BIT_EXT                            = 0x00100000,
                 VK_VIDEO_ENCODE_H2_65_STD_FLAG_BITS_MAX_ENUM_EXT                                     = 0x7FFFFFFF
             }
             
@@ -874,6 +882,8 @@ mixin template Platform_Extensions( extensions... ) {
             enum VK_VIDEO_ENCODE_H265_STD_DEBLOCKING_FILTER_OVERRIDE_ENABLED_FLAG_SET_BIT_EXT        = VkVideoEncodeH265StdFlagBitsEXT.VK_VIDEO_ENCODE_H265_STD_DEBLOCKING_FILTER_OVERRIDE_ENABLED_FLAG_SET_BIT_EXT;
             enum VK_VIDEO_ENCODE_H265_STD_DEPENDENT_SLICE_SEGMENTS_ENABLED_FLAG_SET_BIT_EXT          = VkVideoEncodeH265StdFlagBitsEXT.VK_VIDEO_ENCODE_H265_STD_DEPENDENT_SLICE_SEGMENTS_ENABLED_FLAG_SET_BIT_EXT;
             enum VK_VIDEO_ENCODE_H265_STD_DEPENDENT_SLICE_SEGMENT_FLAG_SET_BIT_EXT                   = VkVideoEncodeH265StdFlagBitsEXT.VK_VIDEO_ENCODE_H265_STD_DEPENDENT_SLICE_SEGMENT_FLAG_SET_BIT_EXT;
+            enum VK_VIDEO_ENCODE_H265_STD_SLICE_QP_DELTA_BIT_EXT                                     = VkVideoEncodeH265StdFlagBitsEXT.VK_VIDEO_ENCODE_H265_STD_SLICE_QP_DELTA_BIT_EXT;
+            enum VK_VIDEO_ENCODE_H265_STD_DIFFERENT_SLICE_QP_DELTA_BIT_EXT                           = VkVideoEncodeH265StdFlagBitsEXT.VK_VIDEO_ENCODE_H265_STD_DIFFERENT_SLICE_QP_DELTA_BIT_EXT;
             enum VK_VIDEO_ENCODE_H2_65_STD_FLAG_BITS_MAX_ENUM_EXT                                    = VkVideoEncodeH265StdFlagBitsEXT.VK_VIDEO_ENCODE_H2_65_STD_FLAG_BITS_MAX_ENUM_EXT;
             
             alias VkVideoEncodeH265CtbSizeFlagsEXT = VkFlags;
