@@ -614,6 +614,9 @@ struct DispatchDevice {
         vkGetFramebufferTilePropertiesQCOM                       = cast( PFN_vkGetFramebufferTilePropertiesQCOM                       ) vkGetDeviceProcAddr( device, "vkGetFramebufferTilePropertiesQCOM" );
         vkGetDynamicRenderingTilePropertiesQCOM                  = cast( PFN_vkGetDynamicRenderingTilePropertiesQCOM                  ) vkGetDeviceProcAddr( device, "vkGetDynamicRenderingTilePropertiesQCOM" );
 
+        // VK_EXT_attachment_feedback_loop_dynamic_state
+        vkCmdSetAttachmentFeedbackLoopEnableEXT                  = cast( PFN_vkCmdSetAttachmentFeedbackLoopEnableEXT                  ) vkGetDeviceProcAddr( device, "vkCmdSetAttachmentFeedbackLoopEnableEXT" );
+
         // VK_KHR_acceleration_structure
         vkCreateAccelerationStructureKHR                         = cast( PFN_vkCreateAccelerationStructureKHR                         ) vkGetDeviceProcAddr( device, "vkCreateAccelerationStructureKHR" );
         vkDestroyAccelerationStructureKHR                        = cast( PFN_vkDestroyAccelerationStructureKHR                        ) vkGetDeviceProcAddr( device, "vkDestroyAccelerationStructureKHR" );
@@ -1206,6 +1209,9 @@ struct DispatchDevice {
     // VK_QCOM_tile_properties
     VkResult  GetFramebufferTilePropertiesQCOM( VkFramebuffer framebuffer, uint32_t* pPropertiesCount, VkTilePropertiesQCOM* pProperties ) { return vkGetFramebufferTilePropertiesQCOM( vkDevice, framebuffer, pPropertiesCount, pProperties ); }
     VkResult  GetDynamicRenderingTilePropertiesQCOM( const( VkRenderingInfo )* pRenderingInfo, VkTilePropertiesQCOM* pProperties ) { return vkGetDynamicRenderingTilePropertiesQCOM( vkDevice, pRenderingInfo, pProperties ); }
+
+    // VK_EXT_attachment_feedback_loop_dynamic_state
+    void      CmdSetAttachmentFeedbackLoopEnableEXT( VkImageAspectFlags aspectMask ) { vkCmdSetAttachmentFeedbackLoopEnableEXT( commandBuffer, aspectMask ); }
 
     // VK_KHR_acceleration_structure
     VkResult  CreateAccelerationStructureKHR( const( VkAccelerationStructureCreateInfoKHR )* pCreateInfo, VkAccelerationStructureKHR* pAccelerationStructure ) { return vkCreateAccelerationStructureKHR( vkDevice, pCreateInfo, pAllocator, pAccelerationStructure ); }
@@ -1906,6 +1912,9 @@ struct DispatchDevice {
     // VK_QCOM_tile_properties
     PFN_vkGetFramebufferTilePropertiesQCOM                       vkGetFramebufferTilePropertiesQCOM;
     PFN_vkGetDynamicRenderingTilePropertiesQCOM                  vkGetDynamicRenderingTilePropertiesQCOM;
+
+    // VK_EXT_attachment_feedback_loop_dynamic_state
+    PFN_vkCmdSetAttachmentFeedbackLoopEnableEXT                  vkCmdSetAttachmentFeedbackLoopEnableEXT;
 
     // VK_KHR_acceleration_structure
     PFN_vkCreateAccelerationStructureKHR                         vkCreateAccelerationStructureKHR;
