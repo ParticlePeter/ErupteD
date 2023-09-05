@@ -350,6 +350,9 @@ extern( System ) {
     // VK_KHR_ray_tracing_maintenance1
     alias PFN_vkCmdTraceRaysIndirect2KHR                                        = void      function( VkCommandBuffer commandBuffer, VkDeviceAddress indirectDeviceAddress );
 
+    // VK_KHR_cooperative_matrix
+    alias PFN_vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR                 = VkResult  function( VkPhysicalDevice physicalDevice, uint32_t* pPropertyCount, VkCooperativeMatrixPropertiesKHR* pProperties );
+
     // VK_EXT_debug_report
     alias PFN_vkCreateDebugReportCallbackEXT                                    = VkResult  function( VkInstance instance, const( VkDebugReportCallbackCreateInfoEXT )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkDebugReportCallbackEXT* pCallback );
     alias PFN_vkDestroyDebugReportCallbackEXT                                   = void      function( VkInstance instance, VkDebugReportCallbackEXT callback, const( VkAllocationCallbacks )* pAllocator );
@@ -1042,6 +1045,9 @@ __gshared {
     // VK_KHR_ray_tracing_maintenance1
     PFN_vkCmdTraceRaysIndirect2KHR                                        vkCmdTraceRaysIndirect2KHR;
 
+    // VK_KHR_cooperative_matrix
+    PFN_vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR                 vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR;
+
     // VK_EXT_debug_report
     PFN_vkCreateDebugReportCallbackEXT                                    vkCreateDebugReportCallbackEXT;
     PFN_vkDestroyDebugReportCallbackEXT                                   vkDestroyDebugReportCallbackEXT;
@@ -1621,6 +1627,9 @@ void loadInstanceLevelFunctions( VkInstance instance ) {
 
     // VK_KHR_fragment_shading_rate
     vkGetPhysicalDeviceFragmentShadingRatesKHR                        = cast( PFN_vkGetPhysicalDeviceFragmentShadingRatesKHR                        ) vkGetInstanceProcAddr( instance, "vkGetPhysicalDeviceFragmentShadingRatesKHR" );
+
+    // VK_KHR_cooperative_matrix
+    vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR                 = cast( PFN_vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR                 ) vkGetInstanceProcAddr( instance, "vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR" );
 
     // VK_EXT_debug_report
     vkCreateDebugReportCallbackEXT                                    = cast( PFN_vkCreateDebugReportCallbackEXT                                    ) vkGetInstanceProcAddr( instance, "vkCreateDebugReportCallbackEXT" );
