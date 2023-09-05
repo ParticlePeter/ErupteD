@@ -623,7 +623,7 @@ extern( System ) {
 
     // VK_NV_device_generated_commands_compute
     alias PFN_vkGetPipelineIndirectMemoryRequirementsNV                         = void      function( VkDevice device, const( VkComputePipelineCreateInfo )* pCreateInfo, VkMemoryRequirements2* pMemoryRequirements );
-    alias PFN_vkCmdUpdatePipelineIndirectBuffer                                 = void      function( VkCommandBuffer commandBuffer, VkPipelineBindPoint pipelineBindPoint, VkPipeline pipeline );
+    alias PFN_vkCmdUpdatePipelineIndirectBufferNV                               = void      function( VkCommandBuffer commandBuffer, VkPipelineBindPoint pipelineBindPoint, VkPipeline pipeline );
     alias PFN_vkGetPipelineIndirectDeviceAddressNV                              = VkDeviceAddress  function( VkDevice device, const( VkPipelineIndirectDeviceAddressInfoNV )* pInfo );
 
     // VK_EXT_extended_dynamic_state3
@@ -1327,7 +1327,7 @@ __gshared {
 
     // VK_NV_device_generated_commands_compute
     PFN_vkGetPipelineIndirectMemoryRequirementsNV                         vkGetPipelineIndirectMemoryRequirementsNV;
-    PFN_vkCmdUpdatePipelineIndirectBuffer                                 vkCmdUpdatePipelineIndirectBuffer;
+    PFN_vkCmdUpdatePipelineIndirectBufferNV                               vkCmdUpdatePipelineIndirectBufferNV;
     PFN_vkGetPipelineIndirectDeviceAddressNV                              vkGetPipelineIndirectDeviceAddressNV;
 
     // VK_EXT_extended_dynamic_state3
@@ -2209,7 +2209,7 @@ void loadDeviceLevelFunctions( VkInstance instance ) {
 
     // VK_NV_device_generated_commands_compute
     vkGetPipelineIndirectMemoryRequirementsNV                = cast( PFN_vkGetPipelineIndirectMemoryRequirementsNV                ) vkGetInstanceProcAddr( instance, "vkGetPipelineIndirectMemoryRequirementsNV" );
-    vkCmdUpdatePipelineIndirectBuffer                        = cast( PFN_vkCmdUpdatePipelineIndirectBuffer                        ) vkGetInstanceProcAddr( instance, "vkCmdUpdatePipelineIndirectBuffer" );
+    vkCmdUpdatePipelineIndirectBufferNV                      = cast( PFN_vkCmdUpdatePipelineIndirectBufferNV                      ) vkGetInstanceProcAddr( instance, "vkCmdUpdatePipelineIndirectBufferNV" );
     vkGetPipelineIndirectDeviceAddressNV                     = cast( PFN_vkGetPipelineIndirectDeviceAddressNV                     ) vkGetInstanceProcAddr( instance, "vkGetPipelineIndirectDeviceAddressNV" );
 
     // VK_EXT_extended_dynamic_state3
@@ -2819,7 +2819,7 @@ void loadDeviceLevelFunctions( VkDevice device ) {
 
     // VK_NV_device_generated_commands_compute
     vkGetPipelineIndirectMemoryRequirementsNV                = cast( PFN_vkGetPipelineIndirectMemoryRequirementsNV                ) vkGetDeviceProcAddr( device, "vkGetPipelineIndirectMemoryRequirementsNV" );
-    vkCmdUpdatePipelineIndirectBuffer                        = cast( PFN_vkCmdUpdatePipelineIndirectBuffer                        ) vkGetDeviceProcAddr( device, "vkCmdUpdatePipelineIndirectBuffer" );
+    vkCmdUpdatePipelineIndirectBufferNV                      = cast( PFN_vkCmdUpdatePipelineIndirectBufferNV                      ) vkGetDeviceProcAddr( device, "vkCmdUpdatePipelineIndirectBufferNV" );
     vkGetPipelineIndirectDeviceAddressNV                     = cast( PFN_vkGetPipelineIndirectDeviceAddressNV                     ) vkGetDeviceProcAddr( device, "vkGetPipelineIndirectDeviceAddressNV" );
 
     // VK_EXT_extended_dynamic_state3

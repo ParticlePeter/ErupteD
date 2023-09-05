@@ -570,7 +570,7 @@ struct DispatchDevice {
 
         // VK_NV_device_generated_commands_compute
         vkGetPipelineIndirectMemoryRequirementsNV                = cast( PFN_vkGetPipelineIndirectMemoryRequirementsNV                ) vkGetDeviceProcAddr( device, "vkGetPipelineIndirectMemoryRequirementsNV" );
-        vkCmdUpdatePipelineIndirectBuffer                        = cast( PFN_vkCmdUpdatePipelineIndirectBuffer                        ) vkGetDeviceProcAddr( device, "vkCmdUpdatePipelineIndirectBuffer" );
+        vkCmdUpdatePipelineIndirectBufferNV                      = cast( PFN_vkCmdUpdatePipelineIndirectBufferNV                      ) vkGetDeviceProcAddr( device, "vkCmdUpdatePipelineIndirectBufferNV" );
         vkGetPipelineIndirectDeviceAddressNV                     = cast( PFN_vkGetPipelineIndirectDeviceAddressNV                     ) vkGetDeviceProcAddr( device, "vkGetPipelineIndirectDeviceAddressNV" );
 
         // VK_EXT_extended_dynamic_state3
@@ -1178,7 +1178,7 @@ struct DispatchDevice {
 
     // VK_NV_device_generated_commands_compute
     void      GetPipelineIndirectMemoryRequirementsNV( const( VkComputePipelineCreateInfo )* pCreateInfo, VkMemoryRequirements2* pMemoryRequirements ) { vkGetPipelineIndirectMemoryRequirementsNV( vkDevice, pCreateInfo, pMemoryRequirements ); }
-    void      CmdUpdatePipelineIndirectBuffer( VkPipelineBindPoint pipelineBindPoint, VkPipeline pipeline ) { vkCmdUpdatePipelineIndirectBuffer( commandBuffer, pipelineBindPoint, pipeline ); }
+    void      CmdUpdatePipelineIndirectBufferNV( VkPipelineBindPoint pipelineBindPoint, VkPipeline pipeline ) { vkCmdUpdatePipelineIndirectBufferNV( commandBuffer, pipelineBindPoint, pipeline ); }
     VkDeviceAddress  GetPipelineIndirectDeviceAddressNV( const( VkPipelineIndirectDeviceAddressInfoNV )* pInfo ) { return vkGetPipelineIndirectDeviceAddressNV( vkDevice, pInfo ); }
 
     // VK_EXT_extended_dynamic_state3
@@ -1893,7 +1893,7 @@ struct DispatchDevice {
 
     // VK_NV_device_generated_commands_compute
     PFN_vkGetPipelineIndirectMemoryRequirementsNV                vkGetPipelineIndirectMemoryRequirementsNV;
-    PFN_vkCmdUpdatePipelineIndirectBuffer                        vkCmdUpdatePipelineIndirectBuffer;
+    PFN_vkCmdUpdatePipelineIndirectBufferNV                      vkCmdUpdatePipelineIndirectBufferNV;
     PFN_vkGetPipelineIndirectDeviceAddressNV                     vkGetPipelineIndirectDeviceAddressNV;
 
     // VK_EXT_extended_dynamic_state3

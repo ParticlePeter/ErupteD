@@ -55,7 +55,7 @@ pure {
 enum VK_API_VERSION_1_0 = VK_MAKE_API_VERSION( 0, 1, 0, 0 );	// Patch version should always be set to 0
 
 // Version of this file (corresponding c header)
-enum VK_HEADER_VERSION = 258;
+enum VK_HEADER_VERSION = 259;
 
 // Complete version of this file (corresponding c header)
 enum VK_HEADER_VERSION_COMPLETE = VK_MAKE_API_VERSION( 0, 1, 3, VK_HEADER_VERSION );
@@ -16335,7 +16335,7 @@ struct VkPhysicalDeviceMemoryDecompressionPropertiesNV {
 // - VK_NV_device_generated_commands_compute -
 enum VK_NV_device_generated_commands_compute = 1;
 
-enum VK_NV_DEVICE_GENERATED_COMMANDS_COMPUTE_SPEC_VERSION = 1;
+enum VK_NV_DEVICE_GENERATED_COMMANDS_COMPUTE_SPEC_VERSION = 2;
 enum const( char )* VK_NV_DEVICE_GENERATED_COMMANDS_COMPUTE_EXTENSION_NAME = "VK_NV_device_generated_commands_compute";
 
 struct VkPhysicalDeviceDeviceGeneratedCommandsComputeFeaturesNV {
