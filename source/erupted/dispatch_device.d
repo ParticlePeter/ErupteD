@@ -477,6 +477,9 @@ struct DispatchDevice {
         vkCreateIndirectCommandsLayoutNV                         = cast( PFN_vkCreateIndirectCommandsLayoutNV                         ) vkGetDeviceProcAddr( device, "vkCreateIndirectCommandsLayoutNV" );
         vkDestroyIndirectCommandsLayoutNV                        = cast( PFN_vkDestroyIndirectCommandsLayoutNV                        ) vkGetDeviceProcAddr( device, "vkDestroyIndirectCommandsLayoutNV" );
 
+        // VK_EXT_depth_bias_control
+        vkCmdSetDepthBias2EXT                                    = cast( PFN_vkCmdSetDepthBias2EXT                                    ) vkGetDeviceProcAddr( device, "vkCmdSetDepthBias2EXT" );
+
         // VK_EXT_descriptor_buffer
         vkGetDescriptorSetLayoutSizeEXT                          = cast( PFN_vkGetDescriptorSetLayoutSizeEXT                          ) vkGetDeviceProcAddr( device, "vkGetDescriptorSetLayoutSizeEXT" );
         vkGetDescriptorSetLayoutBindingOffsetEXT                 = cast( PFN_vkGetDescriptorSetLayoutBindingOffsetEXT                 ) vkGetDeviceProcAddr( device, "vkGetDescriptorSetLayoutBindingOffsetEXT" );
@@ -1072,6 +1075,9 @@ struct DispatchDevice {
     void      CmdBindPipelineShaderGroupNV( VkPipelineBindPoint pipelineBindPoint, VkPipeline pipeline, uint32_t groupIndex ) { vkCmdBindPipelineShaderGroupNV( commandBuffer, pipelineBindPoint, pipeline, groupIndex ); }
     VkResult  CreateIndirectCommandsLayoutNV( const( VkIndirectCommandsLayoutCreateInfoNV )* pCreateInfo, VkIndirectCommandsLayoutNV* pIndirectCommandsLayout ) { return vkCreateIndirectCommandsLayoutNV( vkDevice, pCreateInfo, pAllocator, pIndirectCommandsLayout ); }
     void      DestroyIndirectCommandsLayoutNV( VkIndirectCommandsLayoutNV indirectCommandsLayout ) { vkDestroyIndirectCommandsLayoutNV( vkDevice, indirectCommandsLayout, pAllocator ); }
+
+    // VK_EXT_depth_bias_control
+    void      CmdSetDepthBias2EXT( const( VkDepthBiasInfoEXT )* pDepthBiasInfo ) { vkCmdSetDepthBias2EXT( commandBuffer, pDepthBiasInfo ); }
 
     // VK_EXT_descriptor_buffer
     void      GetDescriptorSetLayoutSizeEXT( VkDescriptorSetLayout layout, VkDeviceSize* pLayoutSizeInBytes ) { vkGetDescriptorSetLayoutSizeEXT( vkDevice, layout, pLayoutSizeInBytes ); }
@@ -1775,6 +1781,9 @@ struct DispatchDevice {
     PFN_vkCmdBindPipelineShaderGroupNV                           vkCmdBindPipelineShaderGroupNV;
     PFN_vkCreateIndirectCommandsLayoutNV                         vkCreateIndirectCommandsLayoutNV;
     PFN_vkDestroyIndirectCommandsLayoutNV                        vkDestroyIndirectCommandsLayoutNV;
+
+    // VK_EXT_depth_bias_control
+    PFN_vkCmdSetDepthBias2EXT                                    vkCmdSetDepthBias2EXT;
 
     // VK_EXT_descriptor_buffer
     PFN_vkGetDescriptorSetLayoutSizeEXT                          vkGetDescriptorSetLayoutSizeEXT;

@@ -42,6 +42,7 @@ enum FUCHSIA_external_semaphore;
 enum FUCHSIA_buffer_collection;
 enum QNX_screen_surface;
 enum NV_displacement_micromap;
+enum QNX_external_memory_screen_buffer;
 
 
 /// extensions to a specific platform are grouped in these enum sequences
@@ -60,7 +61,7 @@ alias USE_PLATFORM_MACOS_MVK       = AliasSeq!( MVK_macos_surface );
 alias USE_PLATFORM_FUCHSIA         = AliasSeq!( FUCHSIA_imagepipe_surface, FUCHSIA_external_memory, FUCHSIA_external_semaphore, FUCHSIA_buffer_collection );
 alias USE_PLATFORM_METAL_EXT       = AliasSeq!( EXT_metal_surface, EXT_metal_objects );
 alias USE_PLATFORM_DIRECTFB_EXT    = AliasSeq!( EXT_directfb_surface );
-alias USE_PLATFORM_SCREEN_QNX      = AliasSeq!( QNX_screen_surface );
+alias USE_PLATFORM_SCREEN_QNX      = AliasSeq!( QNX_screen_surface, QNX_external_memory_screen_buffer );
 
 
 
@@ -1765,6 +1766,55 @@ mixin template Platform_Extensions( extensions... ) {
             
         }
 
+        // VK_QNX_external_memory_screen_buffer : types and function pointer type aliases
+        else static if( __traits( isSame, extension, QNX_external_memory_screen_buffer )) {
+            enum VK_QNX_external_memory_screen_buffer = 1;
+
+            enum VK_QNX_EXTERNAL_MEMORY_SCREEN_BUFFER_SPEC_VERSION = 1;
+            enum const( char )* VK_QNX_EXTERNAL_MEMORY_SCREEN_BUFFER_EXTENSION_NAME = "VK_QNX_external_memory_screen_buffer";
+            
+            struct VkScreenBufferPropertiesQNX {
+                VkStructureType  sType = VK_STRUCTURE_TYPE_SCREEN_BUFFER_PROPERTIES_QNX;
+                void*            pNext;
+                VkDeviceSize     allocationSize;
+                uint32_t         memoryTypeBits;
+            }
+            
+            struct VkScreenBufferFormatPropertiesQNX {
+                VkStructureType                sType = VK_STRUCTURE_TYPE_SCREEN_BUFFER_FORMAT_PROPERTIES_QNX;
+                void*                          pNext;
+                VkFormat                       format;
+                uint64_t                       externalFormat;
+                uint64_t                       screenUsage;
+                VkFormatFeatureFlags           formatFeatures;
+                VkComponentMapping             samplerYcbcrConversionComponents;
+                VkSamplerYcbcrModelConversion  suggestedYcbcrModel;
+                VkSamplerYcbcrRange            suggestedYcbcrRange;
+                VkChromaLocation               suggestedXChromaOffset;
+                VkChromaLocation               suggestedYChromaOffset;
+            }
+            
+            struct VkImportScreenBufferInfoQNX {
+                VkStructureType           sType = VK_STRUCTURE_TYPE_IMPORT_SCREEN_BUFFER_INFO_QNX;
+                const( void )*            pNext;
+                const( _screen_buffer )*  buffer;
+            }
+            
+            struct VkExternalFormatQNX {
+                VkStructureType  sType = VK_STRUCTURE_TYPE_EXTERNAL_FORMAT_QNX;
+                void*            pNext;
+                uint64_t         externalFormat;
+            }
+            
+            struct VkPhysicalDeviceExternalMemoryScreenBufferFeaturesQNX {
+                VkStructureType  sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_MEMORY_SCREEN_BUFFER_FEATURES_QNX;
+                void*            pNext;
+                VkBool32         screenBufferImport;
+            }
+            
+            alias PFN_vkGetScreenBufferPropertiesQNX                                    = VkResult  function( VkDevice device, const( _screen_buffer )* buffer, VkScreenBufferPropertiesQNX* pProperties );
+        }
+
         __gshared {
 
             // VK_KHR_xlib_surface : function pointer decelerations
@@ -1918,6 +1968,11 @@ mixin template Platform_Extensions( extensions... ) {
             else static if( __traits( isSame, extension, QNX_screen_surface )) {
                 PFN_vkCreateScreenSurfaceQNX                                          vkCreateScreenSurfaceQNX;
                 PFN_vkGetPhysicalDeviceScreenPresentationSupportQNX                   vkGetPhysicalDeviceScreenPresentationSupportQNX;
+            }
+
+            // VK_QNX_external_memory_screen_buffer : function pointer decelerations
+            else static if( __traits( isSame, extension, QNX_external_memory_screen_buffer )) {
+                PFN_vkGetScreenBufferPropertiesQNX                                    vkGetScreenBufferPropertiesQNX;
             }
         }
     }
@@ -2116,6 +2171,11 @@ mixin template Platform_Extensions( extensions... ) {
                 vkDestroyBufferCollectionFUCHSIA                         = cast( PFN_vkDestroyBufferCollectionFUCHSIA                         ) vkGetInstanceProcAddr( instance, "vkDestroyBufferCollectionFUCHSIA" );
                 vkGetBufferCollectionPropertiesFUCHSIA                   = cast( PFN_vkGetBufferCollectionPropertiesFUCHSIA                   ) vkGetInstanceProcAddr( instance, "vkGetBufferCollectionPropertiesFUCHSIA" );
             }
+
+            // VK_QNX_external_memory_screen_buffer : load instance based device level function definitions
+            else static if( __traits( isSame, extension, QNX_external_memory_screen_buffer )) {
+                vkGetScreenBufferPropertiesQNX                           = cast( PFN_vkGetScreenBufferPropertiesQNX                           ) vkGetInstanceProcAddr( instance, "vkGetScreenBufferPropertiesQNX" );
+            }
         }
     }
 
@@ -2197,6 +2257,11 @@ mixin template Platform_Extensions( extensions... ) {
                 vkSetBufferCollectionBufferConstraintsFUCHSIA            = cast( PFN_vkSetBufferCollectionBufferConstraintsFUCHSIA            ) vkGetDeviceProcAddr( device, "vkSetBufferCollectionBufferConstraintsFUCHSIA" );
                 vkDestroyBufferCollectionFUCHSIA                         = cast( PFN_vkDestroyBufferCollectionFUCHSIA                         ) vkGetDeviceProcAddr( device, "vkDestroyBufferCollectionFUCHSIA" );
                 vkGetBufferCollectionPropertiesFUCHSIA                   = cast( PFN_vkGetBufferCollectionPropertiesFUCHSIA                   ) vkGetDeviceProcAddr( device, "vkGetBufferCollectionPropertiesFUCHSIA" );
+            }
+
+            // VK_QNX_external_memory_screen_buffer : load device based device level function definitions
+            else static if( __traits( isSame, extension, QNX_external_memory_screen_buffer )) {
+                vkGetScreenBufferPropertiesQNX                           = cast( PFN_vkGetScreenBufferPropertiesQNX                           ) vkGetDeviceProcAddr( device, "vkGetScreenBufferPropertiesQNX" );
             }
         }
     }
@@ -2296,6 +2361,11 @@ mixin template Platform_Extensions( extensions... ) {
                     vkDestroyBufferCollectionFUCHSIA                         = cast( PFN_vkDestroyBufferCollectionFUCHSIA                         ) vkGetDeviceProcAddr( device, "vkDestroyBufferCollectionFUCHSIA" );
                     vkGetBufferCollectionPropertiesFUCHSIA                   = cast( PFN_vkGetBufferCollectionPropertiesFUCHSIA                   ) vkGetDeviceProcAddr( device, "vkGetBufferCollectionPropertiesFUCHSIA" );
                 }
+
+                // VK_QNX_external_memory_screen_buffer : load dispatch device member function definitions
+                else static if( __traits( isSame, extension, QNX_external_memory_screen_buffer )) {
+                    vkGetScreenBufferPropertiesQNX                           = cast( PFN_vkGetScreenBufferPropertiesQNX                           ) vkGetDeviceProcAddr( device, "vkGetScreenBufferPropertiesQNX" );
+                }
             }
         }
 
@@ -2369,6 +2439,11 @@ mixin template Platform_Extensions( extensions... ) {
                 VkResult  SetBufferCollectionBufferConstraintsFUCHSIA( VkBufferCollectionFUCHSIA collection, const( VkBufferConstraintsInfoFUCHSIA )* pBufferConstraintsInfo ) { return vkSetBufferCollectionBufferConstraintsFUCHSIA( vkDevice, collection, pBufferConstraintsInfo ); }
                 void      DestroyBufferCollectionFUCHSIA( VkBufferCollectionFUCHSIA collection ) { vkDestroyBufferCollectionFUCHSIA( vkDevice, collection, pAllocator ); }
                 VkResult  GetBufferCollectionPropertiesFUCHSIA( VkBufferCollectionFUCHSIA collection, VkBufferCollectionPropertiesFUCHSIA* pProperties ) { return vkGetBufferCollectionPropertiesFUCHSIA( vkDevice, collection, pProperties ); }
+            }
+
+            // VK_QNX_external_memory_screen_buffer : dispatch device convenience member functions
+            else static if( __traits( isSame, extension, QNX_external_memory_screen_buffer )) {
+                VkResult  GetScreenBufferPropertiesQNX( const( _screen_buffer )* buffer, VkScreenBufferPropertiesQNX* pProperties ) { return vkGetScreenBufferPropertiesQNX( vkDevice, buffer, pProperties ); }
             }
         }
 
@@ -2526,6 +2601,11 @@ mixin template Platform_Extensions( extensions... ) {
             else static if( __traits( isSame, extension, QNX_screen_surface )) {
                 PFN_vkCreateScreenSurfaceQNX                                          vkCreateScreenSurfaceQNX;
                 PFN_vkGetPhysicalDeviceScreenPresentationSupportQNX                   vkGetPhysicalDeviceScreenPresentationSupportQNX;
+            }
+
+            // VK_QNX_external_memory_screen_buffer : dispatch device member function pointer decelerations
+            else static if( __traits( isSame, extension, QNX_external_memory_screen_buffer )) {
+                PFN_vkGetScreenBufferPropertiesQNX                                    vkGetScreenBufferPropertiesQNX;
             }
         }
     }

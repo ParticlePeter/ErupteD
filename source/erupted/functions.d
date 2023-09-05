@@ -523,6 +523,9 @@ extern( System ) {
     alias PFN_vkCreateIndirectCommandsLayoutNV                                  = VkResult  function( VkDevice device, const( VkIndirectCommandsLayoutCreateInfoNV )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkIndirectCommandsLayoutNV* pIndirectCommandsLayout );
     alias PFN_vkDestroyIndirectCommandsLayoutNV                                 = void      function( VkDevice device, VkIndirectCommandsLayoutNV indirectCommandsLayout, const( VkAllocationCallbacks )* pAllocator );
 
+    // VK_EXT_depth_bias_control
+    alias PFN_vkCmdSetDepthBias2EXT                                             = void      function( VkCommandBuffer commandBuffer, const( VkDepthBiasInfoEXT )* pDepthBiasInfo );
+
     // VK_EXT_acquire_drm_display
     alias PFN_vkAcquireDrmDisplayEXT                                            = VkResult  function( VkPhysicalDevice physicalDevice, int32_t drmFd, VkDisplayKHR display );
     alias PFN_vkGetDrmDisplayEXT                                                = VkResult  function( VkPhysicalDevice physicalDevice, int32_t drmFd, uint32_t connectorId, VkDisplayKHR* display );
@@ -1211,6 +1214,9 @@ __gshared {
     PFN_vkCmdBindPipelineShaderGroupNV                                    vkCmdBindPipelineShaderGroupNV;
     PFN_vkCreateIndirectCommandsLayoutNV                                  vkCreateIndirectCommandsLayoutNV;
     PFN_vkDestroyIndirectCommandsLayoutNV                                 vkDestroyIndirectCommandsLayoutNV;
+
+    // VK_EXT_depth_bias_control
+    PFN_vkCmdSetDepthBias2EXT                                             vkCmdSetDepthBias2EXT;
 
     // VK_EXT_acquire_drm_display
     PFN_vkAcquireDrmDisplayEXT                                            vkAcquireDrmDisplayEXT;
@@ -2083,6 +2089,9 @@ void loadDeviceLevelFunctions( VkInstance instance ) {
     vkCreateIndirectCommandsLayoutNV                         = cast( PFN_vkCreateIndirectCommandsLayoutNV                         ) vkGetInstanceProcAddr( instance, "vkCreateIndirectCommandsLayoutNV" );
     vkDestroyIndirectCommandsLayoutNV                        = cast( PFN_vkDestroyIndirectCommandsLayoutNV                        ) vkGetInstanceProcAddr( instance, "vkDestroyIndirectCommandsLayoutNV" );
 
+    // VK_EXT_depth_bias_control
+    vkCmdSetDepthBias2EXT                                    = cast( PFN_vkCmdSetDepthBias2EXT                                    ) vkGetInstanceProcAddr( instance, "vkCmdSetDepthBias2EXT" );
+
     // VK_EXT_descriptor_buffer
     vkGetDescriptorSetLayoutSizeEXT                          = cast( PFN_vkGetDescriptorSetLayoutSizeEXT                          ) vkGetInstanceProcAddr( instance, "vkGetDescriptorSetLayoutSizeEXT" );
     vkGetDescriptorSetLayoutBindingOffsetEXT                 = cast( PFN_vkGetDescriptorSetLayoutBindingOffsetEXT                 ) vkGetInstanceProcAddr( instance, "vkGetDescriptorSetLayoutBindingOffsetEXT" );
@@ -2680,6 +2689,9 @@ void loadDeviceLevelFunctions( VkDevice device ) {
     vkCmdBindPipelineShaderGroupNV                           = cast( PFN_vkCmdBindPipelineShaderGroupNV                           ) vkGetDeviceProcAddr( device, "vkCmdBindPipelineShaderGroupNV" );
     vkCreateIndirectCommandsLayoutNV                         = cast( PFN_vkCreateIndirectCommandsLayoutNV                         ) vkGetDeviceProcAddr( device, "vkCreateIndirectCommandsLayoutNV" );
     vkDestroyIndirectCommandsLayoutNV                        = cast( PFN_vkDestroyIndirectCommandsLayoutNV                        ) vkGetDeviceProcAddr( device, "vkDestroyIndirectCommandsLayoutNV" );
+
+    // VK_EXT_depth_bias_control
+    vkCmdSetDepthBias2EXT                                    = cast( PFN_vkCmdSetDepthBias2EXT                                    ) vkGetDeviceProcAddr( device, "vkCmdSetDepthBias2EXT" );
 
     // VK_EXT_descriptor_buffer
     vkGetDescriptorSetLayoutSizeEXT                          = cast( PFN_vkGetDescriptorSetLayoutSizeEXT                          ) vkGetDeviceProcAddr( device, "vkGetDescriptorSetLayoutSizeEXT" );
