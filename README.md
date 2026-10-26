@@ -21,17 +21,17 @@ Additionally, DispatchDevice and the python generator have been extracted. The f
 
 Release note v3.x.x Generating Bindings
 ---------------------------------------
-The generator for Erupted-V3 got a DLang generator to become self contained. The DLang modules will not be updated in this repository any more. If you like to have the latest bindings, you have to fetch the latest [Vulkan-Docs](https://github.com/KhronosGroup/Vulkan-Docs) repo or [Vulkan-Headers](https://github.com/KhronosGroup/Vulkan-Headers) (smaller in size) and call `dub run :generate -- "Drive:/Path/to/Vulkan-Docs or -Headers" "source/erupted"` to generate the DLang Vulkan modules.
+Erupted got a DLang generator to become self-contained. The DLang modules will not be updated in this repository any more. If you would like to have the latest bindings, you have to fetch the latest [Vulkan-Docs](https://github.com/KhronosGroup/Vulkan-Docs) repo or [Vulkan-Headers](https://github.com/KhronosGroup/Vulkan-Headers) (smaller in size) and call `dub run :generate -- "Drive:/Path/to/Vulkan-Docs or -Headers" "source/erupted"` to generate the DLang Vulkan modules.
 
 Breaking changes compared to v2.x.x: C array parameters are now passed as pointers like in C, hence `vkCmdSetBlendConstants`, `vkCmdSetFragmentShadingRateKHR` and `vkCmdSetFragmentShadingRateEnumNV` require e.g. `blendConstants.ptr`. `VkTransformMatrixKHR.matrix` is now `float[4][3]`, matching the C layout `float[3][4]`. Video structs consisting of bitfields and multi-dimensional arrays are now complete.
 
-Changes in v3.0.1 (Vulkan 1.4.366): the generator supports the Vulkan 1.4 registry, in which function pointer types are described with `<proto>` and `<param>` elements. 64-Bit FlagBits without any bits (e.g. `VkFormatFeatureFlagBits4KHR`) are aliased to their Flags, as D does not allow empty enums, the C header typedefs both to `VkFlags64` as well. Breaking changes: `_MAX_ENUM` entries are now named like in the C header, e.g. `STD_VIDEO_H264_ASPECT_RATIO_IDC_MAX_ENUM` instead of `STD_VIDEO_H2_64_ASPECT_RATIO_IDC_MAX_ENUM` (37 entries). Promoted or removed by Khronos since v1.3.265: provisional extensions `VK_EXT_video_encode_h264` and `VK_EXT_video_encode_h265` were replaced by their KHR versions, and several `PFN_vk*EXT/KHR` function pointer types of promoted commands are gone, the commands themselves remain available as aliases, e.g. `vkCmdPushDescriptorSetKHR`.
+Changes in v3.0.1 (Vulkan 1.4.366): the generator supports the Vulkan 1.4 registry, in which function pointer types are described with `<proto>` and `<param>` elements. 64-bit FlagBits without any bits (e.g. `VkFormatFeatureFlagBits4KHR`) are aliased to their Flags, as D does not allow empty enums; the C header typedefs both to `VkFlags64` as well. Breaking changes: `_MAX_ENUM` entries are now named like in the C header, e.g. `STD_VIDEO_H264_ASPECT_RATIO_IDC_MAX_ENUM` instead of `STD_VIDEO_H2_64_ASPECT_RATIO_IDC_MAX_ENUM` (37 entries). Promoted or removed by Khronos since v1.3.265: provisional extensions `VK_EXT_video_encode_h264` and `VK_EXT_video_encode_h265` were replaced by their KHR versions, and several `PFN_vk*EXT/KHR` function pointer types of promoted commands are gone; the commands themselves remain available as aliases, e.g. `vkCmdPushDescriptorSetKHR`.
 
 
 
 Usage
 -----
-The easiest way to start is calling `loadGlobalLevelFunctions()` from module `erupted.vulkan_lib_loader`.This function automatically loads the Vulkan dynamic link library `Vulkan-1.dll` (Windows) or `libvulkan.so.1` (Posix), retrieves `vkGetInstanceProcAddr` from the lib and loads global functions from Vulkan implementation.  
+The easiest way to start is calling `loadGlobalLevelFunctions()` from module `erupted.vulkan_lib_loader`. This function automatically loads the Vulkan dynamic link library `Vulkan-1.dll` (Windows) or `libvulkan.so.1` (Posix), retrieves `vkGetInstanceProcAddr` from the lib and loads global functions from Vulkan implementation.  
 
 Steps to follow:
 
@@ -49,16 +49,16 @@ Steps to follow:
 6. call `loadInstanceLevelFunctions(VkInstance)` to load additional `VkInstance` related functions. Get information about available physical devices (e.g. GPU(s), APU(s), etc.) and physical device related resources (e.g. Queue Families, Queues per Family, etc.)
 7. three options are available to acquire a logical device and device resource related functions:
     * call `loadDeviceLevelFunctions(VkInstance)`, the acquired functions call indirectly through the `VkInstance` and will be internally dispatched to various devices by the implementation
-    * call `loadDeviceLevelFunctions(VkDevice)`, the acquired functions call directly the `VkDevice` and related resources. This path is faster, skips one indirection, but is useful only in a single physical device environment. Calling the same function with another `VkDevice` will overwrite all the previously fetched function
+    * call `loadDeviceLevelFunctions(VkDevice)`, the acquired functions call directly the `VkDevice` and related resources. This path is faster, skips one indirection, but is useful only in a single physical device environment. Calling the same function with another `VkDevice` will overwrite all the previously fetched functions
     * create a DispatchDevice with Vulkan functions as members kind of namespaced, see [DispatchDevice](https://github.com/ParticlePeter/ErupteD#dispatchdevice)
 
-Examples for device creation, listing instance/device layers and a simple but complete betterC compute task can be found in the `examples` directory. They can be build and run with `dub run erupted:examplename`, examplename being one of: `devices`, `layers`, `compute`.  Examples found in 'examples/platform' directory are just explanatory and cannot be build or run (see [Platform Extensions](https://github.com/ParticlePeter/Erupted-V2#platform-extensions))
+Examples for device creation, listing instance/device layers and a simple but complete betterC compute task can be found in the `examples` directory. They can be built and run with `dub run erupted:examplename`, examplename being one of: `devices`, `layers`, `compute`.  Examples found in 'examples/platform' directory are just explanatory and cannot be built or run (see [Platform Extensions](https://github.com/ParticlePeter/Erupted-V2#platform-extensions))
 
 
 
 C vs D API
 ----------
-* `VK_NULL_HANDLE` is defined as `0` and can be used as `uint64_t` type and `pointer` type argument in C world. D's `null` can be used only as a pointer argument. This is an issue when compiling for 32 bit, as dispatchable handles (`VkInstance`, `VkPhysicalDevice`, `VkDevice`, `VkQueue`) are pointer types while non dispatchable handles (e.g. `VkSemaphore`) are `uint64_t` types. Hence ErupteD `VK_NULL_HANDLE` can only be used as dispatchable null handle (on 32 Bit!). For non dispatchable handles another ErupteD symbol exist `VK_NULL_ND_HANDLE`. On 64 bit all handles are pointer types and `VK_NULL_HANDLE` can be used at any place. However `VK_NULL_ND_HANDLE` is still defined for sake of completeness and ease of use. The issue might be solved when `multiple alias this` is released, hence I recommend building 64 Bit apps and ignore `VK_NULL_ND_HANDLE`.<br/>
+* `VK_NULL_HANDLE` is defined as `0` and can be used as `uint64_t` type and `pointer` type argument in C world. D's `null` can be used only as a pointer argument. This is an issue when compiling for 32 bit, as dispatchable handles (`VkInstance`, `VkPhysicalDevice`, `VkDevice`, `VkQueue`) are pointer types while non dispatchable handles (e.g. `VkSemaphore`) are `uint64_t` types. Hence ErupteD `VK_NULL_HANDLE` can only be used as dispatchable null handle (on 32 Bit!). For non dispatchable handles another ErupteD symbol exists, `VK_NULL_ND_HANDLE`. On 64 bit all handles are pointer types and `VK_NULL_HANDLE` can be used at any place. However `VK_NULL_ND_HANDLE` is still defined for sake of completeness and ease of use. The issue might be solved when `multiple alias this` is released, hence I recommend building 64 Bit apps and ignore `VK_NULL_ND_HANDLE`.<br/>
 
     Best practice summary:
     * if exclusively building a 32 Bit app or switching forth and back between 32 and 64 Bit use `VK_NULL_ND_HANDLE` for non dispatchable handles
@@ -72,7 +72,7 @@ C vs D API
 
 DispatchDevice
 --------------
-The `DispatchDevice` holds a `VkDevice`, a pointer to `const VkAllocationCallbacks` and the Vulkan functions loaded from that device, collision protected. The allocator is optional for Vulkan as well as for the DispatchDevice and the same rules apply: if not specified, the default allocator will be used. An allocator is locked to the device throughout its lifetime. Before usage, the `DispatchDevice` must be initialize, either immediately:
+The `DispatchDevice` holds a `VkDevice`, a pointer to `const VkAllocationCallbacks` and the Vulkan functions loaded from that device, collision protected. The allocator is optional for Vulkan as well as for the DispatchDevice and the same rules apply: if not specified, the default allocator will be used. An allocator is locked to the device throughout its lifetime. Before usage, the `DispatchDevice` must be initialized, either immediately:
 ```
     auto dd = DispatchDevice( device, allocator );      // allocator default = null
 ```
@@ -89,7 +89,7 @@ or delayed:
 The `DispatchDevice` has also convenience functions. With these the device and allocator arguments can be omitted. They forward to the corresponding Vulkan function, the device and allocator argument are supplied by the private `VkDevice` and `VkAllocationCallbacks` members. The crux is that function pointers can't be overloaded with regular functions hence the `vk` prefix is ditched for the convenience variants:
 ```
     auto dd = DispatchDevice( device );
-    dd.DestroyDevice:       // instead of: dd.vkDestroyDevice( dd.vkDevice, dd.pAllocator );
+    dd.DestroyDevice;       // instead of: dd.vkDestroyDevice( dd.vkDevice, dd.pAllocator );
 ```
 Same mechanism works with functions which require a VkCommandBuffer as first arg, but before using them the public member 'commandBuffer' must be set with the target VkCommandBuffer:
 ```
@@ -104,7 +104,7 @@ The Mechanism does NOT work with queues, there are about four queue related func
 
 Platform Extensions
 -------------------
-Platform extensions, found in module `erupted.platform_extensions`, exist in form of the configurable `mixin template Platform_Extensions( extensions... )`. With this template you can mixin extension related code into your project, but you need to take care of the dependencies yourself. Please note the dropped VK_ prefix, more to that bellow:
+Platform extensions, found in module `erupted.platform_extensions`, exist in form of the configurable `mixin template Platform_Extensions( extensions... )`. With this template you can mixin extension related code into your project, but you need to take care of the dependencies yourself. Please note the dropped VK_ prefix, more to that below:
 ```
 // platform extension example with xlib-d
 // xlib-d must be specified as dependency in your projects dub file
@@ -114,21 +114,21 @@ import erupted.platform_extensions;                     // import the template m
 mixin Platform_Extensions!USE_PLATFORM_XLIB_KHR;        // mixin all xlib related extensions
 ```
 The template publicly imports `erupted.types` and `erupted.functions`. This is necessary as some functions from the latter module are overwritten/extended to also load related Vulkan extension functions.  `DispatchDevice` from module `erupted.dispatch_device` is also extended/overwritten with the corresponding extension functions. If you would include both, your module and `erupted.functions` in another module, `loadInstanceLevelFunctions`, `loadDeviceLevelFunctions` and `DispatchDevice` would collide.<br/>
-If you still encounter collisions, or extended functionality not working, you can try `loadInstanceLevelFunctionsExt`, `loadDeviceLevelFunctionsExt`, `DispatchDeviceExt` and `DispatchDeviceExt.loadDeviceLevelFunctionsExt`. These are are unique function and struct names as well as, in case of `loadDeviceLevelFunctionsExt`, aliases to corresponding (`VkInstance` and `VkDevice` based) unique functions.
+If you still encounter collisions, or extended functionality not working, you can try `loadInstanceLevelFunctionsExt`, `loadDeviceLevelFunctionsExt`, `DispatchDeviceExt` and `DispatchDeviceExt.loadDeviceLevelFunctionsExt`. These are unique function and struct names as well as, in case of `loadDeviceLevelFunctionsExt`, aliases to corresponding (`VkInstance` and `VkDevice` based) unique functions.
 
-Module `erupted.platform_extensions` defines enums corresponding to extension names, and alias sequences corresponding to C Vulkan platform protection `#define` definitions. In both cases the `VK_` prefix has been dropped. Since vulkan 1.1 all feature names (core 1.0, 1.1 and extensions) are #define(d) to 1. This is reflected in ErupteD with `enum feature_name = 1;` and these enums would collide with those defined in module `Platform_Extensions`. Hence the dropped prefixes. Alias sequences of feature names have their prefix dropped as well, this is not necessary but might change in future. The template accepts combinations of any each enum and alias sequence in any order.
+Module `erupted.platform_extensions` defines enums corresponding to extension names, and alias sequences corresponding to C Vulkan platform protection `#define` definitions. In both cases the `VK_` prefix has been dropped. Since vulkan 1.1 all feature names (core 1.0, 1.1 and extensions) are #define(d) to 1. This is reflected in ErupteD with `enum feature_name = 1;` and these enums would collide with those defined in module `Platform_Extensions`. Hence the dropped prefixes. Alias sequences of feature names have their prefix dropped as well, this is not necessary but might change in future. The template accepts combinations of any enum and alias sequence in any order.
 
 You'll find example modules in `examples/platform` for wayland, xcb and xlib. Copy the whole module or its content into your project and possibly edit its name and imported platform module. On windows `core.sys.windows.windows` from druntime is publicly imported, no need for any other dependency. As of writing windows is also the only platform with multiple extensions in place of `USE_PLATFORM_WIN32_KHR` alias sequence/macro, which are all instantiated.  If you figure out which dependencies are available for other platform extensions, please notify me through an issue or send me a PR.
 
 Reasoning for the redesign:
 Platform extensions work with types, and possibly functions, defined in platform specific C headers like `windows.h` or `X11/Xlib.h`. Most important use case of these extensions is arguably platform surface mechanics. The third party library `glfw3` is a solid way to deal with Vulkan platform surfaces in a platform agnostic way. However, by design, `glfw3` does not support surface unrelated platform extensions (e.g. `VK_KHR_external_memory_win32`).<br/>
-The only official platform API (as in being part of the dlang standard lib/runtime) is the windows API, but luckily ports of other platform APIs do exist in the dub registry. However, ErupteD should not rely on unofficial dependencies, as they may brake or become deprecated. Furthermore, specifying several different platform dependencies in `dub.sdl` or `dub.json` does pollute the local dub cache with foreign platform projects, even if they are not usable on the current platform (e.g. `xlib-d` on windows platform).
+The only official platform API (as in being part of the dlang standard lib/runtime) is the windows API, but luckily ports of other platform APIs do exist in the dub registry. However, ErupteD should not rely on unofficial dependencies, as they may break or become deprecated. Furthermore, specifying several different platform dependencies in `dub.sdl` or `dub.json` does pollute the local dub cache with foreign platform projects, even if they are not usable on the current platform (e.g. `xlib-d` on windows platform).
 
 
 
 Beta Extensions
 ---------------
-Beta Extensins were introduced in vulkan v1.2.135 with the first three of them being `KHR_deferred_host_operations`, `KHR_pipeline_library`, `KHR_ray_tracing`. They are marked with the special token `VK_ENABLE_BETA_EXTENSIONS` and are curiously treated as platform extensions (see [vk.xml](https://github.com/KhronosGroup/Vulkan-Docs/blob/master/xml/vk.xml)). This means that, if you want to use them, you need to follow the same steps as detailed in [Platform Extensions](https://github.com/ParticlePeter/ErupteD#platform-extensions), mixing them in individually or all of them at once, e.g.:
+Beta Extensions were introduced in vulkan v1.2.135 with the first three of them being `KHR_deferred_host_operations`, `KHR_pipeline_library`, `KHR_ray_tracing`. They are marked with the special token `VK_ENABLE_BETA_EXTENSIONS` and are curiously treated as platform extensions (see [vk.xml](https://github.com/KhronosGroup/Vulkan-Docs/blob/master/xml/vk.xml)). This means that, if you want to use them, you need to follow the same steps as detailed in [Platform Extensions](https://github.com/ParticlePeter/ErupteD#platform-extensions), mixing them in individually or all of them at once, e.g.:
 ```
 mixin Platform_Extensions!ENABLE_BETA_EXTENSIONS;       // mixin all beta extensions
 ```
