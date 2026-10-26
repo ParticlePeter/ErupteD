@@ -19,9 +19,6 @@ enum KHR_win32_keyed_mutex;
 enum KHR_external_semaphore_win32;
 enum KHR_external_fence_win32;
 enum KHR_portability_subset;
-enum KHR_video_encode_queue;
-enum EXT_video_encode_h264;
-enum EXT_video_encode_h265;
 enum GGP_stream_descriptor_surface;
 enum NV_external_memory_win32;
 enum NV_win32_keyed_mutex;
@@ -35,6 +32,7 @@ enum GGP_frame_token;
 enum FUCHSIA_imagepipe_surface;
 enum EXT_metal_surface;
 enum EXT_full_screen_exclusive;
+enum NV_cuda_kernel_launch;
 enum EXT_metal_objects;
 enum NV_acquire_winrt_display;
 enum EXT_directfb_surface;
@@ -43,7 +41,13 @@ enum FUCHSIA_external_semaphore;
 enum FUCHSIA_buffer_collection;
 enum QNX_screen_surface;
 enum NV_displacement_micromap;
+enum OHOS_external_memory;
+enum ANDROID_external_format_resolve;
+enum AMDX_dense_geometry_format;
 enum QNX_external_memory_screen_buffer;
+enum OHOS_surface;
+enum EXT_external_memory_metal;
+enum SEC_ubm_surface;
 
 
 /// extensions to a specific platform are grouped in these enum sequences
@@ -51,18 +55,20 @@ import std.meta : AliasSeq;
 alias USE_PLATFORM_XLIB_KHR        = AliasSeq!( KHR_xlib_surface );
 alias USE_PLATFORM_XCB_KHR         = AliasSeq!( KHR_xcb_surface );
 alias USE_PLATFORM_WAYLAND_KHR     = AliasSeq!( KHR_wayland_surface );
-alias USE_PLATFORM_ANDROID_KHR     = AliasSeq!( KHR_android_surface, ANDROID_external_memory_android_hardware_buffer );
+alias USE_PLATFORM_ANDROID_KHR     = AliasSeq!( KHR_android_surface, ANDROID_external_memory_android_hardware_buffer, ANDROID_external_format_resolve );
 alias USE_PLATFORM_WIN32_KHR       = AliasSeq!( KHR_win32_surface, KHR_external_memory_win32, KHR_win32_keyed_mutex, KHR_external_semaphore_win32, KHR_external_fence_win32, NV_external_memory_win32, NV_win32_keyed_mutex, EXT_full_screen_exclusive, NV_acquire_winrt_display );
-alias ENABLE_BETA_EXTENSIONS       = AliasSeq!( KHR_portability_subset, KHR_video_encode_queue, EXT_video_encode_h264, EXT_video_encode_h265, AMDX_shader_enqueue, NV_displacement_micromap );
+alias ENABLE_BETA_EXTENSIONS       = AliasSeq!( KHR_portability_subset, AMDX_shader_enqueue, NV_cuda_kernel_launch, NV_displacement_micromap, AMDX_dense_geometry_format );
 alias USE_PLATFORM_GGP             = AliasSeq!( GGP_stream_descriptor_surface, GGP_frame_token );
 alias USE_PLATFORM_VI_NN           = AliasSeq!( NN_vi_surface );
 alias USE_PLATFORM_XLIB_XRANDR_EXT = AliasSeq!( EXT_acquire_xlib_display );
 alias USE_PLATFORM_IOS_MVK         = AliasSeq!( MVK_ios_surface );
 alias USE_PLATFORM_MACOS_MVK       = AliasSeq!( MVK_macos_surface );
 alias USE_PLATFORM_FUCHSIA         = AliasSeq!( FUCHSIA_imagepipe_surface, FUCHSIA_external_memory, FUCHSIA_external_semaphore, FUCHSIA_buffer_collection );
-alias USE_PLATFORM_METAL_EXT       = AliasSeq!( EXT_metal_surface, EXT_metal_objects );
+alias USE_PLATFORM_METAL_EXT       = AliasSeq!( EXT_metal_surface, EXT_metal_objects, EXT_external_memory_metal );
 alias USE_PLATFORM_DIRECTFB_EXT    = AliasSeq!( EXT_directfb_surface );
 alias USE_PLATFORM_SCREEN_QNX      = AliasSeq!( QNX_screen_surface, QNX_external_memory_screen_buffer );
+alias USE_PLATFORM_OHOS            = AliasSeq!( OHOS_external_memory, OHOS_surface );
+alias USE_PLATFORM_UBM_SEC         = AliasSeq!( SEC_ubm_surface );
 
 
 
@@ -106,8 +112,8 @@ mixin template Platform_Extensions( extensions... ) {
                 Window                       window;
             }
             
-            alias PFN_vkCreateXlibSurfaceKHR                                            = VkResult  function( VkInstance instance, const( VkXlibSurfaceCreateInfoKHR )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkSurfaceKHR* pSurface );
-            alias PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR                     = VkBool32  function( VkPhysicalDevice physicalDevice, uint32_t queueFamilyIndex, Display* dpy, VisualID visualID );
+            alias PFN_vkCreateXlibSurfaceKHR                                               = VkResult  function( VkInstance instance, const( VkXlibSurfaceCreateInfoKHR )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkSurfaceKHR* pSurface );
+            alias PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR                        = VkBool32  function( VkPhysicalDevice physicalDevice, uint32_t queueFamilyIndex, Display* dpy, VisualID visualID );
         }
 
         // VK_KHR_xcb_surface : types and function pointer type aliases
@@ -127,8 +133,8 @@ mixin template Platform_Extensions( extensions... ) {
                 xcb_window_t                window;
             }
             
-            alias PFN_vkCreateXcbSurfaceKHR                                             = VkResult  function( VkInstance instance, const( VkXcbSurfaceCreateInfoKHR )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkSurfaceKHR* pSurface );
-            alias PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR                      = VkBool32  function( VkPhysicalDevice physicalDevice, uint32_t queueFamilyIndex, xcb_connection_t* connection, xcb_visualid_t visual_id );
+            alias PFN_vkCreateXcbSurfaceKHR                                                = VkResult  function( VkInstance instance, const( VkXcbSurfaceCreateInfoKHR )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkSurfaceKHR* pSurface );
+            alias PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR                         = VkBool32  function( VkPhysicalDevice physicalDevice, uint32_t queueFamilyIndex, xcb_connection_t* connection, xcb_visualid_t visual_id );
         }
 
         // VK_KHR_wayland_surface : types and function pointer type aliases
@@ -148,8 +154,8 @@ mixin template Platform_Extensions( extensions... ) {
                 const( wl_surface )*            surface;
             }
             
-            alias PFN_vkCreateWaylandSurfaceKHR                                         = VkResult  function( VkInstance instance, const( VkWaylandSurfaceCreateInfoKHR )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkSurfaceKHR* pSurface );
-            alias PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR                  = VkBool32  function( VkPhysicalDevice physicalDevice, uint32_t queueFamilyIndex, const( wl_display )* display );
+            alias PFN_vkCreateWaylandSurfaceKHR                                            = VkResult  function( VkInstance instance, const( VkWaylandSurfaceCreateInfoKHR )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkSurfaceKHR* pSurface );
+            alias PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR                     = VkBool32  function( VkPhysicalDevice physicalDevice, uint32_t queueFamilyIndex, const( wl_display )* display );
         }
 
         // VK_KHR_android_surface : types and function pointer type aliases
@@ -168,7 +174,7 @@ mixin template Platform_Extensions( extensions... ) {
                 const( ANativeWindow )*         window;
             }
             
-            alias PFN_vkCreateAndroidSurfaceKHR                                         = VkResult  function( VkInstance instance, const( VkAndroidSurfaceCreateInfoKHR )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkSurfaceKHR* pSurface );
+            alias PFN_vkCreateAndroidSurfaceKHR                                            = VkResult  function( VkInstance instance, const( VkAndroidSurfaceCreateInfoKHR )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkSurfaceKHR* pSurface );
         }
 
         // VK_KHR_win32_surface : types and function pointer type aliases
@@ -188,8 +194,8 @@ mixin template Platform_Extensions( extensions... ) {
                 HWND                          hwnd;
             }
             
-            alias PFN_vkCreateWin32SurfaceKHR                                           = VkResult  function( VkInstance instance, const( VkWin32SurfaceCreateInfoKHR )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkSurfaceKHR* pSurface );
-            alias PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR                    = VkBool32  function( VkPhysicalDevice physicalDevice, uint32_t queueFamilyIndex );
+            alias PFN_vkCreateWin32SurfaceKHR                                              = VkResult  function( VkInstance instance, const( VkWin32SurfaceCreateInfoKHR )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkSurfaceKHR* pSurface );
+            alias PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR                       = VkBool32  function( VkPhysicalDevice physicalDevice, uint32_t queueFamilyIndex );
         }
 
         // VK_KHR_external_memory_win32 : types and function pointer type aliases
@@ -228,8 +234,8 @@ mixin template Platform_Extensions( extensions... ) {
                 VkExternalMemoryHandleTypeFlagBits  handleType;
             }
             
-            alias PFN_vkGetMemoryWin32HandleKHR                                         = VkResult  function( VkDevice device, const( VkMemoryGetWin32HandleInfoKHR )* pGetWin32HandleInfo, HANDLE* pHandle );
-            alias PFN_vkGetMemoryWin32HandlePropertiesKHR                               = VkResult  function( VkDevice device, VkExternalMemoryHandleTypeFlagBits handleType, HANDLE handle, VkMemoryWin32HandlePropertiesKHR* pMemoryWin32HandleProperties );
+            alias PFN_vkGetMemoryWin32HandleKHR                                            = VkResult  function( VkDevice device, const( VkMemoryGetWin32HandleInfoKHR )* pGetWin32HandleInfo, HANDLE* pHandle );
+            alias PFN_vkGetMemoryWin32HandlePropertiesKHR                                  = VkResult  function( VkDevice device, VkExternalMemoryHandleTypeFlagBits handleType, HANDLE handle, VkMemoryWin32HandlePropertiesKHR* pMemoryWin32HandleProperties );
         }
 
         // VK_KHR_win32_keyed_mutex : types and function pointer type aliases
@@ -294,8 +300,8 @@ mixin template Platform_Extensions( extensions... ) {
                 VkExternalSemaphoreHandleTypeFlagBits  handleType;
             }
             
-            alias PFN_vkImportSemaphoreWin32HandleKHR                                   = VkResult  function( VkDevice device, const( VkImportSemaphoreWin32HandleInfoKHR )* pImportSemaphoreWin32HandleInfo );
-            alias PFN_vkGetSemaphoreWin32HandleKHR                                      = VkResult  function( VkDevice device, const( VkSemaphoreGetWin32HandleInfoKHR )* pGetWin32HandleInfo, HANDLE* pHandle );
+            alias PFN_vkImportSemaphoreWin32HandleKHR                                      = VkResult  function( VkDevice device, const( VkImportSemaphoreWin32HandleInfoKHR )* pImportSemaphoreWin32HandleInfo );
+            alias PFN_vkGetSemaphoreWin32HandleKHR                                         = VkResult  function( VkDevice device, const( VkSemaphoreGetWin32HandleInfoKHR )* pGetWin32HandleInfo, HANDLE* pHandle );
         }
 
         // VK_KHR_external_fence_win32 : types and function pointer type aliases
@@ -330,8 +336,8 @@ mixin template Platform_Extensions( extensions... ) {
                 VkExternalFenceHandleTypeFlagBits  handleType;
             }
             
-            alias PFN_vkImportFenceWin32HandleKHR                                       = VkResult  function( VkDevice device, const( VkImportFenceWin32HandleInfoKHR )* pImportFenceWin32HandleInfo );
-            alias PFN_vkGetFenceWin32HandleKHR                                          = VkResult  function( VkDevice device, const( VkFenceGetWin32HandleInfoKHR )* pGetWin32HandleInfo, HANDLE* pHandle );
+            alias PFN_vkImportFenceWin32HandleKHR                                          = VkResult  function( VkDevice device, const( VkImportFenceWin32HandleInfoKHR )* pImportFenceWin32HandleInfo );
+            alias PFN_vkGetFenceWin32HandleKHR                                             = VkResult  function( VkDevice device, const( VkFenceGetWin32HandleInfoKHR )* pGetWin32HandleInfo, HANDLE* pHandle );
         }
 
         // VK_KHR_portability_subset : types and function pointer type aliases
@@ -369,719 +375,6 @@ mixin template Platform_Extensions( extensions... ) {
             
         }
 
-        // VK_KHR_video_encode_queue : types and function pointer type aliases
-        else static if( __traits( isSame, extension, KHR_video_encode_queue )) {
-            enum VK_KHR_video_encode_queue = 1;
-
-            enum VK_KHR_VIDEO_ENCODE_QUEUE_SPEC_VERSION = 10;
-            enum const( char )* VK_KHR_VIDEO_ENCODE_QUEUE_EXTENSION_NAME = "VK_KHR_video_encode_queue";
-            
-            enum VkVideoEncodeTuningModeKHR {
-                VK_VIDEO_ENCODE_TUNING_MODE_DEFAULT_KHR              = 0,
-                VK_VIDEO_ENCODE_TUNING_MODE_HIGH_QUALITY_KHR         = 1,
-                VK_VIDEO_ENCODE_TUNING_MODE_LOW_LATENCY_KHR          = 2,
-                VK_VIDEO_ENCODE_TUNING_MODE_ULTRA_LOW_LATENCY_KHR    = 3,
-                VK_VIDEO_ENCODE_TUNING_MODE_LOSSLESS_KHR             = 4,
-                VK_VIDEO_ENCODE_TUNING_MODE_MAX_ENUM_KHR             = 0x7FFFFFFF
-            }
-            
-            enum VK_VIDEO_ENCODE_TUNING_MODE_DEFAULT_KHR             = VkVideoEncodeTuningModeKHR.VK_VIDEO_ENCODE_TUNING_MODE_DEFAULT_KHR;
-            enum VK_VIDEO_ENCODE_TUNING_MODE_HIGH_QUALITY_KHR        = VkVideoEncodeTuningModeKHR.VK_VIDEO_ENCODE_TUNING_MODE_HIGH_QUALITY_KHR;
-            enum VK_VIDEO_ENCODE_TUNING_MODE_LOW_LATENCY_KHR         = VkVideoEncodeTuningModeKHR.VK_VIDEO_ENCODE_TUNING_MODE_LOW_LATENCY_KHR;
-            enum VK_VIDEO_ENCODE_TUNING_MODE_ULTRA_LOW_LATENCY_KHR   = VkVideoEncodeTuningModeKHR.VK_VIDEO_ENCODE_TUNING_MODE_ULTRA_LOW_LATENCY_KHR;
-            enum VK_VIDEO_ENCODE_TUNING_MODE_LOSSLESS_KHR            = VkVideoEncodeTuningModeKHR.VK_VIDEO_ENCODE_TUNING_MODE_LOSSLESS_KHR;
-            enum VK_VIDEO_ENCODE_TUNING_MODE_MAX_ENUM_KHR            = VkVideoEncodeTuningModeKHR.VK_VIDEO_ENCODE_TUNING_MODE_MAX_ENUM_KHR;
-            
-            alias VkVideoEncodeFlagsKHR = VkFlags;
-            
-            alias VkVideoEncodeCapabilityFlagsKHR = VkFlags;
-            enum VkVideoEncodeCapabilityFlagBitsKHR : VkVideoEncodeCapabilityFlagsKHR {
-                VK_VIDEO_ENCODE_CAPABILITY_PRECEDING_EXTERNALLY_ENCODED_BYTES_BIT_KHR                = 0x00000001,
-                VK_VIDEO_ENCODE_CAPABILITY_INSUFFICIENT_BITSTREAM_BUFFER_RANGE_DETECTION_BIT_KHR     = 0x00000002,
-                VK_VIDEO_ENCODE_CAPABILITY_FLAG_BITS_MAX_ENUM_KHR                                    = 0x7FFFFFFF
-            }
-            
-            enum VK_VIDEO_ENCODE_CAPABILITY_PRECEDING_EXTERNALLY_ENCODED_BYTES_BIT_KHR               = VkVideoEncodeCapabilityFlagBitsKHR.VK_VIDEO_ENCODE_CAPABILITY_PRECEDING_EXTERNALLY_ENCODED_BYTES_BIT_KHR;
-            enum VK_VIDEO_ENCODE_CAPABILITY_INSUFFICIENT_BITSTREAM_BUFFER_RANGE_DETECTION_BIT_KHR    = VkVideoEncodeCapabilityFlagBitsKHR.VK_VIDEO_ENCODE_CAPABILITY_INSUFFICIENT_BITSTREAM_BUFFER_RANGE_DETECTION_BIT_KHR;
-            enum VK_VIDEO_ENCODE_CAPABILITY_FLAG_BITS_MAX_ENUM_KHR                                   = VkVideoEncodeCapabilityFlagBitsKHR.VK_VIDEO_ENCODE_CAPABILITY_FLAG_BITS_MAX_ENUM_KHR;
-            
-            alias VkVideoEncodeRateControlModeFlagsKHR = VkFlags;
-            enum VkVideoEncodeRateControlModeFlagBitsKHR : VkVideoEncodeRateControlModeFlagsKHR {
-                VK_VIDEO_ENCODE_RATE_CONTROL_MODE_DEFAULT_KHR        = 0,
-                VK_VIDEO_ENCODE_RATE_CONTROL_MODE_DISABLED_BIT_KHR   = 0x00000001,
-                VK_VIDEO_ENCODE_RATE_CONTROL_MODE_CBR_BIT_KHR        = 0x00000002,
-                VK_VIDEO_ENCODE_RATE_CONTROL_MODE_VBR_BIT_KHR        = 0x00000004,
-                VK_VIDEO_ENCODE_RATE_CONTROL_MODE_FLAG_BITS_MAX_ENUM_KHR = 0x7FFFFFFF
-            }
-            
-            enum VK_VIDEO_ENCODE_RATE_CONTROL_MODE_DEFAULT_KHR       = VkVideoEncodeRateControlModeFlagBitsKHR.VK_VIDEO_ENCODE_RATE_CONTROL_MODE_DEFAULT_KHR;
-            enum VK_VIDEO_ENCODE_RATE_CONTROL_MODE_DISABLED_BIT_KHR  = VkVideoEncodeRateControlModeFlagBitsKHR.VK_VIDEO_ENCODE_RATE_CONTROL_MODE_DISABLED_BIT_KHR;
-            enum VK_VIDEO_ENCODE_RATE_CONTROL_MODE_CBR_BIT_KHR       = VkVideoEncodeRateControlModeFlagBitsKHR.VK_VIDEO_ENCODE_RATE_CONTROL_MODE_CBR_BIT_KHR;
-            enum VK_VIDEO_ENCODE_RATE_CONTROL_MODE_VBR_BIT_KHR       = VkVideoEncodeRateControlModeFlagBitsKHR.VK_VIDEO_ENCODE_RATE_CONTROL_MODE_VBR_BIT_KHR;
-            enum VK_VIDEO_ENCODE_RATE_CONTROL_MODE_FLAG_BITS_MAX_ENUM_KHR = VkVideoEncodeRateControlModeFlagBitsKHR.VK_VIDEO_ENCODE_RATE_CONTROL_MODE_FLAG_BITS_MAX_ENUM_KHR;
-            
-            alias VkVideoEncodeFeedbackFlagsKHR = VkFlags;
-            enum VkVideoEncodeFeedbackFlagBitsKHR : VkVideoEncodeFeedbackFlagsKHR {
-                VK_VIDEO_ENCODE_FEEDBACK_BITSTREAM_BUFFER_OFFSET_BIT_KHR     = 0x00000001,
-                VK_VIDEO_ENCODE_FEEDBACK_BITSTREAM_BYTES_WRITTEN_BIT_KHR     = 0x00000002,
-                VK_VIDEO_ENCODE_FEEDBACK_BITSTREAM_HAS_OVERRIDES_BIT_KHR     = 0x00000004,
-                VK_VIDEO_ENCODE_FEEDBACK_FLAG_BITS_MAX_ENUM_KHR              = 0x7FFFFFFF
-            }
-            
-            enum VK_VIDEO_ENCODE_FEEDBACK_BITSTREAM_BUFFER_OFFSET_BIT_KHR    = VkVideoEncodeFeedbackFlagBitsKHR.VK_VIDEO_ENCODE_FEEDBACK_BITSTREAM_BUFFER_OFFSET_BIT_KHR;
-            enum VK_VIDEO_ENCODE_FEEDBACK_BITSTREAM_BYTES_WRITTEN_BIT_KHR    = VkVideoEncodeFeedbackFlagBitsKHR.VK_VIDEO_ENCODE_FEEDBACK_BITSTREAM_BYTES_WRITTEN_BIT_KHR;
-            enum VK_VIDEO_ENCODE_FEEDBACK_BITSTREAM_HAS_OVERRIDES_BIT_KHR    = VkVideoEncodeFeedbackFlagBitsKHR.VK_VIDEO_ENCODE_FEEDBACK_BITSTREAM_HAS_OVERRIDES_BIT_KHR;
-            enum VK_VIDEO_ENCODE_FEEDBACK_FLAG_BITS_MAX_ENUM_KHR             = VkVideoEncodeFeedbackFlagBitsKHR.VK_VIDEO_ENCODE_FEEDBACK_FLAG_BITS_MAX_ENUM_KHR;
-            
-            alias VkVideoEncodeUsageFlagsKHR = VkFlags;
-            enum VkVideoEncodeUsageFlagBitsKHR : VkVideoEncodeUsageFlagsKHR {
-                VK_VIDEO_ENCODE_USAGE_DEFAULT_KHR            = 0,
-                VK_VIDEO_ENCODE_USAGE_TRANSCODING_BIT_KHR    = 0x00000001,
-                VK_VIDEO_ENCODE_USAGE_STREAMING_BIT_KHR      = 0x00000002,
-                VK_VIDEO_ENCODE_USAGE_RECORDING_BIT_KHR      = 0x00000004,
-                VK_VIDEO_ENCODE_USAGE_CONFERENCING_BIT_KHR   = 0x00000008,
-                VK_VIDEO_ENCODE_USAGE_FLAG_BITS_MAX_ENUM_KHR = 0x7FFFFFFF
-            }
-            
-            enum VK_VIDEO_ENCODE_USAGE_DEFAULT_KHR           = VkVideoEncodeUsageFlagBitsKHR.VK_VIDEO_ENCODE_USAGE_DEFAULT_KHR;
-            enum VK_VIDEO_ENCODE_USAGE_TRANSCODING_BIT_KHR   = VkVideoEncodeUsageFlagBitsKHR.VK_VIDEO_ENCODE_USAGE_TRANSCODING_BIT_KHR;
-            enum VK_VIDEO_ENCODE_USAGE_STREAMING_BIT_KHR     = VkVideoEncodeUsageFlagBitsKHR.VK_VIDEO_ENCODE_USAGE_STREAMING_BIT_KHR;
-            enum VK_VIDEO_ENCODE_USAGE_RECORDING_BIT_KHR     = VkVideoEncodeUsageFlagBitsKHR.VK_VIDEO_ENCODE_USAGE_RECORDING_BIT_KHR;
-            enum VK_VIDEO_ENCODE_USAGE_CONFERENCING_BIT_KHR  = VkVideoEncodeUsageFlagBitsKHR.VK_VIDEO_ENCODE_USAGE_CONFERENCING_BIT_KHR;
-            enum VK_VIDEO_ENCODE_USAGE_FLAG_BITS_MAX_ENUM_KHR = VkVideoEncodeUsageFlagBitsKHR.VK_VIDEO_ENCODE_USAGE_FLAG_BITS_MAX_ENUM_KHR;
-            
-            alias VkVideoEncodeContentFlagsKHR = VkFlags;
-            enum VkVideoEncodeContentFlagBitsKHR : VkVideoEncodeContentFlagsKHR {
-                VK_VIDEO_ENCODE_CONTENT_DEFAULT_KHR          = 0,
-                VK_VIDEO_ENCODE_CONTENT_CAMERA_BIT_KHR       = 0x00000001,
-                VK_VIDEO_ENCODE_CONTENT_DESKTOP_BIT_KHR      = 0x00000002,
-                VK_VIDEO_ENCODE_CONTENT_RENDERED_BIT_KHR     = 0x00000004,
-                VK_VIDEO_ENCODE_CONTENT_FLAG_BITS_MAX_ENUM_KHR = 0x7FFFFFFF
-            }
-            
-            enum VK_VIDEO_ENCODE_CONTENT_DEFAULT_KHR         = VkVideoEncodeContentFlagBitsKHR.VK_VIDEO_ENCODE_CONTENT_DEFAULT_KHR;
-            enum VK_VIDEO_ENCODE_CONTENT_CAMERA_BIT_KHR      = VkVideoEncodeContentFlagBitsKHR.VK_VIDEO_ENCODE_CONTENT_CAMERA_BIT_KHR;
-            enum VK_VIDEO_ENCODE_CONTENT_DESKTOP_BIT_KHR     = VkVideoEncodeContentFlagBitsKHR.VK_VIDEO_ENCODE_CONTENT_DESKTOP_BIT_KHR;
-            enum VK_VIDEO_ENCODE_CONTENT_RENDERED_BIT_KHR    = VkVideoEncodeContentFlagBitsKHR.VK_VIDEO_ENCODE_CONTENT_RENDERED_BIT_KHR;
-            enum VK_VIDEO_ENCODE_CONTENT_FLAG_BITS_MAX_ENUM_KHR = VkVideoEncodeContentFlagBitsKHR.VK_VIDEO_ENCODE_CONTENT_FLAG_BITS_MAX_ENUM_KHR;
-            alias VkVideoEncodeRateControlFlagsKHR = VkFlags;
-            
-            struct VkVideoEncodeInfoKHR {
-                VkStructureType                        sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_INFO_KHR;
-                const( void )*                         pNext;
-                VkVideoEncodeFlagsKHR                  flags;
-                VkBuffer                               dstBuffer;
-                VkDeviceSize                           dstBufferOffset;
-                VkDeviceSize                           dstBufferRange;
-                VkVideoPictureResourceInfoKHR          srcPictureResource;
-                const( VkVideoReferenceSlotInfoKHR )*  pSetupReferenceSlot;
-                uint32_t                               referenceSlotCount;
-                const( VkVideoReferenceSlotInfoKHR )*  pReferenceSlots;
-                uint32_t                               precedingExternallyEncodedBytes;
-            }
-            
-            struct VkVideoEncodeCapabilitiesKHR {
-                VkStructureType                       sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_CAPABILITIES_KHR;
-                void*                                 pNext;
-                VkVideoEncodeCapabilityFlagsKHR       flags;
-                VkVideoEncodeRateControlModeFlagsKHR  rateControlModes;
-                uint32_t                              maxRateControlLayers;
-                uint64_t                              maxBitrate;
-                uint32_t                              maxQualityLevels;
-                VkExtent2D                            encodeInputPictureGranularity;
-                VkVideoEncodeFeedbackFlagsKHR         supportedEncodeFeedbackFlags;
-            }
-            
-            struct VkQueryPoolVideoEncodeFeedbackCreateInfoKHR {
-                VkStructureType                sType = VK_STRUCTURE_TYPE_QUERY_POOL_VIDEO_ENCODE_FEEDBACK_CREATE_INFO_KHR;
-                const( void )*                 pNext;
-                VkVideoEncodeFeedbackFlagsKHR  encodeFeedbackFlags;
-            }
-            
-            struct VkVideoEncodeUsageInfoKHR {
-                VkStructureType               sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_USAGE_INFO_KHR;
-                const( void )*                pNext;
-                VkVideoEncodeUsageFlagsKHR    videoUsageHints;
-                VkVideoEncodeContentFlagsKHR  videoContentHints;
-                VkVideoEncodeTuningModeKHR    tuningMode;
-            }
-            
-            struct VkVideoEncodeRateControlLayerInfoKHR {
-                VkStructureType  sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_RATE_CONTROL_LAYER_INFO_KHR;
-                const( void )*   pNext;
-                uint64_t         averageBitrate;
-                uint64_t         maxBitrate;
-                uint32_t         frameRateNumerator;
-                uint32_t         frameRateDenominator;
-            }
-            
-            struct VkVideoEncodeRateControlInfoKHR {
-                VkStructureType                                 sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_RATE_CONTROL_INFO_KHR;
-                const( void )*                                  pNext;
-                VkVideoEncodeRateControlFlagsKHR                flags;
-                VkVideoEncodeRateControlModeFlagBitsKHR         rateControlMode;
-                uint32_t                                        layerCount;
-                const( VkVideoEncodeRateControlLayerInfoKHR )*  pLayers;
-                uint32_t                                        virtualBufferSizeInMs;
-                uint32_t                                        initialVirtualBufferSizeInMs;
-            }
-            
-            struct VkPhysicalDeviceVideoEncodeQualityLevelInfoKHR {
-                VkStructureType                  sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_ENCODE_QUALITY_LEVEL_INFO_KHR;
-                const( void )*                   pNext;
-                const( VkVideoProfileInfoKHR )*  pVideoProfile;
-                uint32_t                         qualityLevel;
-            }
-            
-            struct VkVideoEncodeQualityLevelPropertiesKHR {
-                VkStructureType                          sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_QUALITY_LEVEL_PROPERTIES_KHR;
-                void*                                    pNext;
-                VkVideoEncodeRateControlModeFlagBitsKHR  preferredRateControlMode;
-                uint32_t                                 preferredRateControlLayerCount;
-            }
-            
-            struct VkVideoEncodeQualityLevelInfoKHR {
-                VkStructureType  sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_QUALITY_LEVEL_INFO_KHR;
-                const( void )*   pNext;
-                uint32_t         qualityLevel;
-            }
-            
-            struct VkVideoEncodeSessionParametersGetInfoKHR {
-                VkStructureType              sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_SESSION_PARAMETERS_GET_INFO_KHR;
-                const( void )*               pNext;
-                VkVideoSessionParametersKHR  videoSessionParameters;
-            }
-            
-            struct VkVideoEncodeSessionParametersFeedbackInfoKHR {
-                VkStructureType  sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_SESSION_PARAMETERS_FEEDBACK_INFO_KHR;
-                void*            pNext;
-                VkBool32         hasOverrides;
-            }
-            
-            alias PFN_vkGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR           = VkResult  function( VkPhysicalDevice physicalDevice, const( VkPhysicalDeviceVideoEncodeQualityLevelInfoKHR )* pQualityLevelInfo, VkVideoEncodeQualityLevelPropertiesKHR* pQualityLevelProperties );
-            alias PFN_vkGetEncodedVideoSessionParametersKHR                             = VkResult  function( VkDevice device, const( VkVideoEncodeSessionParametersGetInfoKHR )* pVideoSessionParametersInfo, VkVideoEncodeSessionParametersFeedbackInfoKHR* pFeedbackInfo, size_t* pDataSize, void* pData );
-            alias PFN_vkCmdEncodeVideoKHR                                               = void      function( VkCommandBuffer commandBuffer, const( VkVideoEncodeInfoKHR )* pEncodeInfo );
-        }
-
-        // VK_EXT_video_encode_h264 : types and function pointer type aliases
-        else static if( __traits( isSame, extension, EXT_video_encode_h264 )) {
-            enum VK_EXT_video_encode_h264 = 1;
-
-            enum VK_EXT_VIDEO_ENCODE_H264_SPEC_VERSION = 12;
-            enum const( char )* VK_EXT_VIDEO_ENCODE_H264_EXTENSION_NAME = "VK_EXT_video_encode_h264";
-            
-            alias VkVideoEncodeH264CapabilityFlagsEXT = VkFlags;
-            enum VkVideoEncodeH264CapabilityFlagBitsEXT : VkVideoEncodeH264CapabilityFlagsEXT {
-                VK_VIDEO_ENCODE_H264_CAPABILITY_HRD_COMPLIANCE_BIT_EXT                       = 0x00000001,
-                VK_VIDEO_ENCODE_H264_CAPABILITY_PREDICTION_WEIGHT_TABLE_GENERATED_BIT_EXT    = 0x00000002,
-                VK_VIDEO_ENCODE_H264_CAPABILITY_ROW_UNALIGNED_SLICE_BIT_EXT                  = 0x00000004,
-                VK_VIDEO_ENCODE_H264_CAPABILITY_DIFFERENT_SLICE_TYPE_BIT_EXT                 = 0x00000008,
-                VK_VIDEO_ENCODE_H264_CAPABILITY_B_FRAME_IN_L0_LIST_BIT_EXT                   = 0x00000010,
-                VK_VIDEO_ENCODE_H264_CAPABILITY_B_FRAME_IN_L1_LIST_BIT_EXT                   = 0x00000020,
-                VK_VIDEO_ENCODE_H264_CAPABILITY_PER_PICTURE_TYPE_MIN_MAX_QP_BIT_EXT          = 0x00000040,
-                VK_VIDEO_ENCODE_H264_CAPABILITY_PER_SLICE_CONSTANT_QP_BIT_EXT                = 0x00000080,
-                VK_VIDEO_ENCODE_H264_CAPABILITY_GENERATE_PREFIX_NALU_BIT_EXT                 = 0x00000100,
-                VK_VIDEO_ENCODE_H2_64_CAPABILITY_FLAG_BITS_MAX_ENUM_EXT                      = 0x7FFFFFFF
-            }
-            
-            enum VK_VIDEO_ENCODE_H264_CAPABILITY_HRD_COMPLIANCE_BIT_EXT                      = VkVideoEncodeH264CapabilityFlagBitsEXT.VK_VIDEO_ENCODE_H264_CAPABILITY_HRD_COMPLIANCE_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H264_CAPABILITY_PREDICTION_WEIGHT_TABLE_GENERATED_BIT_EXT   = VkVideoEncodeH264CapabilityFlagBitsEXT.VK_VIDEO_ENCODE_H264_CAPABILITY_PREDICTION_WEIGHT_TABLE_GENERATED_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H264_CAPABILITY_ROW_UNALIGNED_SLICE_BIT_EXT                 = VkVideoEncodeH264CapabilityFlagBitsEXT.VK_VIDEO_ENCODE_H264_CAPABILITY_ROW_UNALIGNED_SLICE_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H264_CAPABILITY_DIFFERENT_SLICE_TYPE_BIT_EXT                = VkVideoEncodeH264CapabilityFlagBitsEXT.VK_VIDEO_ENCODE_H264_CAPABILITY_DIFFERENT_SLICE_TYPE_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H264_CAPABILITY_B_FRAME_IN_L0_LIST_BIT_EXT                  = VkVideoEncodeH264CapabilityFlagBitsEXT.VK_VIDEO_ENCODE_H264_CAPABILITY_B_FRAME_IN_L0_LIST_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H264_CAPABILITY_B_FRAME_IN_L1_LIST_BIT_EXT                  = VkVideoEncodeH264CapabilityFlagBitsEXT.VK_VIDEO_ENCODE_H264_CAPABILITY_B_FRAME_IN_L1_LIST_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H264_CAPABILITY_PER_PICTURE_TYPE_MIN_MAX_QP_BIT_EXT         = VkVideoEncodeH264CapabilityFlagBitsEXT.VK_VIDEO_ENCODE_H264_CAPABILITY_PER_PICTURE_TYPE_MIN_MAX_QP_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H264_CAPABILITY_PER_SLICE_CONSTANT_QP_BIT_EXT               = VkVideoEncodeH264CapabilityFlagBitsEXT.VK_VIDEO_ENCODE_H264_CAPABILITY_PER_SLICE_CONSTANT_QP_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H264_CAPABILITY_GENERATE_PREFIX_NALU_BIT_EXT                = VkVideoEncodeH264CapabilityFlagBitsEXT.VK_VIDEO_ENCODE_H264_CAPABILITY_GENERATE_PREFIX_NALU_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H2_64_CAPABILITY_FLAG_BITS_MAX_ENUM_EXT                     = VkVideoEncodeH264CapabilityFlagBitsEXT.VK_VIDEO_ENCODE_H2_64_CAPABILITY_FLAG_BITS_MAX_ENUM_EXT;
-            
-            alias VkVideoEncodeH264StdFlagsEXT = VkFlags;
-            enum VkVideoEncodeH264StdFlagBitsEXT : VkVideoEncodeH264StdFlagsEXT {
-                VK_VIDEO_ENCODE_H264_STD_SEPARATE_COLOR_PLANE_FLAG_SET_BIT_EXT               = 0x00000001,
-                VK_VIDEO_ENCODE_H264_STD_QPPRIME_Y_ZERO_TRANSFORM_BYPASS_FLAG_SET_BIT_EXT    = 0x00000002,
-                VK_VIDEO_ENCODE_H264_STD_SCALING_MATRIX_PRESENT_FLAG_SET_BIT_EXT             = 0x00000004,
-                VK_VIDEO_ENCODE_H264_STD_CHROMA_QP_INDEX_OFFSET_BIT_EXT                      = 0x00000008,
-                VK_VIDEO_ENCODE_H264_STD_SECOND_CHROMA_QP_INDEX_OFFSET_BIT_EXT               = 0x00000010,
-                VK_VIDEO_ENCODE_H264_STD_PIC_INIT_QP_MINUS26_BIT_EXT                         = 0x00000020,
-                VK_VIDEO_ENCODE_H264_STD_WEIGHTED_PRED_FLAG_SET_BIT_EXT                      = 0x00000040,
-                VK_VIDEO_ENCODE_H264_STD_WEIGHTED_BIPRED_IDC_EXPLICIT_BIT_EXT                = 0x00000080,
-                VK_VIDEO_ENCODE_H264_STD_WEIGHTED_BIPRED_IDC_IMPLICIT_BIT_EXT                = 0x00000100,
-                VK_VIDEO_ENCODE_H264_STD_TRANSFORM_8X8_MODE_FLAG_SET_BIT_EXT                 = 0x00000200,
-                VK_VIDEO_ENCODE_H264_STD_DIRECT_SPATIAL_MV_PRED_FLAG_UNSET_BIT_EXT           = 0x00000400,
-                VK_VIDEO_ENCODE_H264_STD_ENTROPY_CODING_MODE_FLAG_UNSET_BIT_EXT              = 0x00000800,
-                VK_VIDEO_ENCODE_H264_STD_ENTROPY_CODING_MODE_FLAG_SET_BIT_EXT                = 0x00001000,
-                VK_VIDEO_ENCODE_H264_STD_DIRECT_8X8_INFERENCE_FLAG_UNSET_BIT_EXT             = 0x00002000,
-                VK_VIDEO_ENCODE_H264_STD_CONSTRAINED_INTRA_PRED_FLAG_SET_BIT_EXT             = 0x00004000,
-                VK_VIDEO_ENCODE_H264_STD_DEBLOCKING_FILTER_DISABLED_BIT_EXT                  = 0x00008000,
-                VK_VIDEO_ENCODE_H264_STD_DEBLOCKING_FILTER_ENABLED_BIT_EXT                   = 0x00010000,
-                VK_VIDEO_ENCODE_H264_STD_DEBLOCKING_FILTER_PARTIAL_BIT_EXT                   = 0x00020000,
-                VK_VIDEO_ENCODE_H264_STD_SLICE_QP_DELTA_BIT_EXT                              = 0x00080000,
-                VK_VIDEO_ENCODE_H264_STD_DIFFERENT_SLICE_QP_DELTA_BIT_EXT                    = 0x00100000,
-                VK_VIDEO_ENCODE_H2_64_STD_FLAG_BITS_MAX_ENUM_EXT                             = 0x7FFFFFFF
-            }
-            
-            enum VK_VIDEO_ENCODE_H264_STD_SEPARATE_COLOR_PLANE_FLAG_SET_BIT_EXT              = VkVideoEncodeH264StdFlagBitsEXT.VK_VIDEO_ENCODE_H264_STD_SEPARATE_COLOR_PLANE_FLAG_SET_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H264_STD_QPPRIME_Y_ZERO_TRANSFORM_BYPASS_FLAG_SET_BIT_EXT   = VkVideoEncodeH264StdFlagBitsEXT.VK_VIDEO_ENCODE_H264_STD_QPPRIME_Y_ZERO_TRANSFORM_BYPASS_FLAG_SET_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H264_STD_SCALING_MATRIX_PRESENT_FLAG_SET_BIT_EXT            = VkVideoEncodeH264StdFlagBitsEXT.VK_VIDEO_ENCODE_H264_STD_SCALING_MATRIX_PRESENT_FLAG_SET_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H264_STD_CHROMA_QP_INDEX_OFFSET_BIT_EXT                     = VkVideoEncodeH264StdFlagBitsEXT.VK_VIDEO_ENCODE_H264_STD_CHROMA_QP_INDEX_OFFSET_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H264_STD_SECOND_CHROMA_QP_INDEX_OFFSET_BIT_EXT              = VkVideoEncodeH264StdFlagBitsEXT.VK_VIDEO_ENCODE_H264_STD_SECOND_CHROMA_QP_INDEX_OFFSET_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H264_STD_PIC_INIT_QP_MINUS26_BIT_EXT                        = VkVideoEncodeH264StdFlagBitsEXT.VK_VIDEO_ENCODE_H264_STD_PIC_INIT_QP_MINUS26_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H264_STD_WEIGHTED_PRED_FLAG_SET_BIT_EXT                     = VkVideoEncodeH264StdFlagBitsEXT.VK_VIDEO_ENCODE_H264_STD_WEIGHTED_PRED_FLAG_SET_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H264_STD_WEIGHTED_BIPRED_IDC_EXPLICIT_BIT_EXT               = VkVideoEncodeH264StdFlagBitsEXT.VK_VIDEO_ENCODE_H264_STD_WEIGHTED_BIPRED_IDC_EXPLICIT_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H264_STD_WEIGHTED_BIPRED_IDC_IMPLICIT_BIT_EXT               = VkVideoEncodeH264StdFlagBitsEXT.VK_VIDEO_ENCODE_H264_STD_WEIGHTED_BIPRED_IDC_IMPLICIT_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H264_STD_TRANSFORM_8X8_MODE_FLAG_SET_BIT_EXT                = VkVideoEncodeH264StdFlagBitsEXT.VK_VIDEO_ENCODE_H264_STD_TRANSFORM_8X8_MODE_FLAG_SET_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H264_STD_DIRECT_SPATIAL_MV_PRED_FLAG_UNSET_BIT_EXT          = VkVideoEncodeH264StdFlagBitsEXT.VK_VIDEO_ENCODE_H264_STD_DIRECT_SPATIAL_MV_PRED_FLAG_UNSET_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H264_STD_ENTROPY_CODING_MODE_FLAG_UNSET_BIT_EXT             = VkVideoEncodeH264StdFlagBitsEXT.VK_VIDEO_ENCODE_H264_STD_ENTROPY_CODING_MODE_FLAG_UNSET_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H264_STD_ENTROPY_CODING_MODE_FLAG_SET_BIT_EXT               = VkVideoEncodeH264StdFlagBitsEXT.VK_VIDEO_ENCODE_H264_STD_ENTROPY_CODING_MODE_FLAG_SET_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H264_STD_DIRECT_8X8_INFERENCE_FLAG_UNSET_BIT_EXT            = VkVideoEncodeH264StdFlagBitsEXT.VK_VIDEO_ENCODE_H264_STD_DIRECT_8X8_INFERENCE_FLAG_UNSET_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H264_STD_CONSTRAINED_INTRA_PRED_FLAG_SET_BIT_EXT            = VkVideoEncodeH264StdFlagBitsEXT.VK_VIDEO_ENCODE_H264_STD_CONSTRAINED_INTRA_PRED_FLAG_SET_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H264_STD_DEBLOCKING_FILTER_DISABLED_BIT_EXT                 = VkVideoEncodeH264StdFlagBitsEXT.VK_VIDEO_ENCODE_H264_STD_DEBLOCKING_FILTER_DISABLED_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H264_STD_DEBLOCKING_FILTER_ENABLED_BIT_EXT                  = VkVideoEncodeH264StdFlagBitsEXT.VK_VIDEO_ENCODE_H264_STD_DEBLOCKING_FILTER_ENABLED_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H264_STD_DEBLOCKING_FILTER_PARTIAL_BIT_EXT                  = VkVideoEncodeH264StdFlagBitsEXT.VK_VIDEO_ENCODE_H264_STD_DEBLOCKING_FILTER_PARTIAL_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H264_STD_SLICE_QP_DELTA_BIT_EXT                             = VkVideoEncodeH264StdFlagBitsEXT.VK_VIDEO_ENCODE_H264_STD_SLICE_QP_DELTA_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H264_STD_DIFFERENT_SLICE_QP_DELTA_BIT_EXT                   = VkVideoEncodeH264StdFlagBitsEXT.VK_VIDEO_ENCODE_H264_STD_DIFFERENT_SLICE_QP_DELTA_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H2_64_STD_FLAG_BITS_MAX_ENUM_EXT                            = VkVideoEncodeH264StdFlagBitsEXT.VK_VIDEO_ENCODE_H2_64_STD_FLAG_BITS_MAX_ENUM_EXT;
-            
-            alias VkVideoEncodeH264RateControlFlagsEXT = VkFlags;
-            enum VkVideoEncodeH264RateControlFlagBitsEXT : VkVideoEncodeH264RateControlFlagsEXT {
-                VK_VIDEO_ENCODE_H264_RATE_CONTROL_ATTEMPT_HRD_COMPLIANCE_BIT_EXT             = 0x00000001,
-                VK_VIDEO_ENCODE_H264_RATE_CONTROL_REGULAR_GOP_BIT_EXT                        = 0x00000002,
-                VK_VIDEO_ENCODE_H264_RATE_CONTROL_REFERENCE_PATTERN_FLAT_BIT_EXT             = 0x00000004,
-                VK_VIDEO_ENCODE_H264_RATE_CONTROL_REFERENCE_PATTERN_DYADIC_BIT_EXT           = 0x00000008,
-                VK_VIDEO_ENCODE_H264_RATE_CONTROL_TEMPORAL_LAYER_PATTERN_DYADIC_BIT_EXT      = 0x00000010,
-                VK_VIDEO_ENCODE_H2_64_RATE_CONTROL_FLAG_BITS_MAX_ENUM_EXT                    = 0x7FFFFFFF
-            }
-            
-            enum VK_VIDEO_ENCODE_H264_RATE_CONTROL_ATTEMPT_HRD_COMPLIANCE_BIT_EXT            = VkVideoEncodeH264RateControlFlagBitsEXT.VK_VIDEO_ENCODE_H264_RATE_CONTROL_ATTEMPT_HRD_COMPLIANCE_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H264_RATE_CONTROL_REGULAR_GOP_BIT_EXT                       = VkVideoEncodeH264RateControlFlagBitsEXT.VK_VIDEO_ENCODE_H264_RATE_CONTROL_REGULAR_GOP_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H264_RATE_CONTROL_REFERENCE_PATTERN_FLAT_BIT_EXT            = VkVideoEncodeH264RateControlFlagBitsEXT.VK_VIDEO_ENCODE_H264_RATE_CONTROL_REFERENCE_PATTERN_FLAT_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H264_RATE_CONTROL_REFERENCE_PATTERN_DYADIC_BIT_EXT          = VkVideoEncodeH264RateControlFlagBitsEXT.VK_VIDEO_ENCODE_H264_RATE_CONTROL_REFERENCE_PATTERN_DYADIC_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H264_RATE_CONTROL_TEMPORAL_LAYER_PATTERN_DYADIC_BIT_EXT     = VkVideoEncodeH264RateControlFlagBitsEXT.VK_VIDEO_ENCODE_H264_RATE_CONTROL_TEMPORAL_LAYER_PATTERN_DYADIC_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H2_64_RATE_CONTROL_FLAG_BITS_MAX_ENUM_EXT                   = VkVideoEncodeH264RateControlFlagBitsEXT.VK_VIDEO_ENCODE_H2_64_RATE_CONTROL_FLAG_BITS_MAX_ENUM_EXT;
-            
-            struct VkVideoEncodeH264CapabilitiesEXT {
-                VkStructureType                      sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_CAPABILITIES_EXT;
-                void*                                pNext;
-                VkVideoEncodeH264CapabilityFlagsEXT  flags;
-                StdVideoH264LevelIdc                 maxLevelIdc;
-                uint32_t                             maxSliceCount;
-                uint32_t                             maxPPictureL0ReferenceCount;
-                uint32_t                             maxBPictureL0ReferenceCount;
-                uint32_t                             maxL1ReferenceCount;
-                uint32_t                             maxTemporalLayerCount;
-                VkBool32                             expectDyadicTemporalLayerPattern;
-                int32_t                              minQp;
-                int32_t                              maxQp;
-                VkBool32                             prefersGopRemainingFrames;
-                VkBool32                             requiresGopRemainingFrames;
-                VkVideoEncodeH264StdFlagsEXT         stdSyntaxFlags;
-            }
-            
-            struct VkVideoEncodeH264QpEXT {
-                int32_t  qpI;
-                int32_t  qpP;
-                int32_t  qpB;
-            }
-            
-            struct VkVideoEncodeH264QualityLevelPropertiesEXT {
-                VkStructureType                       sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_QUALITY_LEVEL_PROPERTIES_EXT;
-                void*                                 pNext;
-                VkVideoEncodeH264RateControlFlagsEXT  preferredRateControlFlags;
-                uint32_t                              preferredGopFrameCount;
-                uint32_t                              preferredIdrPeriod;
-                uint32_t                              preferredConsecutiveBFrameCount;
-                uint32_t                              preferredTemporalLayerCount;
-                VkVideoEncodeH264QpEXT                preferredConstantQp;
-                uint32_t                              preferredMaxL0ReferenceCount;
-                uint32_t                              preferredMaxL1ReferenceCount;
-                VkBool32                              preferredStdEntropyCodingModeFlag;
-            }
-            
-            struct VkVideoEncodeH264SessionCreateInfoEXT {
-                VkStructureType       sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_SESSION_CREATE_INFO_EXT;
-                const( void )*        pNext;
-                VkBool32              useMaxLevelIdc;
-                StdVideoH264LevelIdc  maxLevelIdc;
-            }
-            
-            struct VkVideoEncodeH264SessionParametersAddInfoEXT {
-                VkStructureType                             sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_SESSION_PARAMETERS_ADD_INFO_EXT;
-                const( void )*                              pNext;
-                uint32_t                                    stdSPSCount;
-                const( StdVideoH264SequenceParameterSet )*  pStdSPSs;
-                uint32_t                                    stdPPSCount;
-                const( StdVideoH264PictureParameterSet )*   pStdPPSs;
-            }
-            
-            struct VkVideoEncodeH264SessionParametersCreateInfoEXT {
-                VkStructureType                                         sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_SESSION_PARAMETERS_CREATE_INFO_EXT;
-                const( void )*                                          pNext;
-                uint32_t                                                maxStdSPSCount;
-                uint32_t                                                maxStdPPSCount;
-                const( VkVideoEncodeH264SessionParametersAddInfoEXT )*  pParametersAddInfo;
-            }
-            
-            struct VkVideoEncodeH264SessionParametersGetInfoEXT {
-                VkStructureType  sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_SESSION_PARAMETERS_GET_INFO_EXT;
-                const( void )*   pNext;
-                VkBool32         writeStdSPS;
-                VkBool32         writeStdPPS;
-                uint32_t         stdSPSId;
-                uint32_t         stdPPSId;
-            }
-            
-            struct VkVideoEncodeH264SessionParametersFeedbackInfoEXT {
-                VkStructureType  sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_SESSION_PARAMETERS_FEEDBACK_INFO_EXT;
-                void*            pNext;
-                VkBool32         hasStdSPSOverrides;
-                VkBool32         hasStdPPSOverrides;
-            }
-            
-            struct VkVideoEncodeH264NaluSliceInfoEXT {
-                VkStructureType                          sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_NALU_SLICE_INFO_EXT;
-                const( void )*                           pNext;
-                int32_t                                  constantQp;
-                const( StdVideoEncodeH264SliceHeader )*  pStdSliceHeader;
-            }
-            
-            struct VkVideoEncodeH264PictureInfoEXT {
-                VkStructureType                              sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_PICTURE_INFO_EXT;
-                const( void )*                               pNext;
-                uint32_t                                     naluSliceEntryCount;
-                const( VkVideoEncodeH264NaluSliceInfoEXT )*  pNaluSliceEntries;
-                const( StdVideoEncodeH264PictureInfo )*      pStdPictureInfo;
-                VkBool32                                     generatePrefixNalu;
-            }
-            
-            struct VkVideoEncodeH264DpbSlotInfoEXT {
-                VkStructureType                            sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_DPB_SLOT_INFO_EXT;
-                const( void )*                             pNext;
-                const( StdVideoEncodeH264ReferenceInfo )*  pStdReferenceInfo;
-            }
-            
-            struct VkVideoEncodeH264ProfileInfoEXT {
-                VkStructureType         sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_PROFILE_INFO_EXT;
-                const( void )*          pNext;
-                StdVideoH264ProfileIdc  stdProfileIdc;
-            }
-            
-            struct VkVideoEncodeH264RateControlInfoEXT {
-                VkStructureType                       sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_RATE_CONTROL_INFO_EXT;
-                const( void )*                        pNext;
-                VkVideoEncodeH264RateControlFlagsEXT  flags;
-                uint32_t                              gopFrameCount;
-                uint32_t                              idrPeriod;
-                uint32_t                              consecutiveBFrameCount;
-                uint32_t                              temporalLayerCount;
-            }
-            
-            struct VkVideoEncodeH264FrameSizeEXT {
-                uint32_t  frameISize;
-                uint32_t  framePSize;
-                uint32_t  frameBSize;
-            }
-            
-            struct VkVideoEncodeH264RateControlLayerInfoEXT {
-                VkStructureType                sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_RATE_CONTROL_LAYER_INFO_EXT;
-                const( void )*                 pNext;
-                VkBool32                       useMinQp;
-                VkVideoEncodeH264QpEXT         minQp;
-                VkBool32                       useMaxQp;
-                VkVideoEncodeH264QpEXT         maxQp;
-                VkBool32                       useMaxFrameSize;
-                VkVideoEncodeH264FrameSizeEXT  maxFrameSize;
-            }
-            
-            struct VkVideoEncodeH264GopRemainingFrameInfoEXT {
-                VkStructureType  sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H264_GOP_REMAINING_FRAME_INFO_EXT;
-                const( void )*   pNext;
-                VkBool32         useGopRemainingFrames;
-                uint32_t         gopRemainingI;
-                uint32_t         gopRemainingP;
-                uint32_t         gopRemainingB;
-            }
-            
-        }
-
-        // VK_EXT_video_encode_h265 : types and function pointer type aliases
-        else static if( __traits( isSame, extension, EXT_video_encode_h265 )) {
-            enum VK_EXT_video_encode_h265 = 1;
-
-            enum VK_EXT_VIDEO_ENCODE_H265_SPEC_VERSION = 12;
-            enum const( char )* VK_EXT_VIDEO_ENCODE_H265_EXTENSION_NAME = "VK_EXT_video_encode_h265";
-            
-            alias VkVideoEncodeH265CapabilityFlagsEXT = VkFlags;
-            enum VkVideoEncodeH265CapabilityFlagBitsEXT : VkVideoEncodeH265CapabilityFlagsEXT {
-                VK_VIDEO_ENCODE_H265_CAPABILITY_HRD_COMPLIANCE_BIT_EXT                       = 0x00000001,
-                VK_VIDEO_ENCODE_H265_CAPABILITY_PREDICTION_WEIGHT_TABLE_GENERATED_BIT_EXT    = 0x00000002,
-                VK_VIDEO_ENCODE_H265_CAPABILITY_ROW_UNALIGNED_SLICE_SEGMENT_BIT_EXT          = 0x00000004,
-                VK_VIDEO_ENCODE_H265_CAPABILITY_DIFFERENT_SLICE_SEGMENT_TYPE_BIT_EXT         = 0x00000008,
-                VK_VIDEO_ENCODE_H265_CAPABILITY_B_FRAME_IN_L0_LIST_BIT_EXT                   = 0x00000010,
-                VK_VIDEO_ENCODE_H265_CAPABILITY_B_FRAME_IN_L1_LIST_BIT_EXT                   = 0x00000020,
-                VK_VIDEO_ENCODE_H265_CAPABILITY_PER_PICTURE_TYPE_MIN_MAX_QP_BIT_EXT          = 0x00000040,
-                VK_VIDEO_ENCODE_H265_CAPABILITY_PER_SLICE_SEGMENT_CONSTANT_QP_BIT_EXT        = 0x00000080,
-                VK_VIDEO_ENCODE_H265_CAPABILITY_MULTIPLE_TILES_PER_SLICE_SEGMENT_BIT_EXT     = 0x00000100,
-                VK_VIDEO_ENCODE_H265_CAPABILITY_MULTIPLE_SLICE_SEGMENTS_PER_TILE_BIT_EXT     = 0x00000200,
-                VK_VIDEO_ENCODE_H2_65_CAPABILITY_FLAG_BITS_MAX_ENUM_EXT                      = 0x7FFFFFFF
-            }
-            
-            enum VK_VIDEO_ENCODE_H265_CAPABILITY_HRD_COMPLIANCE_BIT_EXT                      = VkVideoEncodeH265CapabilityFlagBitsEXT.VK_VIDEO_ENCODE_H265_CAPABILITY_HRD_COMPLIANCE_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_CAPABILITY_PREDICTION_WEIGHT_TABLE_GENERATED_BIT_EXT   = VkVideoEncodeH265CapabilityFlagBitsEXT.VK_VIDEO_ENCODE_H265_CAPABILITY_PREDICTION_WEIGHT_TABLE_GENERATED_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_CAPABILITY_ROW_UNALIGNED_SLICE_SEGMENT_BIT_EXT         = VkVideoEncodeH265CapabilityFlagBitsEXT.VK_VIDEO_ENCODE_H265_CAPABILITY_ROW_UNALIGNED_SLICE_SEGMENT_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_CAPABILITY_DIFFERENT_SLICE_SEGMENT_TYPE_BIT_EXT        = VkVideoEncodeH265CapabilityFlagBitsEXT.VK_VIDEO_ENCODE_H265_CAPABILITY_DIFFERENT_SLICE_SEGMENT_TYPE_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_CAPABILITY_B_FRAME_IN_L0_LIST_BIT_EXT                  = VkVideoEncodeH265CapabilityFlagBitsEXT.VK_VIDEO_ENCODE_H265_CAPABILITY_B_FRAME_IN_L0_LIST_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_CAPABILITY_B_FRAME_IN_L1_LIST_BIT_EXT                  = VkVideoEncodeH265CapabilityFlagBitsEXT.VK_VIDEO_ENCODE_H265_CAPABILITY_B_FRAME_IN_L1_LIST_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_CAPABILITY_PER_PICTURE_TYPE_MIN_MAX_QP_BIT_EXT         = VkVideoEncodeH265CapabilityFlagBitsEXT.VK_VIDEO_ENCODE_H265_CAPABILITY_PER_PICTURE_TYPE_MIN_MAX_QP_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_CAPABILITY_PER_SLICE_SEGMENT_CONSTANT_QP_BIT_EXT       = VkVideoEncodeH265CapabilityFlagBitsEXT.VK_VIDEO_ENCODE_H265_CAPABILITY_PER_SLICE_SEGMENT_CONSTANT_QP_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_CAPABILITY_MULTIPLE_TILES_PER_SLICE_SEGMENT_BIT_EXT    = VkVideoEncodeH265CapabilityFlagBitsEXT.VK_VIDEO_ENCODE_H265_CAPABILITY_MULTIPLE_TILES_PER_SLICE_SEGMENT_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_CAPABILITY_MULTIPLE_SLICE_SEGMENTS_PER_TILE_BIT_EXT    = VkVideoEncodeH265CapabilityFlagBitsEXT.VK_VIDEO_ENCODE_H265_CAPABILITY_MULTIPLE_SLICE_SEGMENTS_PER_TILE_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H2_65_CAPABILITY_FLAG_BITS_MAX_ENUM_EXT                     = VkVideoEncodeH265CapabilityFlagBitsEXT.VK_VIDEO_ENCODE_H2_65_CAPABILITY_FLAG_BITS_MAX_ENUM_EXT;
-            
-            alias VkVideoEncodeH265StdFlagsEXT = VkFlags;
-            enum VkVideoEncodeH265StdFlagBitsEXT : VkVideoEncodeH265StdFlagsEXT {
-                VK_VIDEO_ENCODE_H265_STD_SEPARATE_COLOR_PLANE_FLAG_SET_BIT_EXT                       = 0x00000001,
-                VK_VIDEO_ENCODE_H265_STD_SAMPLE_ADAPTIVE_OFFSET_ENABLED_FLAG_SET_BIT_EXT             = 0x00000002,
-                VK_VIDEO_ENCODE_H265_STD_SCALING_LIST_DATA_PRESENT_FLAG_SET_BIT_EXT                  = 0x00000004,
-                VK_VIDEO_ENCODE_H265_STD_PCM_ENABLED_FLAG_SET_BIT_EXT                                = 0x00000008,
-                VK_VIDEO_ENCODE_H265_STD_SPS_TEMPORAL_MVP_ENABLED_FLAG_SET_BIT_EXT                   = 0x00000010,
-                VK_VIDEO_ENCODE_H265_STD_INIT_QP_MINUS26_BIT_EXT                                     = 0x00000020,
-                VK_VIDEO_ENCODE_H265_STD_WEIGHTED_PRED_FLAG_SET_BIT_EXT                              = 0x00000040,
-                VK_VIDEO_ENCODE_H265_STD_WEIGHTED_BIPRED_FLAG_SET_BIT_EXT                            = 0x00000080,
-                VK_VIDEO_ENCODE_H265_STD_LOG2_PARALLEL_MERGE_LEVEL_MINUS2_BIT_EXT                    = 0x00000100,
-                VK_VIDEO_ENCODE_H265_STD_SIGN_DATA_HIDING_ENABLED_FLAG_SET_BIT_EXT                   = 0x00000200,
-                VK_VIDEO_ENCODE_H265_STD_TRANSFORM_SKIP_ENABLED_FLAG_SET_BIT_EXT                     = 0x00000400,
-                VK_VIDEO_ENCODE_H265_STD_TRANSFORM_SKIP_ENABLED_FLAG_UNSET_BIT_EXT                   = 0x00000800,
-                VK_VIDEO_ENCODE_H265_STD_PPS_SLICE_CHROMA_QP_OFFSETS_PRESENT_FLAG_SET_BIT_EXT        = 0x00001000,
-                VK_VIDEO_ENCODE_H265_STD_TRANSQUANT_BYPASS_ENABLED_FLAG_SET_BIT_EXT                  = 0x00002000,
-                VK_VIDEO_ENCODE_H265_STD_CONSTRAINED_INTRA_PRED_FLAG_SET_BIT_EXT                     = 0x00004000,
-                VK_VIDEO_ENCODE_H265_STD_ENTROPY_CODING_SYNC_ENABLED_FLAG_SET_BIT_EXT                = 0x00008000,
-                VK_VIDEO_ENCODE_H265_STD_DEBLOCKING_FILTER_OVERRIDE_ENABLED_FLAG_SET_BIT_EXT         = 0x00010000,
-                VK_VIDEO_ENCODE_H265_STD_DEPENDENT_SLICE_SEGMENTS_ENABLED_FLAG_SET_BIT_EXT           = 0x00020000,
-                VK_VIDEO_ENCODE_H265_STD_DEPENDENT_SLICE_SEGMENT_FLAG_SET_BIT_EXT                    = 0x00040000,
-                VK_VIDEO_ENCODE_H265_STD_SLICE_QP_DELTA_BIT_EXT                                      = 0x00080000,
-                VK_VIDEO_ENCODE_H265_STD_DIFFERENT_SLICE_QP_DELTA_BIT_EXT                            = 0x00100000,
-                VK_VIDEO_ENCODE_H2_65_STD_FLAG_BITS_MAX_ENUM_EXT                                     = 0x7FFFFFFF
-            }
-            
-            enum VK_VIDEO_ENCODE_H265_STD_SEPARATE_COLOR_PLANE_FLAG_SET_BIT_EXT                      = VkVideoEncodeH265StdFlagBitsEXT.VK_VIDEO_ENCODE_H265_STD_SEPARATE_COLOR_PLANE_FLAG_SET_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_STD_SAMPLE_ADAPTIVE_OFFSET_ENABLED_FLAG_SET_BIT_EXT            = VkVideoEncodeH265StdFlagBitsEXT.VK_VIDEO_ENCODE_H265_STD_SAMPLE_ADAPTIVE_OFFSET_ENABLED_FLAG_SET_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_STD_SCALING_LIST_DATA_PRESENT_FLAG_SET_BIT_EXT                 = VkVideoEncodeH265StdFlagBitsEXT.VK_VIDEO_ENCODE_H265_STD_SCALING_LIST_DATA_PRESENT_FLAG_SET_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_STD_PCM_ENABLED_FLAG_SET_BIT_EXT                               = VkVideoEncodeH265StdFlagBitsEXT.VK_VIDEO_ENCODE_H265_STD_PCM_ENABLED_FLAG_SET_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_STD_SPS_TEMPORAL_MVP_ENABLED_FLAG_SET_BIT_EXT                  = VkVideoEncodeH265StdFlagBitsEXT.VK_VIDEO_ENCODE_H265_STD_SPS_TEMPORAL_MVP_ENABLED_FLAG_SET_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_STD_INIT_QP_MINUS26_BIT_EXT                                    = VkVideoEncodeH265StdFlagBitsEXT.VK_VIDEO_ENCODE_H265_STD_INIT_QP_MINUS26_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_STD_WEIGHTED_PRED_FLAG_SET_BIT_EXT                             = VkVideoEncodeH265StdFlagBitsEXT.VK_VIDEO_ENCODE_H265_STD_WEIGHTED_PRED_FLAG_SET_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_STD_WEIGHTED_BIPRED_FLAG_SET_BIT_EXT                           = VkVideoEncodeH265StdFlagBitsEXT.VK_VIDEO_ENCODE_H265_STD_WEIGHTED_BIPRED_FLAG_SET_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_STD_LOG2_PARALLEL_MERGE_LEVEL_MINUS2_BIT_EXT                   = VkVideoEncodeH265StdFlagBitsEXT.VK_VIDEO_ENCODE_H265_STD_LOG2_PARALLEL_MERGE_LEVEL_MINUS2_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_STD_SIGN_DATA_HIDING_ENABLED_FLAG_SET_BIT_EXT                  = VkVideoEncodeH265StdFlagBitsEXT.VK_VIDEO_ENCODE_H265_STD_SIGN_DATA_HIDING_ENABLED_FLAG_SET_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_STD_TRANSFORM_SKIP_ENABLED_FLAG_SET_BIT_EXT                    = VkVideoEncodeH265StdFlagBitsEXT.VK_VIDEO_ENCODE_H265_STD_TRANSFORM_SKIP_ENABLED_FLAG_SET_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_STD_TRANSFORM_SKIP_ENABLED_FLAG_UNSET_BIT_EXT                  = VkVideoEncodeH265StdFlagBitsEXT.VK_VIDEO_ENCODE_H265_STD_TRANSFORM_SKIP_ENABLED_FLAG_UNSET_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_STD_PPS_SLICE_CHROMA_QP_OFFSETS_PRESENT_FLAG_SET_BIT_EXT       = VkVideoEncodeH265StdFlagBitsEXT.VK_VIDEO_ENCODE_H265_STD_PPS_SLICE_CHROMA_QP_OFFSETS_PRESENT_FLAG_SET_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_STD_TRANSQUANT_BYPASS_ENABLED_FLAG_SET_BIT_EXT                 = VkVideoEncodeH265StdFlagBitsEXT.VK_VIDEO_ENCODE_H265_STD_TRANSQUANT_BYPASS_ENABLED_FLAG_SET_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_STD_CONSTRAINED_INTRA_PRED_FLAG_SET_BIT_EXT                    = VkVideoEncodeH265StdFlagBitsEXT.VK_VIDEO_ENCODE_H265_STD_CONSTRAINED_INTRA_PRED_FLAG_SET_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_STD_ENTROPY_CODING_SYNC_ENABLED_FLAG_SET_BIT_EXT               = VkVideoEncodeH265StdFlagBitsEXT.VK_VIDEO_ENCODE_H265_STD_ENTROPY_CODING_SYNC_ENABLED_FLAG_SET_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_STD_DEBLOCKING_FILTER_OVERRIDE_ENABLED_FLAG_SET_BIT_EXT        = VkVideoEncodeH265StdFlagBitsEXT.VK_VIDEO_ENCODE_H265_STD_DEBLOCKING_FILTER_OVERRIDE_ENABLED_FLAG_SET_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_STD_DEPENDENT_SLICE_SEGMENTS_ENABLED_FLAG_SET_BIT_EXT          = VkVideoEncodeH265StdFlagBitsEXT.VK_VIDEO_ENCODE_H265_STD_DEPENDENT_SLICE_SEGMENTS_ENABLED_FLAG_SET_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_STD_DEPENDENT_SLICE_SEGMENT_FLAG_SET_BIT_EXT                   = VkVideoEncodeH265StdFlagBitsEXT.VK_VIDEO_ENCODE_H265_STD_DEPENDENT_SLICE_SEGMENT_FLAG_SET_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_STD_SLICE_QP_DELTA_BIT_EXT                                     = VkVideoEncodeH265StdFlagBitsEXT.VK_VIDEO_ENCODE_H265_STD_SLICE_QP_DELTA_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_STD_DIFFERENT_SLICE_QP_DELTA_BIT_EXT                           = VkVideoEncodeH265StdFlagBitsEXT.VK_VIDEO_ENCODE_H265_STD_DIFFERENT_SLICE_QP_DELTA_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H2_65_STD_FLAG_BITS_MAX_ENUM_EXT                                    = VkVideoEncodeH265StdFlagBitsEXT.VK_VIDEO_ENCODE_H2_65_STD_FLAG_BITS_MAX_ENUM_EXT;
-            
-            alias VkVideoEncodeH265CtbSizeFlagsEXT = VkFlags;
-            enum VkVideoEncodeH265CtbSizeFlagBitsEXT : VkVideoEncodeH265CtbSizeFlagsEXT {
-                VK_VIDEO_ENCODE_H265_CTB_SIZE_16_BIT_EXT     = 0x00000001,
-                VK_VIDEO_ENCODE_H265_CTB_SIZE_32_BIT_EXT     = 0x00000002,
-                VK_VIDEO_ENCODE_H265_CTB_SIZE_64_BIT_EXT     = 0x00000004,
-                VK_VIDEO_ENCODE_H2_65_CTB_SIZE_FLAG_BITS_MAX_ENUM_EXT = 0x7FFFFFFF
-            }
-            
-            enum VK_VIDEO_ENCODE_H265_CTB_SIZE_16_BIT_EXT    = VkVideoEncodeH265CtbSizeFlagBitsEXT.VK_VIDEO_ENCODE_H265_CTB_SIZE_16_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_CTB_SIZE_32_BIT_EXT    = VkVideoEncodeH265CtbSizeFlagBitsEXT.VK_VIDEO_ENCODE_H265_CTB_SIZE_32_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_CTB_SIZE_64_BIT_EXT    = VkVideoEncodeH265CtbSizeFlagBitsEXT.VK_VIDEO_ENCODE_H265_CTB_SIZE_64_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H2_65_CTB_SIZE_FLAG_BITS_MAX_ENUM_EXT = VkVideoEncodeH265CtbSizeFlagBitsEXT.VK_VIDEO_ENCODE_H2_65_CTB_SIZE_FLAG_BITS_MAX_ENUM_EXT;
-            
-            alias VkVideoEncodeH265TransformBlockSizeFlagsEXT = VkFlags;
-            enum VkVideoEncodeH265TransformBlockSizeFlagBitsEXT : VkVideoEncodeH265TransformBlockSizeFlagsEXT {
-                VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_4_BIT_EXT          = 0x00000001,
-                VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_8_BIT_EXT          = 0x00000002,
-                VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_16_BIT_EXT         = 0x00000004,
-                VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_32_BIT_EXT         = 0x00000008,
-                VK_VIDEO_ENCODE_H2_65_TRANSFORM_BLOCK_SIZE_FLAG_BITS_MAX_ENUM_EXT = 0x7FFFFFFF
-            }
-            
-            enum VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_4_BIT_EXT         = VkVideoEncodeH265TransformBlockSizeFlagBitsEXT.VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_4_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_8_BIT_EXT         = VkVideoEncodeH265TransformBlockSizeFlagBitsEXT.VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_8_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_16_BIT_EXT        = VkVideoEncodeH265TransformBlockSizeFlagBitsEXT.VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_16_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_32_BIT_EXT        = VkVideoEncodeH265TransformBlockSizeFlagBitsEXT.VK_VIDEO_ENCODE_H265_TRANSFORM_BLOCK_SIZE_32_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H2_65_TRANSFORM_BLOCK_SIZE_FLAG_BITS_MAX_ENUM_EXT = VkVideoEncodeH265TransformBlockSizeFlagBitsEXT.VK_VIDEO_ENCODE_H2_65_TRANSFORM_BLOCK_SIZE_FLAG_BITS_MAX_ENUM_EXT;
-            
-            alias VkVideoEncodeH265RateControlFlagsEXT = VkFlags;
-            enum VkVideoEncodeH265RateControlFlagBitsEXT : VkVideoEncodeH265RateControlFlagsEXT {
-                VK_VIDEO_ENCODE_H265_RATE_CONTROL_ATTEMPT_HRD_COMPLIANCE_BIT_EXT             = 0x00000001,
-                VK_VIDEO_ENCODE_H265_RATE_CONTROL_REGULAR_GOP_BIT_EXT                        = 0x00000002,
-                VK_VIDEO_ENCODE_H265_RATE_CONTROL_REFERENCE_PATTERN_FLAT_BIT_EXT             = 0x00000004,
-                VK_VIDEO_ENCODE_H265_RATE_CONTROL_REFERENCE_PATTERN_DYADIC_BIT_EXT           = 0x00000008,
-                VK_VIDEO_ENCODE_H265_RATE_CONTROL_TEMPORAL_SUB_LAYER_PATTERN_DYADIC_BIT_EXT  = 0x00000010,
-                VK_VIDEO_ENCODE_H2_65_RATE_CONTROL_FLAG_BITS_MAX_ENUM_EXT                    = 0x7FFFFFFF
-            }
-            
-            enum VK_VIDEO_ENCODE_H265_RATE_CONTROL_ATTEMPT_HRD_COMPLIANCE_BIT_EXT            = VkVideoEncodeH265RateControlFlagBitsEXT.VK_VIDEO_ENCODE_H265_RATE_CONTROL_ATTEMPT_HRD_COMPLIANCE_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_RATE_CONTROL_REGULAR_GOP_BIT_EXT                       = VkVideoEncodeH265RateControlFlagBitsEXT.VK_VIDEO_ENCODE_H265_RATE_CONTROL_REGULAR_GOP_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_RATE_CONTROL_REFERENCE_PATTERN_FLAT_BIT_EXT            = VkVideoEncodeH265RateControlFlagBitsEXT.VK_VIDEO_ENCODE_H265_RATE_CONTROL_REFERENCE_PATTERN_FLAT_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_RATE_CONTROL_REFERENCE_PATTERN_DYADIC_BIT_EXT          = VkVideoEncodeH265RateControlFlagBitsEXT.VK_VIDEO_ENCODE_H265_RATE_CONTROL_REFERENCE_PATTERN_DYADIC_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H265_RATE_CONTROL_TEMPORAL_SUB_LAYER_PATTERN_DYADIC_BIT_EXT = VkVideoEncodeH265RateControlFlagBitsEXT.VK_VIDEO_ENCODE_H265_RATE_CONTROL_TEMPORAL_SUB_LAYER_PATTERN_DYADIC_BIT_EXT;
-            enum VK_VIDEO_ENCODE_H2_65_RATE_CONTROL_FLAG_BITS_MAX_ENUM_EXT                   = VkVideoEncodeH265RateControlFlagBitsEXT.VK_VIDEO_ENCODE_H2_65_RATE_CONTROL_FLAG_BITS_MAX_ENUM_EXT;
-            
-            struct VkVideoEncodeH265CapabilitiesEXT {
-                VkStructureType                              sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_CAPABILITIES_EXT;
-                void*                                        pNext;
-                VkVideoEncodeH265CapabilityFlagsEXT          flags;
-                StdVideoH265LevelIdc                         maxLevelIdc;
-                uint32_t                                     maxSliceSegmentCount;
-                VkExtent2D                                   maxTiles;
-                VkVideoEncodeH265CtbSizeFlagsEXT             ctbSizes;
-                VkVideoEncodeH265TransformBlockSizeFlagsEXT  transformBlockSizes;
-                uint32_t                                     maxPPictureL0ReferenceCount;
-                uint32_t                                     maxBPictureL0ReferenceCount;
-                uint32_t                                     maxL1ReferenceCount;
-                uint32_t                                     maxSubLayerCount;
-                VkBool32                                     expectDyadicTemporalSubLayerPattern;
-                int32_t                                      minQp;
-                int32_t                                      maxQp;
-                VkBool32                                     prefersGopRemainingFrames;
-                VkBool32                                     requiresGopRemainingFrames;
-                VkVideoEncodeH265StdFlagsEXT                 stdSyntaxFlags;
-            }
-            
-            struct VkVideoEncodeH265SessionCreateInfoEXT {
-                VkStructureType       sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_SESSION_CREATE_INFO_EXT;
-                const( void )*        pNext;
-                VkBool32              useMaxLevelIdc;
-                StdVideoH265LevelIdc  maxLevelIdc;
-            }
-            
-            struct VkVideoEncodeH265QpEXT {
-                int32_t  qpI;
-                int32_t  qpP;
-                int32_t  qpB;
-            }
-            
-            struct VkVideoEncodeH265QualityLevelPropertiesEXT {
-                VkStructureType                       sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_QUALITY_LEVEL_PROPERTIES_EXT;
-                void*                                 pNext;
-                VkVideoEncodeH265RateControlFlagsEXT  preferredRateControlFlags;
-                uint32_t                              preferredGopFrameCount;
-                uint32_t                              preferredIdrPeriod;
-                uint32_t                              preferredConsecutiveBFrameCount;
-                uint32_t                              preferredSubLayerCount;
-                VkVideoEncodeH265QpEXT                preferredConstantQp;
-                uint32_t                              preferredMaxL0ReferenceCount;
-                uint32_t                              preferredMaxL1ReferenceCount;
-            }
-            
-            struct VkVideoEncodeH265SessionParametersAddInfoEXT {
-                VkStructureType                             sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_SESSION_PARAMETERS_ADD_INFO_EXT;
-                const( void )*                              pNext;
-                uint32_t                                    stdVPSCount;
-                const( StdVideoH265VideoParameterSet )*     pStdVPSs;
-                uint32_t                                    stdSPSCount;
-                const( StdVideoH265SequenceParameterSet )*  pStdSPSs;
-                uint32_t                                    stdPPSCount;
-                const( StdVideoH265PictureParameterSet )*   pStdPPSs;
-            }
-            
-            struct VkVideoEncodeH265SessionParametersCreateInfoEXT {
-                VkStructureType                                         sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_SESSION_PARAMETERS_CREATE_INFO_EXT;
-                const( void )*                                          pNext;
-                uint32_t                                                maxStdVPSCount;
-                uint32_t                                                maxStdSPSCount;
-                uint32_t                                                maxStdPPSCount;
-                const( VkVideoEncodeH265SessionParametersAddInfoEXT )*  pParametersAddInfo;
-            }
-            
-            struct VkVideoEncodeH265SessionParametersGetInfoEXT {
-                VkStructureType  sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_SESSION_PARAMETERS_GET_INFO_EXT;
-                const( void )*   pNext;
-                VkBool32         writeStdVPS;
-                VkBool32         writeStdSPS;
-                VkBool32         writeStdPPS;
-                uint32_t         stdVPSId;
-                uint32_t         stdSPSId;
-                uint32_t         stdPPSId;
-            }
-            
-            struct VkVideoEncodeH265SessionParametersFeedbackInfoEXT {
-                VkStructureType  sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_SESSION_PARAMETERS_FEEDBACK_INFO_EXT;
-                void*            pNext;
-                VkBool32         hasStdVPSOverrides;
-                VkBool32         hasStdSPSOverrides;
-                VkBool32         hasStdPPSOverrides;
-            }
-            
-            struct VkVideoEncodeH265NaluSliceSegmentInfoEXT {
-                VkStructureType                                 sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_NALU_SLICE_SEGMENT_INFO_EXT;
-                const( void )*                                  pNext;
-                int32_t                                         constantQp;
-                const( StdVideoEncodeH265SliceSegmentHeader )*  pStdSliceSegmentHeader;
-            }
-            
-            struct VkVideoEncodeH265PictureInfoEXT {
-                VkStructureType                                     sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_PICTURE_INFO_EXT;
-                const( void )*                                      pNext;
-                uint32_t                                            naluSliceSegmentEntryCount;
-                const( VkVideoEncodeH265NaluSliceSegmentInfoEXT )*  pNaluSliceSegmentEntries;
-                const( StdVideoEncodeH265PictureInfo )*             pStdPictureInfo;
-            }
-            
-            struct VkVideoEncodeH265DpbSlotInfoEXT {
-                VkStructureType                            sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_DPB_SLOT_INFO_EXT;
-                const( void )*                             pNext;
-                const( StdVideoEncodeH265ReferenceInfo )*  pStdReferenceInfo;
-            }
-            
-            struct VkVideoEncodeH265ProfileInfoEXT {
-                VkStructureType         sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_PROFILE_INFO_EXT;
-                const( void )*          pNext;
-                StdVideoH265ProfileIdc  stdProfileIdc;
-            }
-            
-            struct VkVideoEncodeH265RateControlInfoEXT {
-                VkStructureType                       sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_RATE_CONTROL_INFO_EXT;
-                const( void )*                        pNext;
-                VkVideoEncodeH265RateControlFlagsEXT  flags;
-                uint32_t                              gopFrameCount;
-                uint32_t                              idrPeriod;
-                uint32_t                              consecutiveBFrameCount;
-                uint32_t                              subLayerCount;
-            }
-            
-            struct VkVideoEncodeH265FrameSizeEXT {
-                uint32_t  frameISize;
-                uint32_t  framePSize;
-                uint32_t  frameBSize;
-            }
-            
-            struct VkVideoEncodeH265RateControlLayerInfoEXT {
-                VkStructureType                sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_RATE_CONTROL_LAYER_INFO_EXT;
-                const( void )*                 pNext;
-                VkBool32                       useMinQp;
-                VkVideoEncodeH265QpEXT         minQp;
-                VkBool32                       useMaxQp;
-                VkVideoEncodeH265QpEXT         maxQp;
-                VkBool32                       useMaxFrameSize;
-                VkVideoEncodeH265FrameSizeEXT  maxFrameSize;
-            }
-            
-            struct VkVideoEncodeH265GopRemainingFrameInfoEXT {
-                VkStructureType  sType = VK_STRUCTURE_TYPE_VIDEO_ENCODE_H265_GOP_REMAINING_FRAME_INFO_EXT;
-                const( void )*   pNext;
-                VkBool32         useGopRemainingFrames;
-                uint32_t         gopRemainingI;
-                uint32_t         gopRemainingP;
-                uint32_t         gopRemainingB;
-            }
-            
-        }
-
         // VK_GGP_stream_descriptor_surface : types and function pointer type aliases
         else static if( __traits( isSame, extension, GGP_stream_descriptor_surface )) {
             enum VK_GGP_stream_descriptor_surface = 1;
@@ -1098,7 +391,7 @@ mixin template Platform_Extensions( extensions... ) {
                 GgpStreamDescriptor                      streamDescriptor;
             }
             
-            alias PFN_vkCreateStreamDescriptorSurfaceGGP                                = VkResult  function( VkInstance instance, const( VkStreamDescriptorSurfaceCreateInfoGGP )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkSurfaceKHR* pSurface );
+            alias PFN_vkCreateStreamDescriptorSurfaceGGP                                   = VkResult  function( VkInstance instance, const( VkStreamDescriptorSurfaceCreateInfoGGP )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkSurfaceKHR* pSurface );
         }
 
         // VK_NV_external_memory_win32 : types and function pointer type aliases
@@ -1122,7 +415,7 @@ mixin template Platform_Extensions( extensions... ) {
                 DWORD                          dwAccess;
             }
             
-            alias PFN_vkGetMemoryWin32HandleNV                                          = VkResult  function( VkDevice device, VkDeviceMemory memory, VkExternalMemoryHandleTypeFlagsNV handleType, HANDLE* pHandle );
+            alias PFN_vkGetMemoryWin32HandleNV                                             = VkResult  function( VkDevice device, VkDeviceMemory memory, VkExternalMemoryHandleTypeFlagsNV handleType, HANDLE* pHandle );
         }
 
         // VK_NV_win32_keyed_mutex : types and function pointer type aliases
@@ -1162,7 +455,7 @@ mixin template Platform_Extensions( extensions... ) {
                 void*                     window;
             }
             
-            alias PFN_vkCreateViSurfaceNN                                               = VkResult  function( VkInstance instance, const( VkViSurfaceCreateInfoNN )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkSurfaceKHR* pSurface );
+            alias PFN_vkCreateViSurfaceNN                                                  = VkResult  function( VkInstance instance, const( VkViSurfaceCreateInfoNN )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkSurfaceKHR* pSurface );
         }
 
         // VK_EXT_acquire_xlib_display : types and function pointer type aliases
@@ -1172,8 +465,8 @@ mixin template Platform_Extensions( extensions... ) {
             enum VK_EXT_ACQUIRE_XLIB_DISPLAY_SPEC_VERSION = 1;
             enum const( char )* VK_EXT_ACQUIRE_XLIB_DISPLAY_EXTENSION_NAME = "VK_EXT_acquire_xlib_display";
             
-            alias PFN_vkAcquireXlibDisplayEXT                                           = VkResult  function( VkPhysicalDevice physicalDevice, Display* dpy, VkDisplayKHR display );
-            alias PFN_vkGetRandROutputDisplayEXT                                        = VkResult  function( VkPhysicalDevice physicalDevice, Display* dpy, RROutput rrOutput, VkDisplayKHR* pDisplay );
+            alias PFN_vkAcquireXlibDisplayEXT                                              = VkResult  function( VkPhysicalDevice physicalDevice, Display* dpy, VkDisplayKHR display );
+            alias PFN_vkGetRandROutputDisplayEXT                                           = VkResult  function( VkPhysicalDevice physicalDevice, Display* dpy, RROutput rrOutput, VkDisplayKHR* pDisplay );
         }
 
         // VK_MVK_ios_surface : types and function pointer type aliases
@@ -1192,7 +485,7 @@ mixin template Platform_Extensions( extensions... ) {
                 const( void )*              pView;
             }
             
-            alias PFN_vkCreateIOSSurfaceMVK                                             = VkResult  function( VkInstance instance, const( VkIOSSurfaceCreateInfoMVK )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkSurfaceKHR* pSurface );
+            alias PFN_vkCreateIOSSurfaceMVK                                                = VkResult  function( VkInstance instance, const( VkIOSSurfaceCreateInfoMVK )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkSurfaceKHR* pSurface );
         }
 
         // VK_MVK_macos_surface : types and function pointer type aliases
@@ -1211,7 +504,7 @@ mixin template Platform_Extensions( extensions... ) {
                 const( void )*                pView;
             }
             
-            alias PFN_vkCreateMacOSSurfaceMVK                                           = VkResult  function( VkInstance instance, const( VkMacOSSurfaceCreateInfoMVK )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkSurfaceKHR* pSurface );
+            alias PFN_vkCreateMacOSSurfaceMVK                                              = VkResult  function( VkInstance instance, const( VkMacOSSurfaceCreateInfoMVK )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkSurfaceKHR* pSurface );
         }
 
         // VK_ANDROID_external_memory_android_hardware_buffer : types and function pointer type aliases
@@ -1278,15 +571,15 @@ mixin template Platform_Extensions( extensions... ) {
                 VkChromaLocation               suggestedYChromaOffset;
             }
             
-            alias PFN_vkGetAndroidHardwareBufferPropertiesANDROID                       = VkResult  function( VkDevice device, const( AHardwareBuffer )* buffer, VkAndroidHardwareBufferPropertiesANDROID* pProperties );
-            alias PFN_vkGetMemoryAndroidHardwareBufferANDROID                           = VkResult  function( VkDevice device, const( VkMemoryGetAndroidHardwareBufferInfoANDROID )* pInfo, AHardwareBuffer pBuffer );
+            alias PFN_vkGetAndroidHardwareBufferPropertiesANDROID                          = VkResult  function( VkDevice device, const( AHardwareBuffer )* buffer, VkAndroidHardwareBufferPropertiesANDROID* pProperties );
+            alias PFN_vkGetMemoryAndroidHardwareBufferANDROID                              = VkResult  function( VkDevice device, const( VkMemoryGetAndroidHardwareBufferInfoANDROID )* pInfo, AHardwareBuffer pBuffer );
         }
 
         // VK_AMDX_shader_enqueue : types and function pointer type aliases
         else static if( __traits( isSame, extension, AMDX_shader_enqueue )) {
             enum VK_AMDX_shader_enqueue = 1;
 
-            enum VK_AMDX_SHADER_ENQUEUE_SPEC_VERSION = 1;
+            enum VK_AMDX_SHADER_ENQUEUE_SPEC_VERSION = 2;
             enum const( char )* VK_AMDX_SHADER_ENQUEUE_EXTENSION_NAME = "VK_AMDX_shader_enqueue";
             enum VK_SHADER_INDEX_UNUSED_AMDX = (~0U);
             
@@ -1294,6 +587,7 @@ mixin template Platform_Extensions( extensions... ) {
                 VkStructureType  sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ENQUEUE_FEATURES_AMDX;
                 void*            pNext;
                 VkBool32         shaderEnqueue;
+                VkBool32         shaderMeshEnqueue;
             }
             
             struct VkPhysicalDeviceShaderEnqueuePropertiesAMDX {
@@ -1304,12 +598,16 @@ mixin template Platform_Extensions( extensions... ) {
                 uint32_t         maxExecutionGraphShaderPayloadSize;
                 uint32_t         maxExecutionGraphShaderPayloadCount;
                 uint32_t         executionGraphDispatchAddressAlignment;
+                uint32_t[3]      maxExecutionGraphWorkgroupCount;
+                uint32_t         maxExecutionGraphWorkgroups;
             }
             
             struct VkExecutionGraphPipelineScratchSizeAMDX {
                 VkStructureType  sType = VK_STRUCTURE_TYPE_EXECUTION_GRAPH_PIPELINE_SCRATCH_SIZE_AMDX;
                 void*            pNext;
-                VkDeviceSize     size;
+                VkDeviceSize     minSize;
+                VkDeviceSize     maxSize;
+                VkDeviceSize     sizeGranularity;
             }
             
             struct VkExecutionGraphPipelineCreateInfoAMDX {
@@ -1349,13 +647,13 @@ mixin template Platform_Extensions( extensions... ) {
                 uint32_t         index;
             }
             
-            alias PFN_vkCreateExecutionGraphPipelinesAMDX                               = VkResult  function( VkDevice device, VkPipelineCache pipelineCache, uint32_t createInfoCount, const( VkExecutionGraphPipelineCreateInfoAMDX )* pCreateInfos, const( VkAllocationCallbacks )* pAllocator, VkPipeline* pPipelines );
-            alias PFN_vkGetExecutionGraphPipelineScratchSizeAMDX                        = VkResult  function( VkDevice device, VkPipeline executionGraph, VkExecutionGraphPipelineScratchSizeAMDX* pSizeInfo );
-            alias PFN_vkGetExecutionGraphPipelineNodeIndexAMDX                          = VkResult  function( VkDevice device, VkPipeline executionGraph, const( VkPipelineShaderStageNodeCreateInfoAMDX )* pNodeInfo, uint32_t* pNodeIndex );
-            alias PFN_vkCmdInitializeGraphScratchMemoryAMDX                             = void      function( VkCommandBuffer commandBuffer, VkDeviceAddress scratch );
-            alias PFN_vkCmdDispatchGraphAMDX                                            = void      function( VkCommandBuffer commandBuffer, VkDeviceAddress scratch, const( VkDispatchGraphCountInfoAMDX )* pCountInfo );
-            alias PFN_vkCmdDispatchGraphIndirectAMDX                                    = void      function( VkCommandBuffer commandBuffer, VkDeviceAddress scratch, const( VkDispatchGraphCountInfoAMDX )* pCountInfo );
-            alias PFN_vkCmdDispatchGraphIndirectCountAMDX                               = void      function( VkCommandBuffer commandBuffer, VkDeviceAddress scratch, VkDeviceAddress countInfo );
+            alias PFN_vkCreateExecutionGraphPipelinesAMDX                                  = VkResult  function( VkDevice device, VkPipelineCache pipelineCache, uint32_t createInfoCount, const( VkExecutionGraphPipelineCreateInfoAMDX )* pCreateInfos, const( VkAllocationCallbacks )* pAllocator, VkPipeline* pPipelines );
+            alias PFN_vkGetExecutionGraphPipelineScratchSizeAMDX                           = VkResult  function( VkDevice device, VkPipeline executionGraph, VkExecutionGraphPipelineScratchSizeAMDX* pSizeInfo );
+            alias PFN_vkGetExecutionGraphPipelineNodeIndexAMDX                             = VkResult  function( VkDevice device, VkPipeline executionGraph, const( VkPipelineShaderStageNodeCreateInfoAMDX )* pNodeInfo, uint32_t* pNodeIndex );
+            alias PFN_vkCmdInitializeGraphScratchMemoryAMDX                                = void      function( VkCommandBuffer commandBuffer, VkPipeline executionGraph, VkDeviceAddress scratch, VkDeviceSize scratchSize );
+            alias PFN_vkCmdDispatchGraphAMDX                                               = void      function( VkCommandBuffer commandBuffer, VkDeviceAddress scratch, VkDeviceSize scratchSize, const( VkDispatchGraphCountInfoAMDX )* pCountInfo );
+            alias PFN_vkCmdDispatchGraphIndirectAMDX                                       = void      function( VkCommandBuffer commandBuffer, VkDeviceAddress scratch, VkDeviceSize scratchSize, const( VkDispatchGraphCountInfoAMDX )* pCountInfo );
+            alias PFN_vkCmdDispatchGraphIndirectCountAMDX                                  = void      function( VkCommandBuffer commandBuffer, VkDeviceAddress scratch, VkDeviceSize scratchSize, VkDeviceAddress countInfo );
         }
 
         // VK_GGP_frame_token : types and function pointer type aliases
@@ -1389,7 +687,7 @@ mixin template Platform_Extensions( extensions... ) {
                 zx_handle_t                           imagePipeHandle;
             }
             
-            alias PFN_vkCreateImagePipeSurfaceFUCHSIA                                   = VkResult  function( VkInstance instance, const( VkImagePipeSurfaceCreateInfoFUCHSIA )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkSurfaceKHR* pSurface );
+            alias PFN_vkCreateImagePipeSurfaceFUCHSIA                                      = VkResult  function( VkInstance instance, const( VkImagePipeSurfaceCreateInfoFUCHSIA )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkSurfaceKHR* pSurface );
         }
 
         // VK_EXT_metal_surface : types and function pointer type aliases
@@ -1408,7 +706,7 @@ mixin template Platform_Extensions( extensions... ) {
                 const( CAMetalLayer )*        pLayer;
             }
             
-            alias PFN_vkCreateMetalSurfaceEXT                                           = VkResult  function( VkInstance instance, const( VkMetalSurfaceCreateInfoEXT )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkSurfaceKHR* pSurface );
+            alias PFN_vkCreateMetalSurfaceEXT                                              = VkResult  function( VkInstance instance, const( VkMetalSurfaceCreateInfoEXT )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkSurfaceKHR* pSurface );
         }
 
         // VK_EXT_full_screen_exclusive : types and function pointer type aliases
@@ -1450,17 +748,83 @@ mixin template Platform_Extensions( extensions... ) {
                 HMONITOR         hmonitor;
             }
             
-            alias PFN_vkGetPhysicalDeviceSurfacePresentModes2EXT                        = VkResult  function( VkPhysicalDevice physicalDevice, const( VkPhysicalDeviceSurfaceInfo2KHR )* pSurfaceInfo, uint32_t* pPresentModeCount, VkPresentModeKHR* pPresentModes );
-            alias PFN_vkAcquireFullScreenExclusiveModeEXT                               = VkResult  function( VkDevice device, VkSwapchainKHR swapchain );
-            alias PFN_vkReleaseFullScreenExclusiveModeEXT                               = VkResult  function( VkDevice device, VkSwapchainKHR swapchain );
-            alias PFN_vkGetDeviceGroupSurfacePresentModes2EXT                           = VkResult  function( VkDevice device, const( VkPhysicalDeviceSurfaceInfo2KHR )* pSurfaceInfo, VkDeviceGroupPresentModeFlagsKHR* pModes );
+            alias PFN_vkGetPhysicalDeviceSurfacePresentModes2EXT                           = VkResult  function( VkPhysicalDevice physicalDevice, const( VkPhysicalDeviceSurfaceInfo2KHR )* pSurfaceInfo, uint32_t* pPresentModeCount, VkPresentModeKHR* pPresentModes );
+            alias PFN_vkAcquireFullScreenExclusiveModeEXT                                  = VkResult  function( VkDevice device, VkSwapchainKHR swapchain );
+            alias PFN_vkReleaseFullScreenExclusiveModeEXT                                  = VkResult  function( VkDevice device, VkSwapchainKHR swapchain );
+            alias PFN_vkGetDeviceGroupSurfacePresentModes2EXT                              = VkResult  function( VkDevice device, const( VkPhysicalDeviceSurfaceInfo2KHR )* pSurfaceInfo, VkDeviceGroupPresentModeFlagsKHR* pModes );
+        }
+
+        // VK_NV_cuda_kernel_launch : types and function pointer type aliases
+        else static if( __traits( isSame, extension, NV_cuda_kernel_launch )) {
+            enum VK_NV_cuda_kernel_launch = 1;
+
+            mixin( VK_DEFINE_NON_DISPATCHABLE_HANDLE!q{VkCudaModuleNV} );
+            mixin( VK_DEFINE_NON_DISPATCHABLE_HANDLE!q{VkCudaFunctionNV} );
+            
+            enum VK_NV_CUDA_KERNEL_LAUNCH_SPEC_VERSION = 2;
+            enum const( char )* VK_NV_CUDA_KERNEL_LAUNCH_EXTENSION_NAME = "VK_NV_cuda_kernel_launch";
+            
+            struct VkCudaModuleCreateInfoNV {
+                VkStructureType  sType = VK_STRUCTURE_TYPE_CUDA_MODULE_CREATE_INFO_NV;
+                const( void )*   pNext;
+                size_t           dataSize;
+                const( void )*   pData;
+            }
+            
+            struct VkCudaFunctionCreateInfoNV {
+                VkStructureType  sType = VK_STRUCTURE_TYPE_CUDA_FUNCTION_CREATE_INFO_NV;
+                const( void )*   pNext;
+                VkCudaModuleNV   Module;
+                const( char )*   pName;
+                alias            module_ = Module;
+                alias            _module = Module;
+            }
+            
+            struct VkCudaLaunchInfoNV {
+                VkStructureType   sType = VK_STRUCTURE_TYPE_CUDA_LAUNCH_INFO_NV;
+                const( void )*    pNext;
+                VkCudaFunctionNV  Function;
+                uint32_t          gridDimX;
+                uint32_t          gridDimY;
+                uint32_t          gridDimZ;
+                uint32_t          blockDimX;
+                uint32_t          blockDimY;
+                uint32_t          blockDimZ;
+                uint32_t          sharedMemBytes;
+                size_t            paramCount;
+                const( void* )*   pParams;
+                size_t            extraCount;
+                const( void* )*   pExtras;
+                alias             function_ = Function;
+                alias             _function = Function;
+            }
+            
+            struct VkPhysicalDeviceCudaKernelLaunchFeaturesNV {
+                VkStructureType  sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CUDA_KERNEL_LAUNCH_FEATURES_NV;
+                void*            pNext;
+                VkBool32         cudaKernelLaunchFeatures;
+            }
+            
+            struct VkPhysicalDeviceCudaKernelLaunchPropertiesNV {
+                VkStructureType  sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CUDA_KERNEL_LAUNCH_PROPERTIES_NV;
+                void*            pNext;
+                uint32_t         computeCapabilityMinor;
+                uint32_t         computeCapabilityMajor;
+            }
+            
+            alias PFN_vkCreateCudaModuleNV                                                 = VkResult  function( VkDevice device, const( VkCudaModuleCreateInfoNV )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkCudaModuleNV* pModule );
+            alias PFN_vkGetCudaModuleCacheNV                                               = VkResult  function( VkDevice device, VkCudaModuleNV Module, size_t* pCacheSize, void* pCacheData );
+            alias PFN_vkCreateCudaFunctionNV                                               = VkResult  function( VkDevice device, const( VkCudaFunctionCreateInfoNV )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkCudaFunctionNV* pFunction );
+            alias PFN_vkDestroyCudaModuleNV                                                = void      function( VkDevice device, VkCudaModuleNV Module, const( VkAllocationCallbacks )* pAllocator );
+            alias PFN_vkDestroyCudaFunctionNV                                              = void      function( VkDevice device, VkCudaFunctionNV Function, const( VkAllocationCallbacks )* pAllocator );
+            alias PFN_vkCmdCudaLaunchKernelNV                                              = void      function( VkCommandBuffer commandBuffer, const( VkCudaLaunchInfoNV )* pLaunchInfo );
         }
 
         // VK_EXT_metal_objects : types and function pointer type aliases
         else static if( __traits( isSame, extension, EXT_metal_objects )) {
             enum VK_EXT_metal_objects = 1;
 
-            enum VK_EXT_METAL_OBJECTS_SPEC_VERSION = 1;
+            enum VK_EXT_METAL_OBJECTS_SPEC_VERSION = 2;
             enum const( char )* VK_EXT_METAL_OBJECTS_EXTENSION_NAME = "VK_EXT_metal_objects";
             
             alias VkExportMetalObjectTypeFlagsEXT = VkFlags;
@@ -1563,7 +927,7 @@ mixin template Platform_Extensions( extensions... ) {
                 MTLSharedEvent_id  mtlSharedEvent;
             }
             
-            alias PFN_vkExportMetalObjectsEXT                                           = void      function( VkDevice device, VkExportMetalObjectsInfoEXT* pMetalObjectsInfo );
+            alias PFN_vkExportMetalObjectsEXT                                              = void      function( VkDevice device, VkExportMetalObjectsInfoEXT* pMetalObjectsInfo );
         }
 
         // VK_NV_acquire_winrt_display : types and function pointer type aliases
@@ -1573,8 +937,8 @@ mixin template Platform_Extensions( extensions... ) {
             enum VK_NV_ACQUIRE_WINRT_DISPLAY_SPEC_VERSION = 1;
             enum const( char )* VK_NV_ACQUIRE_WINRT_DISPLAY_EXTENSION_NAME = "VK_NV_acquire_winrt_display";
             
-            alias PFN_vkAcquireWinrtDisplayNV                                           = VkResult  function( VkPhysicalDevice physicalDevice, VkDisplayKHR display );
-            alias PFN_vkGetWinrtDisplayNV                                               = VkResult  function( VkPhysicalDevice physicalDevice, uint32_t deviceRelativeId, VkDisplayKHR* pDisplay );
+            alias PFN_vkAcquireWinrtDisplayNV                                              = VkResult  function( VkPhysicalDevice physicalDevice, VkDisplayKHR display );
+            alias PFN_vkGetWinrtDisplayNV                                                  = VkResult  function( VkPhysicalDevice physicalDevice, uint32_t deviceRelativeId, VkDisplayKHR* pDisplay );
         }
 
         // VK_EXT_directfb_surface : types and function pointer type aliases
@@ -1594,8 +958,8 @@ mixin template Platform_Extensions( extensions... ) {
                 IDirectFBSurface*                surface;
             }
             
-            alias PFN_vkCreateDirectFBSurfaceEXT                                        = VkResult  function( VkInstance instance, const( VkDirectFBSurfaceCreateInfoEXT )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkSurfaceKHR* pSurface );
-            alias PFN_vkGetPhysicalDeviceDirectFBPresentationSupportEXT                 = VkBool32  function( VkPhysicalDevice physicalDevice, uint32_t queueFamilyIndex, IDirectFB* dfb );
+            alias PFN_vkCreateDirectFBSurfaceEXT                                           = VkResult  function( VkInstance instance, const( VkDirectFBSurfaceCreateInfoEXT )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkSurfaceKHR* pSurface );
+            alias PFN_vkGetPhysicalDeviceDirectFBPresentationSupportEXT                    = VkBool32  function( VkPhysicalDevice physicalDevice, uint32_t queueFamilyIndex, IDirectFB* dfb );
         }
 
         // VK_FUCHSIA_external_memory : types and function pointer type aliases
@@ -1625,8 +989,8 @@ mixin template Platform_Extensions( extensions... ) {
                 VkExternalMemoryHandleTypeFlagBits  handleType;
             }
             
-            alias PFN_vkGetMemoryZirconHandleFUCHSIA                                    = VkResult  function( VkDevice device, const( VkMemoryGetZirconHandleInfoFUCHSIA )* pGetZirconHandleInfo, zx_handle_t* pZirconHandle );
-            alias PFN_vkGetMemoryZirconHandlePropertiesFUCHSIA                          = VkResult  function( VkDevice device, VkExternalMemoryHandleTypeFlagBits handleType, zx_handle_t zirconHandle, VkMemoryZirconHandlePropertiesFUCHSIA* pMemoryZirconHandleProperties );
+            alias PFN_vkGetMemoryZirconHandleFUCHSIA                                       = VkResult  function( VkDevice device, const( VkMemoryGetZirconHandleInfoFUCHSIA )* pGetZirconHandleInfo, zx_handle_t* pZirconHandle );
+            alias PFN_vkGetMemoryZirconHandlePropertiesFUCHSIA                             = VkResult  function( VkDevice device, VkExternalMemoryHandleTypeFlagBits handleType, zx_handle_t zirconHandle, VkMemoryZirconHandlePropertiesFUCHSIA* pMemoryZirconHandleProperties );
         }
 
         // VK_FUCHSIA_external_semaphore : types and function pointer type aliases
@@ -1652,8 +1016,8 @@ mixin template Platform_Extensions( extensions... ) {
                 VkExternalSemaphoreHandleTypeFlagBits  handleType;
             }
             
-            alias PFN_vkImportSemaphoreZirconHandleFUCHSIA                              = VkResult  function( VkDevice device, const( VkImportSemaphoreZirconHandleInfoFUCHSIA )* pImportSemaphoreZirconHandleInfo );
-            alias PFN_vkGetSemaphoreZirconHandleFUCHSIA                                 = VkResult  function( VkDevice device, const( VkSemaphoreGetZirconHandleInfoFUCHSIA )* pGetZirconHandleInfo, zx_handle_t* pZirconHandle );
+            alias PFN_vkImportSemaphoreZirconHandleFUCHSIA                                 = VkResult  function( VkDevice device, const( VkImportSemaphoreZirconHandleInfoFUCHSIA )* pImportSemaphoreZirconHandleInfo );
+            alias PFN_vkGetSemaphoreZirconHandleFUCHSIA                                    = VkResult  function( VkDevice device, const( VkSemaphoreGetZirconHandleInfoFUCHSIA )* pGetZirconHandleInfo, zx_handle_t* pZirconHandle );
         }
 
         // VK_FUCHSIA_buffer_collection : types and function pointer type aliases
@@ -1771,11 +1135,11 @@ mixin template Platform_Extensions( extensions... ) {
                 VkImageConstraintsInfoFlagsFUCHSIA             flags;
             }
             
-            alias PFN_vkCreateBufferCollectionFUCHSIA                                   = VkResult  function( VkDevice device, const( VkBufferCollectionCreateInfoFUCHSIA )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkBufferCollectionFUCHSIA* pCollection );
-            alias PFN_vkSetBufferCollectionImageConstraintsFUCHSIA                      = VkResult  function( VkDevice device, VkBufferCollectionFUCHSIA collection, const( VkImageConstraintsInfoFUCHSIA )* pImageConstraintsInfo );
-            alias PFN_vkSetBufferCollectionBufferConstraintsFUCHSIA                     = VkResult  function( VkDevice device, VkBufferCollectionFUCHSIA collection, const( VkBufferConstraintsInfoFUCHSIA )* pBufferConstraintsInfo );
-            alias PFN_vkDestroyBufferCollectionFUCHSIA                                  = void      function( VkDevice device, VkBufferCollectionFUCHSIA collection, const( VkAllocationCallbacks )* pAllocator );
-            alias PFN_vkGetBufferCollectionPropertiesFUCHSIA                            = VkResult  function( VkDevice device, VkBufferCollectionFUCHSIA collection, VkBufferCollectionPropertiesFUCHSIA* pProperties );
+            alias PFN_vkCreateBufferCollectionFUCHSIA                                      = VkResult  function( VkDevice device, const( VkBufferCollectionCreateInfoFUCHSIA )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkBufferCollectionFUCHSIA* pCollection );
+            alias PFN_vkSetBufferCollectionImageConstraintsFUCHSIA                         = VkResult  function( VkDevice device, VkBufferCollectionFUCHSIA collection, const( VkImageConstraintsInfoFUCHSIA )* pImageConstraintsInfo );
+            alias PFN_vkSetBufferCollectionBufferConstraintsFUCHSIA                        = VkResult  function( VkDevice device, VkBufferCollectionFUCHSIA collection, const( VkBufferConstraintsInfoFUCHSIA )* pBufferConstraintsInfo );
+            alias PFN_vkDestroyBufferCollectionFUCHSIA                                     = void      function( VkDevice device, VkBufferCollectionFUCHSIA collection, const( VkAllocationCallbacks )* pAllocator );
+            alias PFN_vkGetBufferCollectionPropertiesFUCHSIA                               = VkResult  function( VkDevice device, VkBufferCollectionFUCHSIA collection, VkBufferCollectionPropertiesFUCHSIA* pProperties );
         }
 
         // VK_QNX_screen_surface : types and function pointer type aliases
@@ -1795,8 +1159,8 @@ mixin template Platform_Extensions( extensions... ) {
                 const( _screen_window )*       window;
             }
             
-            alias PFN_vkCreateScreenSurfaceQNX                                          = VkResult  function( VkInstance instance, const( VkScreenSurfaceCreateInfoQNX )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkSurfaceKHR* pSurface );
-            alias PFN_vkGetPhysicalDeviceScreenPresentationSupportQNX                   = VkBool32  function( VkPhysicalDevice physicalDevice, uint32_t queueFamilyIndex, const( _screen_window )* window );
+            alias PFN_vkCreateScreenSurfaceQNX                                             = VkResult  function( VkInstance instance, const( VkScreenSurfaceCreateInfoQNX )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkSurfaceKHR* pSurface );
+            alias PFN_vkGetPhysicalDeviceScreenPresentationSupportQNX                      = VkBool32  function( VkPhysicalDevice physicalDevice, uint32_t queueFamilyIndex, const( _screen_window )* window );
         }
 
         // VK_NV_displacement_micromap : types and function pointer type aliases
@@ -1853,6 +1217,127 @@ mixin template Platform_Extensions( extensions... ) {
             
         }
 
+        // VK_OHOS_external_memory : types and function pointer type aliases
+        else static if( __traits( isSame, extension, OHOS_external_memory )) {
+            enum VK_OHOS_external_memory = 1;
+
+            enum VK_OHOS_EXTERNAL_MEMORY_SPEC_VERSION = 1;
+            enum const( char )* VK_OHOS_EXTERNAL_MEMORY_EXTENSION_NAME = "VK_OHOS_external_memory";
+            
+            struct VkNativeBufferUsageOHOS {
+                VkStructureType  sType = VK_STRUCTURE_TYPE_NATIVE_BUFFER_USAGE_OHOS;
+                void*            pNext;
+                uint64_t         OHOSNativeBufferUsage;
+            }
+            
+            struct VkNativeBufferPropertiesOHOS {
+                VkStructureType  sType = VK_STRUCTURE_TYPE_NATIVE_BUFFER_PROPERTIES_OHOS;
+                void*            pNext;
+                VkDeviceSize     allocationSize;
+                uint32_t         memoryTypeBits;
+            }
+            
+            struct VkNativeBufferFormatPropertiesOHOS {
+                VkStructureType                sType = VK_STRUCTURE_TYPE_NATIVE_BUFFER_FORMAT_PROPERTIES_OHOS;
+                void*                          pNext;
+                VkFormat                       format;
+                uint64_t                       externalFormat;
+                VkFormatFeatureFlags           formatFeatures;
+                VkComponentMapping             samplerYcbcrConversionComponents;
+                VkSamplerYcbcrModelConversion  suggestedYcbcrModel;
+                VkSamplerYcbcrRange            suggestedYcbcrRange;
+                VkChromaLocation               suggestedXChromaOffset;
+                VkChromaLocation               suggestedYChromaOffset;
+            }
+            
+            struct VkImportNativeBufferInfoOHOS {
+                VkStructureType            sType = VK_STRUCTURE_TYPE_IMPORT_NATIVE_BUFFER_INFO_OHOS;
+                const( void )*             pNext;
+                const( OH_NativeBuffer )*  buffer;
+            }
+            
+            struct VkMemoryGetNativeBufferInfoOHOS {
+                VkStructureType  sType = VK_STRUCTURE_TYPE_MEMORY_GET_NATIVE_BUFFER_INFO_OHOS;
+                const( void )*   pNext;
+                VkDeviceMemory   memory;
+            }
+            
+            struct VkExternalFormatOHOS {
+                VkStructureType  sType = VK_STRUCTURE_TYPE_EXTERNAL_FORMAT_OHOS;
+                void*            pNext;
+                uint64_t         externalFormat;
+            }
+            
+            alias PFN_vkGetNativeBufferPropertiesOHOS                                      = VkResult  function( VkDevice device, const( OH_NativeBuffer )* buffer, VkNativeBufferPropertiesOHOS* pProperties );
+            alias PFN_vkGetMemoryNativeBufferOHOS                                          = VkResult  function( VkDevice device, const( VkMemoryGetNativeBufferInfoOHOS )* pInfo, OH_NativeBuffer pBuffer );
+        }
+
+        // VK_ANDROID_external_format_resolve : types and function pointer type aliases
+        else static if( __traits( isSame, extension, ANDROID_external_format_resolve )) {
+            enum VK_ANDROID_external_format_resolve = 1;
+
+            enum VK_ANDROID_EXTERNAL_FORMAT_RESOLVE_SPEC_VERSION = 1;
+            enum const( char )* VK_ANDROID_EXTERNAL_FORMAT_RESOLVE_EXTENSION_NAME = "VK_ANDROID_external_format_resolve";
+            
+            struct VkPhysicalDeviceExternalFormatResolveFeaturesANDROID {
+                VkStructureType  sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_FORMAT_RESOLVE_FEATURES_ANDROID;
+                void*            pNext;
+                VkBool32         externalFormatResolve;
+            }
+            
+            struct VkPhysicalDeviceExternalFormatResolvePropertiesANDROID {
+                VkStructureType   sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_FORMAT_RESOLVE_PROPERTIES_ANDROID;
+                void*             pNext;
+                VkBool32          nullColorAttachmentWithExternalFormatResolve;
+                VkChromaLocation  externalFormatResolveChromaOffsetX;
+                VkChromaLocation  externalFormatResolveChromaOffsetY;
+            }
+            
+            struct VkAndroidHardwareBufferFormatResolvePropertiesANDROID {
+                VkStructureType  sType = VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_FORMAT_RESOLVE_PROPERTIES_ANDROID;
+                void*            pNext;
+                VkFormat         colorAttachmentFormat;
+            }
+            
+        }
+
+        // VK_AMDX_dense_geometry_format : types and function pointer type aliases
+        else static if( __traits( isSame, extension, AMDX_dense_geometry_format )) {
+            enum VK_AMDX_dense_geometry_format = 1;
+
+            enum VK_AMDX_DENSE_GEOMETRY_FORMAT_SPEC_VERSION = 1;
+            enum const( char )* VK_AMDX_DENSE_GEOMETRY_FORMAT_EXTENSION_NAME = "VK_AMDX_dense_geometry_format";
+            enum VK_COMPRESSED_TRIANGLE_FORMAT_DGF1_BYTE_ALIGNMENT_AMDX = 128;
+            enum VK_COMPRESSED_TRIANGLE_FORMAT_DGF1_BYTE_STRIDE_AMDX = 128;
+            
+            enum VkCompressedTriangleFormatAMDX {
+                VK_COMPRESSED_TRIANGLE_FORMAT_DGF1_AMDX      = 0,
+                VK_COMPRESSED_TRIANGLE_FORMAT_MAX_ENUM_AMDX  = 0x7FFFFFFF
+            }
+            
+            enum VK_COMPRESSED_TRIANGLE_FORMAT_DGF1_AMDX     = VkCompressedTriangleFormatAMDX.VK_COMPRESSED_TRIANGLE_FORMAT_DGF1_AMDX;
+            enum VK_COMPRESSED_TRIANGLE_FORMAT_MAX_ENUM_AMDX = VkCompressedTriangleFormatAMDX.VK_COMPRESSED_TRIANGLE_FORMAT_MAX_ENUM_AMDX;
+            
+            struct VkPhysicalDeviceDenseGeometryFormatFeaturesAMDX {
+                VkStructureType  sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DENSE_GEOMETRY_FORMAT_FEATURES_AMDX;
+                void*            pNext;
+                VkBool32         denseGeometryFormat;
+            }
+            
+            struct VkAccelerationStructureDenseGeometryFormatTrianglesDataAMDX {
+                VkStructureType                 sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_DENSE_GEOMETRY_FORMAT_TRIANGLES_DATA_AMDX;
+                const( void )*                  pNext;
+                VkDeviceOrHostAddressConstKHR   compressedData;
+                VkDeviceSize                    dataSize;
+                uint32_t                        numTriangles;
+                uint32_t                        numVertices;
+                uint32_t                        maxPrimitiveIndex;
+                uint32_t                        maxGeometryIndex;
+                VkCompressedTriangleFormatAMDX  format;
+            }
+            
+        }
+
         // VK_QNX_external_memory_screen_buffer : types and function pointer type aliases
         else static if( __traits( isSame, extension, QNX_external_memory_screen_buffer )) {
             enum VK_QNX_external_memory_screen_buffer = 1;
@@ -1899,178 +1384,275 @@ mixin template Platform_Extensions( extensions... ) {
                 VkBool32         screenBufferImport;
             }
             
-            alias PFN_vkGetScreenBufferPropertiesQNX                                    = VkResult  function( VkDevice device, const( _screen_buffer )* buffer, VkScreenBufferPropertiesQNX* pProperties );
+            alias PFN_vkGetScreenBufferPropertiesQNX                                       = VkResult  function( VkDevice device, const( _screen_buffer )* buffer, VkScreenBufferPropertiesQNX* pProperties );
+        }
+
+        // VK_OHOS_surface : types and function pointer type aliases
+        else static if( __traits( isSame, extension, OHOS_surface )) {
+            enum VK_OHOS_surface = 1;
+
+            enum VK_OHOS_SURFACE_SPEC_VERSION = 1;
+            enum const( char )* VK_OHOS_SURFACE_EXTENSION_NAME = "VK_OHOS_surface";
+            
+            alias VkSurfaceCreateFlagsOHOS = VkFlags;
+            
+            struct VkSurfaceCreateInfoOHOS {
+                VkStructureType           sType = VK_STRUCTURE_TYPE_SURFACE_CREATE_INFO_OHOS;
+                const( void )*            pNext;
+                VkSurfaceCreateFlagsOHOS  flags;
+                OHNativeWindow*           window;
+            }
+            
+            alias PFN_vkCreateSurfaceOHOS                                                  = VkResult  function( VkInstance instance, const( VkSurfaceCreateInfoOHOS )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkSurfaceKHR* pSurface );
+        }
+
+        // VK_EXT_external_memory_metal : types and function pointer type aliases
+        else static if( __traits( isSame, extension, EXT_external_memory_metal )) {
+            enum VK_EXT_external_memory_metal = 1;
+
+            enum VK_EXT_EXTERNAL_MEMORY_METAL_SPEC_VERSION = 1;
+            enum const( char )* VK_EXT_EXTERNAL_MEMORY_METAL_EXTENSION_NAME = "VK_EXT_external_memory_metal";
+            
+            struct VkImportMemoryMetalHandleInfoEXT {
+                VkStructureType                     sType = VK_STRUCTURE_TYPE_IMPORT_MEMORY_METAL_HANDLE_INFO_EXT;
+                const( void )*                      pNext;
+                VkExternalMemoryHandleTypeFlagBits  handleType;
+                void*                               handle;
+            }
+            
+            struct VkMemoryMetalHandlePropertiesEXT {
+                VkStructureType  sType = VK_STRUCTURE_TYPE_MEMORY_METAL_HANDLE_PROPERTIES_EXT;
+                void*            pNext;
+                uint32_t         memoryTypeBits;
+            }
+            
+            struct VkMemoryGetMetalHandleInfoEXT {
+                VkStructureType                     sType = VK_STRUCTURE_TYPE_MEMORY_GET_METAL_HANDLE_INFO_EXT;
+                const( void )*                      pNext;
+                VkDeviceMemory                      memory;
+                VkExternalMemoryHandleTypeFlagBits  handleType;
+            }
+            
+            alias PFN_vkGetMemoryMetalHandleEXT                                            = VkResult  function( VkDevice device, const( VkMemoryGetMetalHandleInfoEXT )* pGetMetalHandleInfo, void** pHandle );
+            alias PFN_vkGetMemoryMetalHandlePropertiesEXT                                  = VkResult  function( VkDevice device, VkExternalMemoryHandleTypeFlagBits handleType, const( void )* pHandle, VkMemoryMetalHandlePropertiesEXT* pMemoryMetalHandleProperties );
+        }
+
+        // VK_SEC_ubm_surface : types and function pointer type aliases
+        else static if( __traits( isSame, extension, SEC_ubm_surface )) {
+            enum VK_SEC_ubm_surface = 1;
+
+            enum VK_SEC_UBM_SURFACE_SPEC_VERSION = 1;
+            enum const( char )* VK_SEC_UBM_SURFACE_EXTENSION_NAME = "VK_SEC_ubm_surface";
+            
+            alias VkUbmSurfaceCreateFlagsSEC = VkFlags;
+            
+            struct VkUbmSurfaceCreateInfoSEC {
+                VkStructureType             sType = VK_STRUCTURE_TYPE_UBM_SURFACE_CREATE_INFO_SEC;
+                const( void )*              pNext;
+                VkUbmSurfaceCreateFlagsSEC  flags;
+                const( ubm_device )*        device;
+                const( ubm_surface )*       surface;
+            }
+            
+            alias PFN_vkCreateUbmSurfaceSEC                                                = VkResult  function( VkInstance instance, const( VkUbmSurfaceCreateInfoSEC )* pCreateInfo, const( VkAllocationCallbacks )* pAllocator, VkSurfaceKHR* pSurface );
+            alias PFN_vkGetPhysicalDeviceUbmPresentationSupportSEC                         = VkBool32  function( VkPhysicalDevice physicalDevice, uint32_t queueFamilyIndex, const( ubm_device )* device );
         }
 
         __gshared {
 
             // VK_KHR_xlib_surface : function pointer decelerations
             static if( __traits( isSame, extension, KHR_xlib_surface )) {
-                PFN_vkCreateXlibSurfaceKHR                                            vkCreateXlibSurfaceKHR;
-                PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR                     vkGetPhysicalDeviceXlibPresentationSupportKHR;
+                PFN_vkCreateXlibSurfaceKHR                                               vkCreateXlibSurfaceKHR;
+                PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR                        vkGetPhysicalDeviceXlibPresentationSupportKHR;
             }
 
             // VK_KHR_xcb_surface : function pointer decelerations
             else static if( __traits( isSame, extension, KHR_xcb_surface )) {
-                PFN_vkCreateXcbSurfaceKHR                                             vkCreateXcbSurfaceKHR;
-                PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR                      vkGetPhysicalDeviceXcbPresentationSupportKHR;
+                PFN_vkCreateXcbSurfaceKHR                                                vkCreateXcbSurfaceKHR;
+                PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR                         vkGetPhysicalDeviceXcbPresentationSupportKHR;
             }
 
             // VK_KHR_wayland_surface : function pointer decelerations
             else static if( __traits( isSame, extension, KHR_wayland_surface )) {
-                PFN_vkCreateWaylandSurfaceKHR                                         vkCreateWaylandSurfaceKHR;
-                PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR                  vkGetPhysicalDeviceWaylandPresentationSupportKHR;
+                PFN_vkCreateWaylandSurfaceKHR                                            vkCreateWaylandSurfaceKHR;
+                PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR                     vkGetPhysicalDeviceWaylandPresentationSupportKHR;
             }
 
             // VK_KHR_android_surface : function pointer decelerations
             else static if( __traits( isSame, extension, KHR_android_surface )) {
-                PFN_vkCreateAndroidSurfaceKHR                                         vkCreateAndroidSurfaceKHR;
+                PFN_vkCreateAndroidSurfaceKHR                                            vkCreateAndroidSurfaceKHR;
             }
 
             // VK_KHR_win32_surface : function pointer decelerations
             else static if( __traits( isSame, extension, KHR_win32_surface )) {
-                PFN_vkCreateWin32SurfaceKHR                                           vkCreateWin32SurfaceKHR;
-                PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR                    vkGetPhysicalDeviceWin32PresentationSupportKHR;
+                PFN_vkCreateWin32SurfaceKHR                                              vkCreateWin32SurfaceKHR;
+                PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR                       vkGetPhysicalDeviceWin32PresentationSupportKHR;
             }
 
             // VK_KHR_external_memory_win32 : function pointer decelerations
             else static if( __traits( isSame, extension, KHR_external_memory_win32 )) {
-                PFN_vkGetMemoryWin32HandleKHR                                         vkGetMemoryWin32HandleKHR;
-                PFN_vkGetMemoryWin32HandlePropertiesKHR                               vkGetMemoryWin32HandlePropertiesKHR;
+                PFN_vkGetMemoryWin32HandleKHR                                            vkGetMemoryWin32HandleKHR;
+                PFN_vkGetMemoryWin32HandlePropertiesKHR                                  vkGetMemoryWin32HandlePropertiesKHR;
             }
 
             // VK_KHR_external_semaphore_win32 : function pointer decelerations
             else static if( __traits( isSame, extension, KHR_external_semaphore_win32 )) {
-                PFN_vkImportSemaphoreWin32HandleKHR                                   vkImportSemaphoreWin32HandleKHR;
-                PFN_vkGetSemaphoreWin32HandleKHR                                      vkGetSemaphoreWin32HandleKHR;
+                PFN_vkImportSemaphoreWin32HandleKHR                                      vkImportSemaphoreWin32HandleKHR;
+                PFN_vkGetSemaphoreWin32HandleKHR                                         vkGetSemaphoreWin32HandleKHR;
             }
 
             // VK_KHR_external_fence_win32 : function pointer decelerations
             else static if( __traits( isSame, extension, KHR_external_fence_win32 )) {
-                PFN_vkImportFenceWin32HandleKHR                                       vkImportFenceWin32HandleKHR;
-                PFN_vkGetFenceWin32HandleKHR                                          vkGetFenceWin32HandleKHR;
-            }
-
-            // VK_KHR_video_encode_queue : function pointer decelerations
-            else static if( __traits( isSame, extension, KHR_video_encode_queue )) {
-                PFN_vkGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR           vkGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR;
-                PFN_vkGetEncodedVideoSessionParametersKHR                             vkGetEncodedVideoSessionParametersKHR;
-                PFN_vkCmdEncodeVideoKHR                                               vkCmdEncodeVideoKHR;
+                PFN_vkImportFenceWin32HandleKHR                                          vkImportFenceWin32HandleKHR;
+                PFN_vkGetFenceWin32HandleKHR                                             vkGetFenceWin32HandleKHR;
             }
 
             // VK_GGP_stream_descriptor_surface : function pointer decelerations
             else static if( __traits( isSame, extension, GGP_stream_descriptor_surface )) {
-                PFN_vkCreateStreamDescriptorSurfaceGGP                                vkCreateStreamDescriptorSurfaceGGP;
+                PFN_vkCreateStreamDescriptorSurfaceGGP                                   vkCreateStreamDescriptorSurfaceGGP;
             }
 
             // VK_NV_external_memory_win32 : function pointer decelerations
             else static if( __traits( isSame, extension, NV_external_memory_win32 )) {
-                PFN_vkGetMemoryWin32HandleNV                                          vkGetMemoryWin32HandleNV;
+                PFN_vkGetMemoryWin32HandleNV                                             vkGetMemoryWin32HandleNV;
             }
 
             // VK_NN_vi_surface : function pointer decelerations
             else static if( __traits( isSame, extension, NN_vi_surface )) {
-                PFN_vkCreateViSurfaceNN                                               vkCreateViSurfaceNN;
+                PFN_vkCreateViSurfaceNN                                                  vkCreateViSurfaceNN;
             }
 
             // VK_EXT_acquire_xlib_display : function pointer decelerations
             else static if( __traits( isSame, extension, EXT_acquire_xlib_display )) {
-                PFN_vkAcquireXlibDisplayEXT                                           vkAcquireXlibDisplayEXT;
-                PFN_vkGetRandROutputDisplayEXT                                        vkGetRandROutputDisplayEXT;
+                PFN_vkAcquireXlibDisplayEXT                                              vkAcquireXlibDisplayEXT;
+                PFN_vkGetRandROutputDisplayEXT                                           vkGetRandROutputDisplayEXT;
             }
 
             // VK_MVK_ios_surface : function pointer decelerations
             else static if( __traits( isSame, extension, MVK_ios_surface )) {
-                PFN_vkCreateIOSSurfaceMVK                                             vkCreateIOSSurfaceMVK;
+                PFN_vkCreateIOSSurfaceMVK                                                vkCreateIOSSurfaceMVK;
             }
 
             // VK_MVK_macos_surface : function pointer decelerations
             else static if( __traits( isSame, extension, MVK_macos_surface )) {
-                PFN_vkCreateMacOSSurfaceMVK                                           vkCreateMacOSSurfaceMVK;
+                PFN_vkCreateMacOSSurfaceMVK                                              vkCreateMacOSSurfaceMVK;
             }
 
             // VK_ANDROID_external_memory_android_hardware_buffer : function pointer decelerations
             else static if( __traits( isSame, extension, ANDROID_external_memory_android_hardware_buffer )) {
-                PFN_vkGetAndroidHardwareBufferPropertiesANDROID                       vkGetAndroidHardwareBufferPropertiesANDROID;
-                PFN_vkGetMemoryAndroidHardwareBufferANDROID                           vkGetMemoryAndroidHardwareBufferANDROID;
+                PFN_vkGetAndroidHardwareBufferPropertiesANDROID                          vkGetAndroidHardwareBufferPropertiesANDROID;
+                PFN_vkGetMemoryAndroidHardwareBufferANDROID                              vkGetMemoryAndroidHardwareBufferANDROID;
             }
 
             // VK_AMDX_shader_enqueue : function pointer decelerations
             else static if( __traits( isSame, extension, AMDX_shader_enqueue )) {
-                PFN_vkCreateExecutionGraphPipelinesAMDX                               vkCreateExecutionGraphPipelinesAMDX;
-                PFN_vkGetExecutionGraphPipelineScratchSizeAMDX                        vkGetExecutionGraphPipelineScratchSizeAMDX;
-                PFN_vkGetExecutionGraphPipelineNodeIndexAMDX                          vkGetExecutionGraphPipelineNodeIndexAMDX;
-                PFN_vkCmdInitializeGraphScratchMemoryAMDX                             vkCmdInitializeGraphScratchMemoryAMDX;
-                PFN_vkCmdDispatchGraphAMDX                                            vkCmdDispatchGraphAMDX;
-                PFN_vkCmdDispatchGraphIndirectAMDX                                    vkCmdDispatchGraphIndirectAMDX;
-                PFN_vkCmdDispatchGraphIndirectCountAMDX                               vkCmdDispatchGraphIndirectCountAMDX;
+                PFN_vkCreateExecutionGraphPipelinesAMDX                                  vkCreateExecutionGraphPipelinesAMDX;
+                PFN_vkGetExecutionGraphPipelineScratchSizeAMDX                           vkGetExecutionGraphPipelineScratchSizeAMDX;
+                PFN_vkGetExecutionGraphPipelineNodeIndexAMDX                             vkGetExecutionGraphPipelineNodeIndexAMDX;
+                PFN_vkCmdInitializeGraphScratchMemoryAMDX                                vkCmdInitializeGraphScratchMemoryAMDX;
+                PFN_vkCmdDispatchGraphAMDX                                               vkCmdDispatchGraphAMDX;
+                PFN_vkCmdDispatchGraphIndirectAMDX                                       vkCmdDispatchGraphIndirectAMDX;
+                PFN_vkCmdDispatchGraphIndirectCountAMDX                                  vkCmdDispatchGraphIndirectCountAMDX;
             }
 
             // VK_FUCHSIA_imagepipe_surface : function pointer decelerations
             else static if( __traits( isSame, extension, FUCHSIA_imagepipe_surface )) {
-                PFN_vkCreateImagePipeSurfaceFUCHSIA                                   vkCreateImagePipeSurfaceFUCHSIA;
+                PFN_vkCreateImagePipeSurfaceFUCHSIA                                      vkCreateImagePipeSurfaceFUCHSIA;
             }
 
             // VK_EXT_metal_surface : function pointer decelerations
             else static if( __traits( isSame, extension, EXT_metal_surface )) {
-                PFN_vkCreateMetalSurfaceEXT                                           vkCreateMetalSurfaceEXT;
+                PFN_vkCreateMetalSurfaceEXT                                              vkCreateMetalSurfaceEXT;
             }
 
             // VK_EXT_full_screen_exclusive : function pointer decelerations
             else static if( __traits( isSame, extension, EXT_full_screen_exclusive )) {
-                PFN_vkGetPhysicalDeviceSurfacePresentModes2EXT                        vkGetPhysicalDeviceSurfacePresentModes2EXT;
-                PFN_vkAcquireFullScreenExclusiveModeEXT                               vkAcquireFullScreenExclusiveModeEXT;
-                PFN_vkReleaseFullScreenExclusiveModeEXT                               vkReleaseFullScreenExclusiveModeEXT;
-                PFN_vkGetDeviceGroupSurfacePresentModes2EXT                           vkGetDeviceGroupSurfacePresentModes2EXT;
+                PFN_vkGetPhysicalDeviceSurfacePresentModes2EXT                           vkGetPhysicalDeviceSurfacePresentModes2EXT;
+                PFN_vkAcquireFullScreenExclusiveModeEXT                                  vkAcquireFullScreenExclusiveModeEXT;
+                PFN_vkReleaseFullScreenExclusiveModeEXT                                  vkReleaseFullScreenExclusiveModeEXT;
+                PFN_vkGetDeviceGroupSurfacePresentModes2EXT                              vkGetDeviceGroupSurfacePresentModes2EXT;
+            }
+
+            // VK_NV_cuda_kernel_launch : function pointer decelerations
+            else static if( __traits( isSame, extension, NV_cuda_kernel_launch )) {
+                PFN_vkCreateCudaModuleNV                                                 vkCreateCudaModuleNV;
+                PFN_vkGetCudaModuleCacheNV                                               vkGetCudaModuleCacheNV;
+                PFN_vkCreateCudaFunctionNV                                               vkCreateCudaFunctionNV;
+                PFN_vkDestroyCudaModuleNV                                                vkDestroyCudaModuleNV;
+                PFN_vkDestroyCudaFunctionNV                                              vkDestroyCudaFunctionNV;
+                PFN_vkCmdCudaLaunchKernelNV                                              vkCmdCudaLaunchKernelNV;
             }
 
             // VK_EXT_metal_objects : function pointer decelerations
             else static if( __traits( isSame, extension, EXT_metal_objects )) {
-                PFN_vkExportMetalObjectsEXT                                           vkExportMetalObjectsEXT;
+                PFN_vkExportMetalObjectsEXT                                              vkExportMetalObjectsEXT;
             }
 
             // VK_NV_acquire_winrt_display : function pointer decelerations
             else static if( __traits( isSame, extension, NV_acquire_winrt_display )) {
-                PFN_vkAcquireWinrtDisplayNV                                           vkAcquireWinrtDisplayNV;
-                PFN_vkGetWinrtDisplayNV                                               vkGetWinrtDisplayNV;
+                PFN_vkAcquireWinrtDisplayNV                                              vkAcquireWinrtDisplayNV;
+                PFN_vkGetWinrtDisplayNV                                                  vkGetWinrtDisplayNV;
             }
 
             // VK_EXT_directfb_surface : function pointer decelerations
             else static if( __traits( isSame, extension, EXT_directfb_surface )) {
-                PFN_vkCreateDirectFBSurfaceEXT                                        vkCreateDirectFBSurfaceEXT;
-                PFN_vkGetPhysicalDeviceDirectFBPresentationSupportEXT                 vkGetPhysicalDeviceDirectFBPresentationSupportEXT;
+                PFN_vkCreateDirectFBSurfaceEXT                                           vkCreateDirectFBSurfaceEXT;
+                PFN_vkGetPhysicalDeviceDirectFBPresentationSupportEXT                    vkGetPhysicalDeviceDirectFBPresentationSupportEXT;
             }
 
             // VK_FUCHSIA_external_memory : function pointer decelerations
             else static if( __traits( isSame, extension, FUCHSIA_external_memory )) {
-                PFN_vkGetMemoryZirconHandleFUCHSIA                                    vkGetMemoryZirconHandleFUCHSIA;
-                PFN_vkGetMemoryZirconHandlePropertiesFUCHSIA                          vkGetMemoryZirconHandlePropertiesFUCHSIA;
+                PFN_vkGetMemoryZirconHandleFUCHSIA                                       vkGetMemoryZirconHandleFUCHSIA;
+                PFN_vkGetMemoryZirconHandlePropertiesFUCHSIA                             vkGetMemoryZirconHandlePropertiesFUCHSIA;
             }
 
             // VK_FUCHSIA_external_semaphore : function pointer decelerations
             else static if( __traits( isSame, extension, FUCHSIA_external_semaphore )) {
-                PFN_vkImportSemaphoreZirconHandleFUCHSIA                              vkImportSemaphoreZirconHandleFUCHSIA;
-                PFN_vkGetSemaphoreZirconHandleFUCHSIA                                 vkGetSemaphoreZirconHandleFUCHSIA;
+                PFN_vkImportSemaphoreZirconHandleFUCHSIA                                 vkImportSemaphoreZirconHandleFUCHSIA;
+                PFN_vkGetSemaphoreZirconHandleFUCHSIA                                    vkGetSemaphoreZirconHandleFUCHSIA;
             }
 
             // VK_FUCHSIA_buffer_collection : function pointer decelerations
             else static if( __traits( isSame, extension, FUCHSIA_buffer_collection )) {
-                PFN_vkCreateBufferCollectionFUCHSIA                                   vkCreateBufferCollectionFUCHSIA;
-                PFN_vkSetBufferCollectionImageConstraintsFUCHSIA                      vkSetBufferCollectionImageConstraintsFUCHSIA;
-                PFN_vkSetBufferCollectionBufferConstraintsFUCHSIA                     vkSetBufferCollectionBufferConstraintsFUCHSIA;
-                PFN_vkDestroyBufferCollectionFUCHSIA                                  vkDestroyBufferCollectionFUCHSIA;
-                PFN_vkGetBufferCollectionPropertiesFUCHSIA                            vkGetBufferCollectionPropertiesFUCHSIA;
+                PFN_vkCreateBufferCollectionFUCHSIA                                      vkCreateBufferCollectionFUCHSIA;
+                PFN_vkSetBufferCollectionImageConstraintsFUCHSIA                         vkSetBufferCollectionImageConstraintsFUCHSIA;
+                PFN_vkSetBufferCollectionBufferConstraintsFUCHSIA                        vkSetBufferCollectionBufferConstraintsFUCHSIA;
+                PFN_vkDestroyBufferCollectionFUCHSIA                                     vkDestroyBufferCollectionFUCHSIA;
+                PFN_vkGetBufferCollectionPropertiesFUCHSIA                               vkGetBufferCollectionPropertiesFUCHSIA;
             }
 
             // VK_QNX_screen_surface : function pointer decelerations
             else static if( __traits( isSame, extension, QNX_screen_surface )) {
-                PFN_vkCreateScreenSurfaceQNX                                          vkCreateScreenSurfaceQNX;
-                PFN_vkGetPhysicalDeviceScreenPresentationSupportQNX                   vkGetPhysicalDeviceScreenPresentationSupportQNX;
+                PFN_vkCreateScreenSurfaceQNX                                             vkCreateScreenSurfaceQNX;
+                PFN_vkGetPhysicalDeviceScreenPresentationSupportQNX                      vkGetPhysicalDeviceScreenPresentationSupportQNX;
+            }
+
+            // VK_OHOS_external_memory : function pointer decelerations
+            else static if( __traits( isSame, extension, OHOS_external_memory )) {
+                PFN_vkGetNativeBufferPropertiesOHOS                                      vkGetNativeBufferPropertiesOHOS;
+                PFN_vkGetMemoryNativeBufferOHOS                                          vkGetMemoryNativeBufferOHOS;
             }
 
             // VK_QNX_external_memory_screen_buffer : function pointer decelerations
             else static if( __traits( isSame, extension, QNX_external_memory_screen_buffer )) {
-                PFN_vkGetScreenBufferPropertiesQNX                                    vkGetScreenBufferPropertiesQNX;
+                PFN_vkGetScreenBufferPropertiesQNX                                       vkGetScreenBufferPropertiesQNX;
+            }
+
+            // VK_OHOS_surface : function pointer decelerations
+            else static if( __traits( isSame, extension, OHOS_surface )) {
+                PFN_vkCreateSurfaceOHOS                                                  vkCreateSurfaceOHOS;
+            }
+
+            // VK_EXT_external_memory_metal : function pointer decelerations
+            else static if( __traits( isSame, extension, EXT_external_memory_metal )) {
+                PFN_vkGetMemoryMetalHandleEXT                                            vkGetMemoryMetalHandleEXT;
+                PFN_vkGetMemoryMetalHandlePropertiesEXT                                  vkGetMemoryMetalHandlePropertiesEXT;
+            }
+
+            // VK_SEC_ubm_surface : function pointer decelerations
+            else static if( __traits( isSame, extension, SEC_ubm_surface )) {
+                PFN_vkCreateUbmSurfaceSEC                                                vkCreateUbmSurfaceSEC;
+                PFN_vkGetPhysicalDeviceUbmPresentationSupportSEC                         vkGetPhysicalDeviceUbmPresentationSupportSEC;
             }
         }
     }
@@ -2097,95 +1679,101 @@ mixin template Platform_Extensions( extensions... ) {
 
             // VK_KHR_xlib_surface : load instance level function definitions
             static if( __traits( isSame, extension, KHR_xlib_surface )) {
-                vkCreateXlibSurfaceKHR                                            = cast( PFN_vkCreateXlibSurfaceKHR                                            ) vkGetInstanceProcAddr( instance, "vkCreateXlibSurfaceKHR" );
-                vkGetPhysicalDeviceXlibPresentationSupportKHR                     = cast( PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR                     ) vkGetInstanceProcAddr( instance, "vkGetPhysicalDeviceXlibPresentationSupportKHR" );
+                vkCreateXlibSurfaceKHR                                               = cast( PFN_vkCreateXlibSurfaceKHR                                               ) vkGetInstanceProcAddr( instance, "vkCreateXlibSurfaceKHR" );
+                vkGetPhysicalDeviceXlibPresentationSupportKHR                        = cast( PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR                        ) vkGetInstanceProcAddr( instance, "vkGetPhysicalDeviceXlibPresentationSupportKHR" );
             }
 
             // VK_KHR_xcb_surface : load instance level function definitions
             else static if( __traits( isSame, extension, KHR_xcb_surface )) {
-                vkCreateXcbSurfaceKHR                                             = cast( PFN_vkCreateXcbSurfaceKHR                                             ) vkGetInstanceProcAddr( instance, "vkCreateXcbSurfaceKHR" );
-                vkGetPhysicalDeviceXcbPresentationSupportKHR                      = cast( PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR                      ) vkGetInstanceProcAddr( instance, "vkGetPhysicalDeviceXcbPresentationSupportKHR" );
+                vkCreateXcbSurfaceKHR                                                = cast( PFN_vkCreateXcbSurfaceKHR                                                ) vkGetInstanceProcAddr( instance, "vkCreateXcbSurfaceKHR" );
+                vkGetPhysicalDeviceXcbPresentationSupportKHR                         = cast( PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR                         ) vkGetInstanceProcAddr( instance, "vkGetPhysicalDeviceXcbPresentationSupportKHR" );
             }
 
             // VK_KHR_wayland_surface : load instance level function definitions
             else static if( __traits( isSame, extension, KHR_wayland_surface )) {
-                vkCreateWaylandSurfaceKHR                                         = cast( PFN_vkCreateWaylandSurfaceKHR                                         ) vkGetInstanceProcAddr( instance, "vkCreateWaylandSurfaceKHR" );
-                vkGetPhysicalDeviceWaylandPresentationSupportKHR                  = cast( PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR                  ) vkGetInstanceProcAddr( instance, "vkGetPhysicalDeviceWaylandPresentationSupportKHR" );
+                vkCreateWaylandSurfaceKHR                                            = cast( PFN_vkCreateWaylandSurfaceKHR                                            ) vkGetInstanceProcAddr( instance, "vkCreateWaylandSurfaceKHR" );
+                vkGetPhysicalDeviceWaylandPresentationSupportKHR                     = cast( PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR                     ) vkGetInstanceProcAddr( instance, "vkGetPhysicalDeviceWaylandPresentationSupportKHR" );
             }
 
             // VK_KHR_android_surface : load instance level function definitions
             else static if( __traits( isSame, extension, KHR_android_surface )) {
-                vkCreateAndroidSurfaceKHR                                         = cast( PFN_vkCreateAndroidSurfaceKHR                                         ) vkGetInstanceProcAddr( instance, "vkCreateAndroidSurfaceKHR" );
+                vkCreateAndroidSurfaceKHR                                            = cast( PFN_vkCreateAndroidSurfaceKHR                                            ) vkGetInstanceProcAddr( instance, "vkCreateAndroidSurfaceKHR" );
             }
 
             // VK_KHR_win32_surface : load instance level function definitions
             else static if( __traits( isSame, extension, KHR_win32_surface )) {
-                vkCreateWin32SurfaceKHR                                           = cast( PFN_vkCreateWin32SurfaceKHR                                           ) vkGetInstanceProcAddr( instance, "vkCreateWin32SurfaceKHR" );
-                vkGetPhysicalDeviceWin32PresentationSupportKHR                    = cast( PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR                    ) vkGetInstanceProcAddr( instance, "vkGetPhysicalDeviceWin32PresentationSupportKHR" );
-            }
-
-            // VK_KHR_video_encode_queue : load instance level function definitions
-            else static if( __traits( isSame, extension, KHR_video_encode_queue )) {
-                vkGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR           = cast( PFN_vkGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR           ) vkGetInstanceProcAddr( instance, "vkGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR" );
+                vkCreateWin32SurfaceKHR                                              = cast( PFN_vkCreateWin32SurfaceKHR                                              ) vkGetInstanceProcAddr( instance, "vkCreateWin32SurfaceKHR" );
+                vkGetPhysicalDeviceWin32PresentationSupportKHR                       = cast( PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR                       ) vkGetInstanceProcAddr( instance, "vkGetPhysicalDeviceWin32PresentationSupportKHR" );
             }
 
             // VK_GGP_stream_descriptor_surface : load instance level function definitions
             else static if( __traits( isSame, extension, GGP_stream_descriptor_surface )) {
-                vkCreateStreamDescriptorSurfaceGGP                                = cast( PFN_vkCreateStreamDescriptorSurfaceGGP                                ) vkGetInstanceProcAddr( instance, "vkCreateStreamDescriptorSurfaceGGP" );
+                vkCreateStreamDescriptorSurfaceGGP                                   = cast( PFN_vkCreateStreamDescriptorSurfaceGGP                                   ) vkGetInstanceProcAddr( instance, "vkCreateStreamDescriptorSurfaceGGP" );
             }
 
             // VK_NN_vi_surface : load instance level function definitions
             else static if( __traits( isSame, extension, NN_vi_surface )) {
-                vkCreateViSurfaceNN                                               = cast( PFN_vkCreateViSurfaceNN                                               ) vkGetInstanceProcAddr( instance, "vkCreateViSurfaceNN" );
+                vkCreateViSurfaceNN                                                  = cast( PFN_vkCreateViSurfaceNN                                                  ) vkGetInstanceProcAddr( instance, "vkCreateViSurfaceNN" );
             }
 
             // VK_EXT_acquire_xlib_display : load instance level function definitions
             else static if( __traits( isSame, extension, EXT_acquire_xlib_display )) {
-                vkAcquireXlibDisplayEXT                                           = cast( PFN_vkAcquireXlibDisplayEXT                                           ) vkGetInstanceProcAddr( instance, "vkAcquireXlibDisplayEXT" );
-                vkGetRandROutputDisplayEXT                                        = cast( PFN_vkGetRandROutputDisplayEXT                                        ) vkGetInstanceProcAddr( instance, "vkGetRandROutputDisplayEXT" );
+                vkAcquireXlibDisplayEXT                                              = cast( PFN_vkAcquireXlibDisplayEXT                                              ) vkGetInstanceProcAddr( instance, "vkAcquireXlibDisplayEXT" );
+                vkGetRandROutputDisplayEXT                                           = cast( PFN_vkGetRandROutputDisplayEXT                                           ) vkGetInstanceProcAddr( instance, "vkGetRandROutputDisplayEXT" );
             }
 
             // VK_MVK_ios_surface : load instance level function definitions
             else static if( __traits( isSame, extension, MVK_ios_surface )) {
-                vkCreateIOSSurfaceMVK                                             = cast( PFN_vkCreateIOSSurfaceMVK                                             ) vkGetInstanceProcAddr( instance, "vkCreateIOSSurfaceMVK" );
+                vkCreateIOSSurfaceMVK                                                = cast( PFN_vkCreateIOSSurfaceMVK                                                ) vkGetInstanceProcAddr( instance, "vkCreateIOSSurfaceMVK" );
             }
 
             // VK_MVK_macos_surface : load instance level function definitions
             else static if( __traits( isSame, extension, MVK_macos_surface )) {
-                vkCreateMacOSSurfaceMVK                                           = cast( PFN_vkCreateMacOSSurfaceMVK                                           ) vkGetInstanceProcAddr( instance, "vkCreateMacOSSurfaceMVK" );
+                vkCreateMacOSSurfaceMVK                                              = cast( PFN_vkCreateMacOSSurfaceMVK                                              ) vkGetInstanceProcAddr( instance, "vkCreateMacOSSurfaceMVK" );
             }
 
             // VK_FUCHSIA_imagepipe_surface : load instance level function definitions
             else static if( __traits( isSame, extension, FUCHSIA_imagepipe_surface )) {
-                vkCreateImagePipeSurfaceFUCHSIA                                   = cast( PFN_vkCreateImagePipeSurfaceFUCHSIA                                   ) vkGetInstanceProcAddr( instance, "vkCreateImagePipeSurfaceFUCHSIA" );
+                vkCreateImagePipeSurfaceFUCHSIA                                      = cast( PFN_vkCreateImagePipeSurfaceFUCHSIA                                      ) vkGetInstanceProcAddr( instance, "vkCreateImagePipeSurfaceFUCHSIA" );
             }
 
             // VK_EXT_metal_surface : load instance level function definitions
             else static if( __traits( isSame, extension, EXT_metal_surface )) {
-                vkCreateMetalSurfaceEXT                                           = cast( PFN_vkCreateMetalSurfaceEXT                                           ) vkGetInstanceProcAddr( instance, "vkCreateMetalSurfaceEXT" );
+                vkCreateMetalSurfaceEXT                                              = cast( PFN_vkCreateMetalSurfaceEXT                                              ) vkGetInstanceProcAddr( instance, "vkCreateMetalSurfaceEXT" );
             }
 
             // VK_EXT_full_screen_exclusive : load instance level function definitions
             else static if( __traits( isSame, extension, EXT_full_screen_exclusive )) {
-                vkGetPhysicalDeviceSurfacePresentModes2EXT                        = cast( PFN_vkGetPhysicalDeviceSurfacePresentModes2EXT                        ) vkGetInstanceProcAddr( instance, "vkGetPhysicalDeviceSurfacePresentModes2EXT" );
+                vkGetPhysicalDeviceSurfacePresentModes2EXT                           = cast( PFN_vkGetPhysicalDeviceSurfacePresentModes2EXT                           ) vkGetInstanceProcAddr( instance, "vkGetPhysicalDeviceSurfacePresentModes2EXT" );
             }
 
             // VK_NV_acquire_winrt_display : load instance level function definitions
             else static if( __traits( isSame, extension, NV_acquire_winrt_display )) {
-                vkAcquireWinrtDisplayNV                                           = cast( PFN_vkAcquireWinrtDisplayNV                                           ) vkGetInstanceProcAddr( instance, "vkAcquireWinrtDisplayNV" );
-                vkGetWinrtDisplayNV                                               = cast( PFN_vkGetWinrtDisplayNV                                               ) vkGetInstanceProcAddr( instance, "vkGetWinrtDisplayNV" );
+                vkAcquireWinrtDisplayNV                                              = cast( PFN_vkAcquireWinrtDisplayNV                                              ) vkGetInstanceProcAddr( instance, "vkAcquireWinrtDisplayNV" );
+                vkGetWinrtDisplayNV                                                  = cast( PFN_vkGetWinrtDisplayNV                                                  ) vkGetInstanceProcAddr( instance, "vkGetWinrtDisplayNV" );
             }
 
             // VK_EXT_directfb_surface : load instance level function definitions
             else static if( __traits( isSame, extension, EXT_directfb_surface )) {
-                vkCreateDirectFBSurfaceEXT                                        = cast( PFN_vkCreateDirectFBSurfaceEXT                                        ) vkGetInstanceProcAddr( instance, "vkCreateDirectFBSurfaceEXT" );
-                vkGetPhysicalDeviceDirectFBPresentationSupportEXT                 = cast( PFN_vkGetPhysicalDeviceDirectFBPresentationSupportEXT                 ) vkGetInstanceProcAddr( instance, "vkGetPhysicalDeviceDirectFBPresentationSupportEXT" );
+                vkCreateDirectFBSurfaceEXT                                           = cast( PFN_vkCreateDirectFBSurfaceEXT                                           ) vkGetInstanceProcAddr( instance, "vkCreateDirectFBSurfaceEXT" );
+                vkGetPhysicalDeviceDirectFBPresentationSupportEXT                    = cast( PFN_vkGetPhysicalDeviceDirectFBPresentationSupportEXT                    ) vkGetInstanceProcAddr( instance, "vkGetPhysicalDeviceDirectFBPresentationSupportEXT" );
             }
 
             // VK_QNX_screen_surface : load instance level function definitions
             else static if( __traits( isSame, extension, QNX_screen_surface )) {
-                vkCreateScreenSurfaceQNX                                          = cast( PFN_vkCreateScreenSurfaceQNX                                          ) vkGetInstanceProcAddr( instance, "vkCreateScreenSurfaceQNX" );
-                vkGetPhysicalDeviceScreenPresentationSupportQNX                   = cast( PFN_vkGetPhysicalDeviceScreenPresentationSupportQNX                   ) vkGetInstanceProcAddr( instance, "vkGetPhysicalDeviceScreenPresentationSupportQNX" );
+                vkCreateScreenSurfaceQNX                                             = cast( PFN_vkCreateScreenSurfaceQNX                                             ) vkGetInstanceProcAddr( instance, "vkCreateScreenSurfaceQNX" );
+                vkGetPhysicalDeviceScreenPresentationSupportQNX                      = cast( PFN_vkGetPhysicalDeviceScreenPresentationSupportQNX                      ) vkGetInstanceProcAddr( instance, "vkGetPhysicalDeviceScreenPresentationSupportQNX" );
+            }
+
+            // VK_OHOS_surface : load instance level function definitions
+            else static if( __traits( isSame, extension, OHOS_surface )) {
+                vkCreateSurfaceOHOS                                                  = cast( PFN_vkCreateSurfaceOHOS                                                  ) vkGetInstanceProcAddr( instance, "vkCreateSurfaceOHOS" );
+            }
+
+            // VK_SEC_ubm_surface : load instance level function definitions
+            else static if( __traits( isSame, extension, SEC_ubm_surface )) {
+                vkCreateUbmSurfaceSEC                                                = cast( PFN_vkCreateUbmSurfaceSEC                                                ) vkGetInstanceProcAddr( instance, "vkCreateUbmSurfaceSEC" );
+                vkGetPhysicalDeviceUbmPresentationSupportSEC                         = cast( PFN_vkGetPhysicalDeviceUbmPresentationSupportSEC                         ) vkGetInstanceProcAddr( instance, "vkGetPhysicalDeviceUbmPresentationSupportSEC" );
             }
         }
     }
@@ -2220,12 +1808,6 @@ mixin template Platform_Extensions( extensions... ) {
                 vkGetFenceWin32HandleKHR                                 = cast( PFN_vkGetFenceWin32HandleKHR                                 ) vkGetInstanceProcAddr( instance, "vkGetFenceWin32HandleKHR" );
             }
 
-            // VK_KHR_video_encode_queue : load instance based device level function definitions
-            else static if( __traits( isSame, extension, KHR_video_encode_queue )) {
-                vkGetEncodedVideoSessionParametersKHR                    = cast( PFN_vkGetEncodedVideoSessionParametersKHR                    ) vkGetInstanceProcAddr( instance, "vkGetEncodedVideoSessionParametersKHR" );
-                vkCmdEncodeVideoKHR                                      = cast( PFN_vkCmdEncodeVideoKHR                                      ) vkGetInstanceProcAddr( instance, "vkCmdEncodeVideoKHR" );
-            }
-
             // VK_NV_external_memory_win32 : load instance based device level function definitions
             else static if( __traits( isSame, extension, NV_external_memory_win32 )) {
                 vkGetMemoryWin32HandleNV                                 = cast( PFN_vkGetMemoryWin32HandleNV                                 ) vkGetInstanceProcAddr( instance, "vkGetMemoryWin32HandleNV" );
@@ -2255,6 +1837,16 @@ mixin template Platform_Extensions( extensions... ) {
                 vkGetDeviceGroupSurfacePresentModes2EXT                  = cast( PFN_vkGetDeviceGroupSurfacePresentModes2EXT                  ) vkGetInstanceProcAddr( instance, "vkGetDeviceGroupSurfacePresentModes2EXT" );
             }
 
+            // VK_NV_cuda_kernel_launch : load instance based device level function definitions
+            else static if( __traits( isSame, extension, NV_cuda_kernel_launch )) {
+                vkCreateCudaModuleNV                                     = cast( PFN_vkCreateCudaModuleNV                                     ) vkGetInstanceProcAddr( instance, "vkCreateCudaModuleNV" );
+                vkGetCudaModuleCacheNV                                   = cast( PFN_vkGetCudaModuleCacheNV                                   ) vkGetInstanceProcAddr( instance, "vkGetCudaModuleCacheNV" );
+                vkCreateCudaFunctionNV                                   = cast( PFN_vkCreateCudaFunctionNV                                   ) vkGetInstanceProcAddr( instance, "vkCreateCudaFunctionNV" );
+                vkDestroyCudaModuleNV                                    = cast( PFN_vkDestroyCudaModuleNV                                    ) vkGetInstanceProcAddr( instance, "vkDestroyCudaModuleNV" );
+                vkDestroyCudaFunctionNV                                  = cast( PFN_vkDestroyCudaFunctionNV                                  ) vkGetInstanceProcAddr( instance, "vkDestroyCudaFunctionNV" );
+                vkCmdCudaLaunchKernelNV                                  = cast( PFN_vkCmdCudaLaunchKernelNV                                  ) vkGetInstanceProcAddr( instance, "vkCmdCudaLaunchKernelNV" );
+            }
+
             // VK_EXT_metal_objects : load instance based device level function definitions
             else static if( __traits( isSame, extension, EXT_metal_objects )) {
                 vkExportMetalObjectsEXT                                  = cast( PFN_vkExportMetalObjectsEXT                                  ) vkGetInstanceProcAddr( instance, "vkExportMetalObjectsEXT" );
@@ -2281,9 +1873,21 @@ mixin template Platform_Extensions( extensions... ) {
                 vkGetBufferCollectionPropertiesFUCHSIA                   = cast( PFN_vkGetBufferCollectionPropertiesFUCHSIA                   ) vkGetInstanceProcAddr( instance, "vkGetBufferCollectionPropertiesFUCHSIA" );
             }
 
+            // VK_OHOS_external_memory : load instance based device level function definitions
+            else static if( __traits( isSame, extension, OHOS_external_memory )) {
+                vkGetNativeBufferPropertiesOHOS                          = cast( PFN_vkGetNativeBufferPropertiesOHOS                          ) vkGetInstanceProcAddr( instance, "vkGetNativeBufferPropertiesOHOS" );
+                vkGetMemoryNativeBufferOHOS                              = cast( PFN_vkGetMemoryNativeBufferOHOS                              ) vkGetInstanceProcAddr( instance, "vkGetMemoryNativeBufferOHOS" );
+            }
+
             // VK_QNX_external_memory_screen_buffer : load instance based device level function definitions
             else static if( __traits( isSame, extension, QNX_external_memory_screen_buffer )) {
                 vkGetScreenBufferPropertiesQNX                           = cast( PFN_vkGetScreenBufferPropertiesQNX                           ) vkGetInstanceProcAddr( instance, "vkGetScreenBufferPropertiesQNX" );
+            }
+
+            // VK_EXT_external_memory_metal : load instance based device level function definitions
+            else static if( __traits( isSame, extension, EXT_external_memory_metal )) {
+                vkGetMemoryMetalHandleEXT                                = cast( PFN_vkGetMemoryMetalHandleEXT                                ) vkGetInstanceProcAddr( instance, "vkGetMemoryMetalHandleEXT" );
+                vkGetMemoryMetalHandlePropertiesEXT                      = cast( PFN_vkGetMemoryMetalHandlePropertiesEXT                      ) vkGetInstanceProcAddr( instance, "vkGetMemoryMetalHandlePropertiesEXT" );
             }
         }
     }
@@ -2318,12 +1922,6 @@ mixin template Platform_Extensions( extensions... ) {
                 vkGetFenceWin32HandleKHR                                 = cast( PFN_vkGetFenceWin32HandleKHR                                 ) vkGetDeviceProcAddr( device, "vkGetFenceWin32HandleKHR" );
             }
 
-            // VK_KHR_video_encode_queue : load device based device level function definitions
-            else static if( __traits( isSame, extension, KHR_video_encode_queue )) {
-                vkGetEncodedVideoSessionParametersKHR                    = cast( PFN_vkGetEncodedVideoSessionParametersKHR                    ) vkGetDeviceProcAddr( device, "vkGetEncodedVideoSessionParametersKHR" );
-                vkCmdEncodeVideoKHR                                      = cast( PFN_vkCmdEncodeVideoKHR                                      ) vkGetDeviceProcAddr( device, "vkCmdEncodeVideoKHR" );
-            }
-
             // VK_NV_external_memory_win32 : load device based device level function definitions
             else static if( __traits( isSame, extension, NV_external_memory_win32 )) {
                 vkGetMemoryWin32HandleNV                                 = cast( PFN_vkGetMemoryWin32HandleNV                                 ) vkGetDeviceProcAddr( device, "vkGetMemoryWin32HandleNV" );
@@ -2353,6 +1951,16 @@ mixin template Platform_Extensions( extensions... ) {
                 vkGetDeviceGroupSurfacePresentModes2EXT                  = cast( PFN_vkGetDeviceGroupSurfacePresentModes2EXT                  ) vkGetDeviceProcAddr( device, "vkGetDeviceGroupSurfacePresentModes2EXT" );
             }
 
+            // VK_NV_cuda_kernel_launch : load device based device level function definitions
+            else static if( __traits( isSame, extension, NV_cuda_kernel_launch )) {
+                vkCreateCudaModuleNV                                     = cast( PFN_vkCreateCudaModuleNV                                     ) vkGetDeviceProcAddr( device, "vkCreateCudaModuleNV" );
+                vkGetCudaModuleCacheNV                                   = cast( PFN_vkGetCudaModuleCacheNV                                   ) vkGetDeviceProcAddr( device, "vkGetCudaModuleCacheNV" );
+                vkCreateCudaFunctionNV                                   = cast( PFN_vkCreateCudaFunctionNV                                   ) vkGetDeviceProcAddr( device, "vkCreateCudaFunctionNV" );
+                vkDestroyCudaModuleNV                                    = cast( PFN_vkDestroyCudaModuleNV                                    ) vkGetDeviceProcAddr( device, "vkDestroyCudaModuleNV" );
+                vkDestroyCudaFunctionNV                                  = cast( PFN_vkDestroyCudaFunctionNV                                  ) vkGetDeviceProcAddr( device, "vkDestroyCudaFunctionNV" );
+                vkCmdCudaLaunchKernelNV                                  = cast( PFN_vkCmdCudaLaunchKernelNV                                  ) vkGetDeviceProcAddr( device, "vkCmdCudaLaunchKernelNV" );
+            }
+
             // VK_EXT_metal_objects : load device based device level function definitions
             else static if( __traits( isSame, extension, EXT_metal_objects )) {
                 vkExportMetalObjectsEXT                                  = cast( PFN_vkExportMetalObjectsEXT                                  ) vkGetDeviceProcAddr( device, "vkExportMetalObjectsEXT" );
@@ -2379,9 +1987,21 @@ mixin template Platform_Extensions( extensions... ) {
                 vkGetBufferCollectionPropertiesFUCHSIA                   = cast( PFN_vkGetBufferCollectionPropertiesFUCHSIA                   ) vkGetDeviceProcAddr( device, "vkGetBufferCollectionPropertiesFUCHSIA" );
             }
 
+            // VK_OHOS_external_memory : load device based device level function definitions
+            else static if( __traits( isSame, extension, OHOS_external_memory )) {
+                vkGetNativeBufferPropertiesOHOS                          = cast( PFN_vkGetNativeBufferPropertiesOHOS                          ) vkGetDeviceProcAddr( device, "vkGetNativeBufferPropertiesOHOS" );
+                vkGetMemoryNativeBufferOHOS                              = cast( PFN_vkGetMemoryNativeBufferOHOS                              ) vkGetDeviceProcAddr( device, "vkGetMemoryNativeBufferOHOS" );
+            }
+
             // VK_QNX_external_memory_screen_buffer : load device based device level function definitions
             else static if( __traits( isSame, extension, QNX_external_memory_screen_buffer )) {
                 vkGetScreenBufferPropertiesQNX                           = cast( PFN_vkGetScreenBufferPropertiesQNX                           ) vkGetDeviceProcAddr( device, "vkGetScreenBufferPropertiesQNX" );
+            }
+
+            // VK_EXT_external_memory_metal : load device based device level function definitions
+            else static if( __traits( isSame, extension, EXT_external_memory_metal )) {
+                vkGetMemoryMetalHandleEXT                                = cast( PFN_vkGetMemoryMetalHandleEXT                                ) vkGetDeviceProcAddr( device, "vkGetMemoryMetalHandleEXT" );
+                vkGetMemoryMetalHandlePropertiesEXT                      = cast( PFN_vkGetMemoryMetalHandlePropertiesEXT                      ) vkGetDeviceProcAddr( device, "vkGetMemoryMetalHandlePropertiesEXT" );
             }
         }
     }
@@ -2432,12 +2052,6 @@ mixin template Platform_Extensions( extensions... ) {
                     vkGetFenceWin32HandleKHR                                 = cast( PFN_vkGetFenceWin32HandleKHR                                 ) vkGetDeviceProcAddr( device, "vkGetFenceWin32HandleKHR" );
                 }
 
-                // VK_KHR_video_encode_queue : load dispatch device member function definitions
-                else static if( __traits( isSame, extension, KHR_video_encode_queue )) {
-                    vkGetEncodedVideoSessionParametersKHR                    = cast( PFN_vkGetEncodedVideoSessionParametersKHR                    ) vkGetDeviceProcAddr( device, "vkGetEncodedVideoSessionParametersKHR" );
-                    vkCmdEncodeVideoKHR                                      = cast( PFN_vkCmdEncodeVideoKHR                                      ) vkGetDeviceProcAddr( device, "vkCmdEncodeVideoKHR" );
-                }
-
                 // VK_NV_external_memory_win32 : load dispatch device member function definitions
                 else static if( __traits( isSame, extension, NV_external_memory_win32 )) {
                     vkGetMemoryWin32HandleNV                                 = cast( PFN_vkGetMemoryWin32HandleNV                                 ) vkGetDeviceProcAddr( device, "vkGetMemoryWin32HandleNV" );
@@ -2467,6 +2081,16 @@ mixin template Platform_Extensions( extensions... ) {
                     vkGetDeviceGroupSurfacePresentModes2EXT                  = cast( PFN_vkGetDeviceGroupSurfacePresentModes2EXT                  ) vkGetDeviceProcAddr( device, "vkGetDeviceGroupSurfacePresentModes2EXT" );
                 }
 
+                // VK_NV_cuda_kernel_launch : load dispatch device member function definitions
+                else static if( __traits( isSame, extension, NV_cuda_kernel_launch )) {
+                    vkCreateCudaModuleNV                                     = cast( PFN_vkCreateCudaModuleNV                                     ) vkGetDeviceProcAddr( device, "vkCreateCudaModuleNV" );
+                    vkGetCudaModuleCacheNV                                   = cast( PFN_vkGetCudaModuleCacheNV                                   ) vkGetDeviceProcAddr( device, "vkGetCudaModuleCacheNV" );
+                    vkCreateCudaFunctionNV                                   = cast( PFN_vkCreateCudaFunctionNV                                   ) vkGetDeviceProcAddr( device, "vkCreateCudaFunctionNV" );
+                    vkDestroyCudaModuleNV                                    = cast( PFN_vkDestroyCudaModuleNV                                    ) vkGetDeviceProcAddr( device, "vkDestroyCudaModuleNV" );
+                    vkDestroyCudaFunctionNV                                  = cast( PFN_vkDestroyCudaFunctionNV                                  ) vkGetDeviceProcAddr( device, "vkDestroyCudaFunctionNV" );
+                    vkCmdCudaLaunchKernelNV                                  = cast( PFN_vkCmdCudaLaunchKernelNV                                  ) vkGetDeviceProcAddr( device, "vkCmdCudaLaunchKernelNV" );
+                }
+
                 // VK_EXT_metal_objects : load dispatch device member function definitions
                 else static if( __traits( isSame, extension, EXT_metal_objects )) {
                     vkExportMetalObjectsEXT                                  = cast( PFN_vkExportMetalObjectsEXT                                  ) vkGetDeviceProcAddr( device, "vkExportMetalObjectsEXT" );
@@ -2493,9 +2117,21 @@ mixin template Platform_Extensions( extensions... ) {
                     vkGetBufferCollectionPropertiesFUCHSIA                   = cast( PFN_vkGetBufferCollectionPropertiesFUCHSIA                   ) vkGetDeviceProcAddr( device, "vkGetBufferCollectionPropertiesFUCHSIA" );
                 }
 
+                // VK_OHOS_external_memory : load dispatch device member function definitions
+                else static if( __traits( isSame, extension, OHOS_external_memory )) {
+                    vkGetNativeBufferPropertiesOHOS                          = cast( PFN_vkGetNativeBufferPropertiesOHOS                          ) vkGetDeviceProcAddr( device, "vkGetNativeBufferPropertiesOHOS" );
+                    vkGetMemoryNativeBufferOHOS                              = cast( PFN_vkGetMemoryNativeBufferOHOS                              ) vkGetDeviceProcAddr( device, "vkGetMemoryNativeBufferOHOS" );
+                }
+
                 // VK_QNX_external_memory_screen_buffer : load dispatch device member function definitions
                 else static if( __traits( isSame, extension, QNX_external_memory_screen_buffer )) {
                     vkGetScreenBufferPropertiesQNX                           = cast( PFN_vkGetScreenBufferPropertiesQNX                           ) vkGetDeviceProcAddr( device, "vkGetScreenBufferPropertiesQNX" );
+                }
+
+                // VK_EXT_external_memory_metal : load dispatch device member function definitions
+                else static if( __traits( isSame, extension, EXT_external_memory_metal )) {
+                    vkGetMemoryMetalHandleEXT                                = cast( PFN_vkGetMemoryMetalHandleEXT                                ) vkGetDeviceProcAddr( device, "vkGetMemoryMetalHandleEXT" );
+                    vkGetMemoryMetalHandlePropertiesEXT                      = cast( PFN_vkGetMemoryMetalHandlePropertiesEXT                      ) vkGetDeviceProcAddr( device, "vkGetMemoryMetalHandlePropertiesEXT" );
                 }
             }
         }
@@ -2522,12 +2158,6 @@ mixin template Platform_Extensions( extensions... ) {
                 VkResult  GetFenceWin32HandleKHR( const( VkFenceGetWin32HandleInfoKHR )* pGetWin32HandleInfo, HANDLE* pHandle ) { return vkGetFenceWin32HandleKHR( vkDevice, pGetWin32HandleInfo, pHandle ); }
             }
 
-            // VK_KHR_video_encode_queue : dispatch device convenience member functions
-            else static if( __traits( isSame, extension, KHR_video_encode_queue )) {
-                VkResult  GetEncodedVideoSessionParametersKHR( const( VkVideoEncodeSessionParametersGetInfoKHR )* pVideoSessionParametersInfo, VkVideoEncodeSessionParametersFeedbackInfoKHR* pFeedbackInfo, size_t* pDataSize, void* pData ) { return vkGetEncodedVideoSessionParametersKHR( vkDevice, pVideoSessionParametersInfo, pFeedbackInfo, pDataSize, pData ); }
-                void      CmdEncodeVideoKHR( const( VkVideoEncodeInfoKHR )* pEncodeInfo ) { vkCmdEncodeVideoKHR( commandBuffer, pEncodeInfo ); }
-            }
-
             // VK_NV_external_memory_win32 : dispatch device convenience member functions
             else static if( __traits( isSame, extension, NV_external_memory_win32 )) {
                 VkResult  GetMemoryWin32HandleNV( VkDeviceMemory memory, VkExternalMemoryHandleTypeFlagsNV handleType, HANDLE* pHandle ) { return vkGetMemoryWin32HandleNV( vkDevice, memory, handleType, pHandle ); }
@@ -2544,10 +2174,10 @@ mixin template Platform_Extensions( extensions... ) {
                 VkResult  CreateExecutionGraphPipelinesAMDX( VkPipelineCache pipelineCache, uint32_t createInfoCount, const( VkExecutionGraphPipelineCreateInfoAMDX )* pCreateInfos, VkPipeline* pPipelines ) { return vkCreateExecutionGraphPipelinesAMDX( vkDevice, pipelineCache, createInfoCount, pCreateInfos, pAllocator, pPipelines ); }
                 VkResult  GetExecutionGraphPipelineScratchSizeAMDX( VkPipeline executionGraph, VkExecutionGraphPipelineScratchSizeAMDX* pSizeInfo ) { return vkGetExecutionGraphPipelineScratchSizeAMDX( vkDevice, executionGraph, pSizeInfo ); }
                 VkResult  GetExecutionGraphPipelineNodeIndexAMDX( VkPipeline executionGraph, const( VkPipelineShaderStageNodeCreateInfoAMDX )* pNodeInfo, uint32_t* pNodeIndex ) { return vkGetExecutionGraphPipelineNodeIndexAMDX( vkDevice, executionGraph, pNodeInfo, pNodeIndex ); }
-                void      CmdInitializeGraphScratchMemoryAMDX( VkDeviceAddress scratch ) { vkCmdInitializeGraphScratchMemoryAMDX( commandBuffer, scratch ); }
-                void      CmdDispatchGraphAMDX( VkDeviceAddress scratch, const( VkDispatchGraphCountInfoAMDX )* pCountInfo ) { vkCmdDispatchGraphAMDX( commandBuffer, scratch, pCountInfo ); }
-                void      CmdDispatchGraphIndirectAMDX( VkDeviceAddress scratch, const( VkDispatchGraphCountInfoAMDX )* pCountInfo ) { vkCmdDispatchGraphIndirectAMDX( commandBuffer, scratch, pCountInfo ); }
-                void      CmdDispatchGraphIndirectCountAMDX( VkDeviceAddress scratch, VkDeviceAddress countInfo ) { vkCmdDispatchGraphIndirectCountAMDX( commandBuffer, scratch, countInfo ); }
+                void      CmdInitializeGraphScratchMemoryAMDX( VkPipeline executionGraph, VkDeviceAddress scratch, VkDeviceSize scratchSize ) { vkCmdInitializeGraphScratchMemoryAMDX( commandBuffer, executionGraph, scratch, scratchSize ); }
+                void      CmdDispatchGraphAMDX( VkDeviceAddress scratch, VkDeviceSize scratchSize, const( VkDispatchGraphCountInfoAMDX )* pCountInfo ) { vkCmdDispatchGraphAMDX( commandBuffer, scratch, scratchSize, pCountInfo ); }
+                void      CmdDispatchGraphIndirectAMDX( VkDeviceAddress scratch, VkDeviceSize scratchSize, const( VkDispatchGraphCountInfoAMDX )* pCountInfo ) { vkCmdDispatchGraphIndirectAMDX( commandBuffer, scratch, scratchSize, pCountInfo ); }
+                void      CmdDispatchGraphIndirectCountAMDX( VkDeviceAddress scratch, VkDeviceSize scratchSize, VkDeviceAddress countInfo ) { vkCmdDispatchGraphIndirectCountAMDX( commandBuffer, scratch, scratchSize, countInfo ); }
             }
 
             // VK_EXT_full_screen_exclusive : dispatch device convenience member functions
@@ -2555,6 +2185,16 @@ mixin template Platform_Extensions( extensions... ) {
                 VkResult  AcquireFullScreenExclusiveModeEXT( VkSwapchainKHR swapchain ) { return vkAcquireFullScreenExclusiveModeEXT( vkDevice, swapchain ); }
                 VkResult  ReleaseFullScreenExclusiveModeEXT( VkSwapchainKHR swapchain ) { return vkReleaseFullScreenExclusiveModeEXT( vkDevice, swapchain ); }
                 VkResult  GetDeviceGroupSurfacePresentModes2EXT( const( VkPhysicalDeviceSurfaceInfo2KHR )* pSurfaceInfo, VkDeviceGroupPresentModeFlagsKHR* pModes ) { return vkGetDeviceGroupSurfacePresentModes2EXT( vkDevice, pSurfaceInfo, pModes ); }
+            }
+
+            // VK_NV_cuda_kernel_launch : dispatch device convenience member functions
+            else static if( __traits( isSame, extension, NV_cuda_kernel_launch )) {
+                VkResult  CreateCudaModuleNV( const( VkCudaModuleCreateInfoNV )* pCreateInfo, VkCudaModuleNV* pModule ) { return vkCreateCudaModuleNV( vkDevice, pCreateInfo, pAllocator, pModule ); }
+                VkResult  GetCudaModuleCacheNV( VkCudaModuleNV Module, size_t* pCacheSize, void* pCacheData ) { return vkGetCudaModuleCacheNV( vkDevice, Module, pCacheSize, pCacheData ); }
+                VkResult  CreateCudaFunctionNV( const( VkCudaFunctionCreateInfoNV )* pCreateInfo, VkCudaFunctionNV* pFunction ) { return vkCreateCudaFunctionNV( vkDevice, pCreateInfo, pAllocator, pFunction ); }
+                void      DestroyCudaModuleNV( VkCudaModuleNV Module ) { vkDestroyCudaModuleNV( vkDevice, Module, pAllocator ); }
+                void      DestroyCudaFunctionNV( VkCudaFunctionNV Function ) { vkDestroyCudaFunctionNV( vkDevice, Function, pAllocator ); }
+                void      CmdCudaLaunchKernelNV( const( VkCudaLaunchInfoNV )* pLaunchInfo ) { vkCmdCudaLaunchKernelNV( commandBuffer, pLaunchInfo ); }
             }
 
             // VK_EXT_metal_objects : dispatch device convenience member functions
@@ -2583,9 +2223,21 @@ mixin template Platform_Extensions( extensions... ) {
                 VkResult  GetBufferCollectionPropertiesFUCHSIA( VkBufferCollectionFUCHSIA collection, VkBufferCollectionPropertiesFUCHSIA* pProperties ) { return vkGetBufferCollectionPropertiesFUCHSIA( vkDevice, collection, pProperties ); }
             }
 
+            // VK_OHOS_external_memory : dispatch device convenience member functions
+            else static if( __traits( isSame, extension, OHOS_external_memory )) {
+                VkResult  GetNativeBufferPropertiesOHOS( const( OH_NativeBuffer )* buffer, VkNativeBufferPropertiesOHOS* pProperties ) { return vkGetNativeBufferPropertiesOHOS( vkDevice, buffer, pProperties ); }
+                VkResult  GetMemoryNativeBufferOHOS( const( VkMemoryGetNativeBufferInfoOHOS )* pInfo, OH_NativeBuffer pBuffer ) { return vkGetMemoryNativeBufferOHOS( vkDevice, pInfo, pBuffer ); }
+            }
+
             // VK_QNX_external_memory_screen_buffer : dispatch device convenience member functions
             else static if( __traits( isSame, extension, QNX_external_memory_screen_buffer )) {
                 VkResult  GetScreenBufferPropertiesQNX( const( _screen_buffer )* buffer, VkScreenBufferPropertiesQNX* pProperties ) { return vkGetScreenBufferPropertiesQNX( vkDevice, buffer, pProperties ); }
+            }
+
+            // VK_EXT_external_memory_metal : dispatch device convenience member functions
+            else static if( __traits( isSame, extension, EXT_external_memory_metal )) {
+                VkResult  GetMemoryMetalHandleEXT( const( VkMemoryGetMetalHandleInfoEXT )* pGetMetalHandleInfo, void** pHandle ) { return vkGetMemoryMetalHandleEXT( vkDevice, pGetMetalHandleInfo, pHandle ); }
+                VkResult  GetMemoryMetalHandlePropertiesEXT( VkExternalMemoryHandleTypeFlagBits handleType, const( void )* pHandle, VkMemoryMetalHandlePropertiesEXT* pMemoryMetalHandleProperties ) { return vkGetMemoryMetalHandlePropertiesEXT( vkDevice, handleType, pHandle, pMemoryMetalHandleProperties ); }
             }
         }
 
@@ -2594,171 +2246,197 @@ mixin template Platform_Extensions( extensions... ) {
 
             // VK_KHR_xlib_surface : dispatch device member function pointer decelerations
             static if( __traits( isSame, extension, KHR_xlib_surface )) {
-                PFN_vkCreateXlibSurfaceKHR                                            vkCreateXlibSurfaceKHR;
-                PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR                     vkGetPhysicalDeviceXlibPresentationSupportKHR;
+                PFN_vkCreateXlibSurfaceKHR                                               vkCreateXlibSurfaceKHR;
+                PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR                        vkGetPhysicalDeviceXlibPresentationSupportKHR;
             }
 
             // VK_KHR_xcb_surface : dispatch device member function pointer decelerations
             else static if( __traits( isSame, extension, KHR_xcb_surface )) {
-                PFN_vkCreateXcbSurfaceKHR                                             vkCreateXcbSurfaceKHR;
-                PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR                      vkGetPhysicalDeviceXcbPresentationSupportKHR;
+                PFN_vkCreateXcbSurfaceKHR                                                vkCreateXcbSurfaceKHR;
+                PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR                         vkGetPhysicalDeviceXcbPresentationSupportKHR;
             }
 
             // VK_KHR_wayland_surface : dispatch device member function pointer decelerations
             else static if( __traits( isSame, extension, KHR_wayland_surface )) {
-                PFN_vkCreateWaylandSurfaceKHR                                         vkCreateWaylandSurfaceKHR;
-                PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR                  vkGetPhysicalDeviceWaylandPresentationSupportKHR;
+                PFN_vkCreateWaylandSurfaceKHR                                            vkCreateWaylandSurfaceKHR;
+                PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR                     vkGetPhysicalDeviceWaylandPresentationSupportKHR;
             }
 
             // VK_KHR_android_surface : dispatch device member function pointer decelerations
             else static if( __traits( isSame, extension, KHR_android_surface )) {
-                PFN_vkCreateAndroidSurfaceKHR                                         vkCreateAndroidSurfaceKHR;
+                PFN_vkCreateAndroidSurfaceKHR                                            vkCreateAndroidSurfaceKHR;
             }
 
             // VK_KHR_win32_surface : dispatch device member function pointer decelerations
             else static if( __traits( isSame, extension, KHR_win32_surface )) {
-                PFN_vkCreateWin32SurfaceKHR                                           vkCreateWin32SurfaceKHR;
-                PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR                    vkGetPhysicalDeviceWin32PresentationSupportKHR;
+                PFN_vkCreateWin32SurfaceKHR                                              vkCreateWin32SurfaceKHR;
+                PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR                       vkGetPhysicalDeviceWin32PresentationSupportKHR;
             }
 
             // VK_KHR_external_memory_win32 : dispatch device member function pointer decelerations
             else static if( __traits( isSame, extension, KHR_external_memory_win32 )) {
-                PFN_vkGetMemoryWin32HandleKHR                                         vkGetMemoryWin32HandleKHR;
-                PFN_vkGetMemoryWin32HandlePropertiesKHR                               vkGetMemoryWin32HandlePropertiesKHR;
+                PFN_vkGetMemoryWin32HandleKHR                                            vkGetMemoryWin32HandleKHR;
+                PFN_vkGetMemoryWin32HandlePropertiesKHR                                  vkGetMemoryWin32HandlePropertiesKHR;
             }
 
             // VK_KHR_external_semaphore_win32 : dispatch device member function pointer decelerations
             else static if( __traits( isSame, extension, KHR_external_semaphore_win32 )) {
-                PFN_vkImportSemaphoreWin32HandleKHR                                   vkImportSemaphoreWin32HandleKHR;
-                PFN_vkGetSemaphoreWin32HandleKHR                                      vkGetSemaphoreWin32HandleKHR;
+                PFN_vkImportSemaphoreWin32HandleKHR                                      vkImportSemaphoreWin32HandleKHR;
+                PFN_vkGetSemaphoreWin32HandleKHR                                         vkGetSemaphoreWin32HandleKHR;
             }
 
             // VK_KHR_external_fence_win32 : dispatch device member function pointer decelerations
             else static if( __traits( isSame, extension, KHR_external_fence_win32 )) {
-                PFN_vkImportFenceWin32HandleKHR                                       vkImportFenceWin32HandleKHR;
-                PFN_vkGetFenceWin32HandleKHR                                          vkGetFenceWin32HandleKHR;
-            }
-
-            // VK_KHR_video_encode_queue : dispatch device member function pointer decelerations
-            else static if( __traits( isSame, extension, KHR_video_encode_queue )) {
-                PFN_vkGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR           vkGetPhysicalDeviceVideoEncodeQualityLevelPropertiesKHR;
-                PFN_vkGetEncodedVideoSessionParametersKHR                             vkGetEncodedVideoSessionParametersKHR;
-                PFN_vkCmdEncodeVideoKHR                                               vkCmdEncodeVideoKHR;
+                PFN_vkImportFenceWin32HandleKHR                                          vkImportFenceWin32HandleKHR;
+                PFN_vkGetFenceWin32HandleKHR                                             vkGetFenceWin32HandleKHR;
             }
 
             // VK_GGP_stream_descriptor_surface : dispatch device member function pointer decelerations
             else static if( __traits( isSame, extension, GGP_stream_descriptor_surface )) {
-                PFN_vkCreateStreamDescriptorSurfaceGGP                                vkCreateStreamDescriptorSurfaceGGP;
+                PFN_vkCreateStreamDescriptorSurfaceGGP                                   vkCreateStreamDescriptorSurfaceGGP;
             }
 
             // VK_NV_external_memory_win32 : dispatch device member function pointer decelerations
             else static if( __traits( isSame, extension, NV_external_memory_win32 )) {
-                PFN_vkGetMemoryWin32HandleNV                                          vkGetMemoryWin32HandleNV;
+                PFN_vkGetMemoryWin32HandleNV                                             vkGetMemoryWin32HandleNV;
             }
 
             // VK_NN_vi_surface : dispatch device member function pointer decelerations
             else static if( __traits( isSame, extension, NN_vi_surface )) {
-                PFN_vkCreateViSurfaceNN                                               vkCreateViSurfaceNN;
+                PFN_vkCreateViSurfaceNN                                                  vkCreateViSurfaceNN;
             }
 
             // VK_EXT_acquire_xlib_display : dispatch device member function pointer decelerations
             else static if( __traits( isSame, extension, EXT_acquire_xlib_display )) {
-                PFN_vkAcquireXlibDisplayEXT                                           vkAcquireXlibDisplayEXT;
-                PFN_vkGetRandROutputDisplayEXT                                        vkGetRandROutputDisplayEXT;
+                PFN_vkAcquireXlibDisplayEXT                                              vkAcquireXlibDisplayEXT;
+                PFN_vkGetRandROutputDisplayEXT                                           vkGetRandROutputDisplayEXT;
             }
 
             // VK_MVK_ios_surface : dispatch device member function pointer decelerations
             else static if( __traits( isSame, extension, MVK_ios_surface )) {
-                PFN_vkCreateIOSSurfaceMVK                                             vkCreateIOSSurfaceMVK;
+                PFN_vkCreateIOSSurfaceMVK                                                vkCreateIOSSurfaceMVK;
             }
 
             // VK_MVK_macos_surface : dispatch device member function pointer decelerations
             else static if( __traits( isSame, extension, MVK_macos_surface )) {
-                PFN_vkCreateMacOSSurfaceMVK                                           vkCreateMacOSSurfaceMVK;
+                PFN_vkCreateMacOSSurfaceMVK                                              vkCreateMacOSSurfaceMVK;
             }
 
             // VK_ANDROID_external_memory_android_hardware_buffer : dispatch device member function pointer decelerations
             else static if( __traits( isSame, extension, ANDROID_external_memory_android_hardware_buffer )) {
-                PFN_vkGetAndroidHardwareBufferPropertiesANDROID                       vkGetAndroidHardwareBufferPropertiesANDROID;
-                PFN_vkGetMemoryAndroidHardwareBufferANDROID                           vkGetMemoryAndroidHardwareBufferANDROID;
+                PFN_vkGetAndroidHardwareBufferPropertiesANDROID                          vkGetAndroidHardwareBufferPropertiesANDROID;
+                PFN_vkGetMemoryAndroidHardwareBufferANDROID                              vkGetMemoryAndroidHardwareBufferANDROID;
             }
 
             // VK_AMDX_shader_enqueue : dispatch device member function pointer decelerations
             else static if( __traits( isSame, extension, AMDX_shader_enqueue )) {
-                PFN_vkCreateExecutionGraphPipelinesAMDX                               vkCreateExecutionGraphPipelinesAMDX;
-                PFN_vkGetExecutionGraphPipelineScratchSizeAMDX                        vkGetExecutionGraphPipelineScratchSizeAMDX;
-                PFN_vkGetExecutionGraphPipelineNodeIndexAMDX                          vkGetExecutionGraphPipelineNodeIndexAMDX;
-                PFN_vkCmdInitializeGraphScratchMemoryAMDX                             vkCmdInitializeGraphScratchMemoryAMDX;
-                PFN_vkCmdDispatchGraphAMDX                                            vkCmdDispatchGraphAMDX;
-                PFN_vkCmdDispatchGraphIndirectAMDX                                    vkCmdDispatchGraphIndirectAMDX;
-                PFN_vkCmdDispatchGraphIndirectCountAMDX                               vkCmdDispatchGraphIndirectCountAMDX;
+                PFN_vkCreateExecutionGraphPipelinesAMDX                                  vkCreateExecutionGraphPipelinesAMDX;
+                PFN_vkGetExecutionGraphPipelineScratchSizeAMDX                           vkGetExecutionGraphPipelineScratchSizeAMDX;
+                PFN_vkGetExecutionGraphPipelineNodeIndexAMDX                             vkGetExecutionGraphPipelineNodeIndexAMDX;
+                PFN_vkCmdInitializeGraphScratchMemoryAMDX                                vkCmdInitializeGraphScratchMemoryAMDX;
+                PFN_vkCmdDispatchGraphAMDX                                               vkCmdDispatchGraphAMDX;
+                PFN_vkCmdDispatchGraphIndirectAMDX                                       vkCmdDispatchGraphIndirectAMDX;
+                PFN_vkCmdDispatchGraphIndirectCountAMDX                                  vkCmdDispatchGraphIndirectCountAMDX;
             }
 
             // VK_FUCHSIA_imagepipe_surface : dispatch device member function pointer decelerations
             else static if( __traits( isSame, extension, FUCHSIA_imagepipe_surface )) {
-                PFN_vkCreateImagePipeSurfaceFUCHSIA                                   vkCreateImagePipeSurfaceFUCHSIA;
+                PFN_vkCreateImagePipeSurfaceFUCHSIA                                      vkCreateImagePipeSurfaceFUCHSIA;
             }
 
             // VK_EXT_metal_surface : dispatch device member function pointer decelerations
             else static if( __traits( isSame, extension, EXT_metal_surface )) {
-                PFN_vkCreateMetalSurfaceEXT                                           vkCreateMetalSurfaceEXT;
+                PFN_vkCreateMetalSurfaceEXT                                              vkCreateMetalSurfaceEXT;
             }
 
             // VK_EXT_full_screen_exclusive : dispatch device member function pointer decelerations
             else static if( __traits( isSame, extension, EXT_full_screen_exclusive )) {
-                PFN_vkGetPhysicalDeviceSurfacePresentModes2EXT                        vkGetPhysicalDeviceSurfacePresentModes2EXT;
-                PFN_vkAcquireFullScreenExclusiveModeEXT                               vkAcquireFullScreenExclusiveModeEXT;
-                PFN_vkReleaseFullScreenExclusiveModeEXT                               vkReleaseFullScreenExclusiveModeEXT;
-                PFN_vkGetDeviceGroupSurfacePresentModes2EXT                           vkGetDeviceGroupSurfacePresentModes2EXT;
+                PFN_vkGetPhysicalDeviceSurfacePresentModes2EXT                           vkGetPhysicalDeviceSurfacePresentModes2EXT;
+                PFN_vkAcquireFullScreenExclusiveModeEXT                                  vkAcquireFullScreenExclusiveModeEXT;
+                PFN_vkReleaseFullScreenExclusiveModeEXT                                  vkReleaseFullScreenExclusiveModeEXT;
+                PFN_vkGetDeviceGroupSurfacePresentModes2EXT                              vkGetDeviceGroupSurfacePresentModes2EXT;
+            }
+
+            // VK_NV_cuda_kernel_launch : dispatch device member function pointer decelerations
+            else static if( __traits( isSame, extension, NV_cuda_kernel_launch )) {
+                PFN_vkCreateCudaModuleNV                                                 vkCreateCudaModuleNV;
+                PFN_vkGetCudaModuleCacheNV                                               vkGetCudaModuleCacheNV;
+                PFN_vkCreateCudaFunctionNV                                               vkCreateCudaFunctionNV;
+                PFN_vkDestroyCudaModuleNV                                                vkDestroyCudaModuleNV;
+                PFN_vkDestroyCudaFunctionNV                                              vkDestroyCudaFunctionNV;
+                PFN_vkCmdCudaLaunchKernelNV                                              vkCmdCudaLaunchKernelNV;
             }
 
             // VK_EXT_metal_objects : dispatch device member function pointer decelerations
             else static if( __traits( isSame, extension, EXT_metal_objects )) {
-                PFN_vkExportMetalObjectsEXT                                           vkExportMetalObjectsEXT;
+                PFN_vkExportMetalObjectsEXT                                              vkExportMetalObjectsEXT;
             }
 
             // VK_NV_acquire_winrt_display : dispatch device member function pointer decelerations
             else static if( __traits( isSame, extension, NV_acquire_winrt_display )) {
-                PFN_vkAcquireWinrtDisplayNV                                           vkAcquireWinrtDisplayNV;
-                PFN_vkGetWinrtDisplayNV                                               vkGetWinrtDisplayNV;
+                PFN_vkAcquireWinrtDisplayNV                                              vkAcquireWinrtDisplayNV;
+                PFN_vkGetWinrtDisplayNV                                                  vkGetWinrtDisplayNV;
             }
 
             // VK_EXT_directfb_surface : dispatch device member function pointer decelerations
             else static if( __traits( isSame, extension, EXT_directfb_surface )) {
-                PFN_vkCreateDirectFBSurfaceEXT                                        vkCreateDirectFBSurfaceEXT;
-                PFN_vkGetPhysicalDeviceDirectFBPresentationSupportEXT                 vkGetPhysicalDeviceDirectFBPresentationSupportEXT;
+                PFN_vkCreateDirectFBSurfaceEXT                                           vkCreateDirectFBSurfaceEXT;
+                PFN_vkGetPhysicalDeviceDirectFBPresentationSupportEXT                    vkGetPhysicalDeviceDirectFBPresentationSupportEXT;
             }
 
             // VK_FUCHSIA_external_memory : dispatch device member function pointer decelerations
             else static if( __traits( isSame, extension, FUCHSIA_external_memory )) {
-                PFN_vkGetMemoryZirconHandleFUCHSIA                                    vkGetMemoryZirconHandleFUCHSIA;
-                PFN_vkGetMemoryZirconHandlePropertiesFUCHSIA                          vkGetMemoryZirconHandlePropertiesFUCHSIA;
+                PFN_vkGetMemoryZirconHandleFUCHSIA                                       vkGetMemoryZirconHandleFUCHSIA;
+                PFN_vkGetMemoryZirconHandlePropertiesFUCHSIA                             vkGetMemoryZirconHandlePropertiesFUCHSIA;
             }
 
             // VK_FUCHSIA_external_semaphore : dispatch device member function pointer decelerations
             else static if( __traits( isSame, extension, FUCHSIA_external_semaphore )) {
-                PFN_vkImportSemaphoreZirconHandleFUCHSIA                              vkImportSemaphoreZirconHandleFUCHSIA;
-                PFN_vkGetSemaphoreZirconHandleFUCHSIA                                 vkGetSemaphoreZirconHandleFUCHSIA;
+                PFN_vkImportSemaphoreZirconHandleFUCHSIA                                 vkImportSemaphoreZirconHandleFUCHSIA;
+                PFN_vkGetSemaphoreZirconHandleFUCHSIA                                    vkGetSemaphoreZirconHandleFUCHSIA;
             }
 
             // VK_FUCHSIA_buffer_collection : dispatch device member function pointer decelerations
             else static if( __traits( isSame, extension, FUCHSIA_buffer_collection )) {
-                PFN_vkCreateBufferCollectionFUCHSIA                                   vkCreateBufferCollectionFUCHSIA;
-                PFN_vkSetBufferCollectionImageConstraintsFUCHSIA                      vkSetBufferCollectionImageConstraintsFUCHSIA;
-                PFN_vkSetBufferCollectionBufferConstraintsFUCHSIA                     vkSetBufferCollectionBufferConstraintsFUCHSIA;
-                PFN_vkDestroyBufferCollectionFUCHSIA                                  vkDestroyBufferCollectionFUCHSIA;
-                PFN_vkGetBufferCollectionPropertiesFUCHSIA                            vkGetBufferCollectionPropertiesFUCHSIA;
+                PFN_vkCreateBufferCollectionFUCHSIA                                      vkCreateBufferCollectionFUCHSIA;
+                PFN_vkSetBufferCollectionImageConstraintsFUCHSIA                         vkSetBufferCollectionImageConstraintsFUCHSIA;
+                PFN_vkSetBufferCollectionBufferConstraintsFUCHSIA                        vkSetBufferCollectionBufferConstraintsFUCHSIA;
+                PFN_vkDestroyBufferCollectionFUCHSIA                                     vkDestroyBufferCollectionFUCHSIA;
+                PFN_vkGetBufferCollectionPropertiesFUCHSIA                               vkGetBufferCollectionPropertiesFUCHSIA;
             }
 
             // VK_QNX_screen_surface : dispatch device member function pointer decelerations
             else static if( __traits( isSame, extension, QNX_screen_surface )) {
-                PFN_vkCreateScreenSurfaceQNX                                          vkCreateScreenSurfaceQNX;
-                PFN_vkGetPhysicalDeviceScreenPresentationSupportQNX                   vkGetPhysicalDeviceScreenPresentationSupportQNX;
+                PFN_vkCreateScreenSurfaceQNX                                             vkCreateScreenSurfaceQNX;
+                PFN_vkGetPhysicalDeviceScreenPresentationSupportQNX                      vkGetPhysicalDeviceScreenPresentationSupportQNX;
+            }
+
+            // VK_OHOS_external_memory : dispatch device member function pointer decelerations
+            else static if( __traits( isSame, extension, OHOS_external_memory )) {
+                PFN_vkGetNativeBufferPropertiesOHOS                                      vkGetNativeBufferPropertiesOHOS;
+                PFN_vkGetMemoryNativeBufferOHOS                                          vkGetMemoryNativeBufferOHOS;
             }
 
             // VK_QNX_external_memory_screen_buffer : dispatch device member function pointer decelerations
             else static if( __traits( isSame, extension, QNX_external_memory_screen_buffer )) {
-                PFN_vkGetScreenBufferPropertiesQNX                                    vkGetScreenBufferPropertiesQNX;
+                PFN_vkGetScreenBufferPropertiesQNX                                       vkGetScreenBufferPropertiesQNX;
+            }
+
+            // VK_OHOS_surface : dispatch device member function pointer decelerations
+            else static if( __traits( isSame, extension, OHOS_surface )) {
+                PFN_vkCreateSurfaceOHOS                                                  vkCreateSurfaceOHOS;
+            }
+
+            // VK_EXT_external_memory_metal : dispatch device member function pointer decelerations
+            else static if( __traits( isSame, extension, EXT_external_memory_metal )) {
+                PFN_vkGetMemoryMetalHandleEXT                                            vkGetMemoryMetalHandleEXT;
+                PFN_vkGetMemoryMetalHandlePropertiesEXT                                  vkGetMemoryMetalHandlePropertiesEXT;
+            }
+
+            // VK_SEC_ubm_surface : dispatch device member function pointer decelerations
+            else static if( __traits( isSame, extension, SEC_ubm_surface )) {
+                PFN_vkCreateUbmSurfaceSEC                                                vkCreateUbmSurfaceSEC;
+                PFN_vkGetPhysicalDeviceUbmPresentationSupportSEC                         vkGetPhysicalDeviceUbmPresentationSupportSEC;
             }
         }
     }

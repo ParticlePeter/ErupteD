@@ -545,10 +545,11 @@ final class Generator {
         if( !emit ) return;
 
         // combine all type sections
+        auto content = featureContent[ featureName ];
         foreach( section; TYPE_SECTIONS )
             if( sections[ section ].length )
                 foreach( line; sections[ section ] ~ [ "" ] )
-                    featureContent[ featureName ][ Section.typeDefinitions ] ~= Line( line );
+                    content[ Section.typeDefinitions ] ~= Line( line );
 
         featureName = null;
     }
@@ -565,7 +566,7 @@ final class Generator {
 
         bool isEnum = typeAlias is null;
 
-        string snakeName = groupName.replaceAll( ctRegex!`([0-9a-z_])([A-Z0-9][^A-Z0-9]?)`, "$1_$2" ).toUpper;
+        string snakeName = groupName.replaceAll( ctRegex!`([0-9]+|[a-z_])([A-Z0-9])`, "$1_$2" ).toUpper;
 
         string namePrefix = snakeName;
         string nameSuffix = "";
@@ -600,6 +601,16 @@ final class Generator {
         // in this case requiredEnumNames will be empty and we simply exit this method, but only for enums
         auto requiredEnumNames = enums.filter!( e => isEnumRequired( e )).map!( e => e.get( "name" )).array;
         if( isEnum && requiredEnumNames.length == 0 ) return;
+
+        // vulkan-headers-v1.4.3xx introduced empty 64 bit bitmasks (VkFormatFeatureFlagBits4KHR), D does not allow empty enums
+        // these have no _MAX_ENUM entry, hence we alias FlagBits to Flags, the c header typedefs both to VkFlags64 as well
+        if( !isEnum && requiredEnumNames.length == 0 && groupElem.has( "bitwidth" )) {
+            if( sections[ "bitmask" ].length )
+                appendSection( "bitmask", "" );
+            sections[ "bitmask" ] ~= [ scopedGroup[ 0 ], "alias %s = %s;".format( groupName, typeAlias.get( "name" )) ];
+            return;
+        }
+
         size_t maxGlobalLen = requiredEnumNames.length ? requiredEnumNames.map!( n => n.length ).maxElement : 0;
         maxGlobalLen = alignTo( 5 + maxGlobalLen, 2 * indent.length );    // len( 'enum ' ) = 5
         size_t maxScopedLen = maxGlobalLen;
@@ -799,6 +810,32 @@ final class Generator {
 
     // alias PFN_vkAllocationFunction = void* function( ... )
     void genFuncPointer( Element elem, string name ) {
+        // newer registries (Vulkan 1.4) describe funcpointers like commands with <proto> and <param> elements
+        if( auto proto = elem.find( "proto" )) {
+            // text of an element up to its <name>, keeping the alignment whitespace of the registry
+            string declPrefix( Element e ) {
+                string decl = e.iterText.join;
+                return decl[ 0 .. decl.lastIndexOf( e.find( "name" ).text ) ];
+            }
+
+            string[] paramLines;
+            foreach( param; elem.findAll( "param" )) {
+                string line = declPrefix( param );
+                if( line.startsWith( "const " ))
+                    line = line.replace( "const ", "const( " )     // scope const to next element
+                               .replace( "*", " )*" )              // end scope before asterisk
+                               .replaceFirst( "   ", "" );         // remove three spaces taken by parenthesis and one space before
+                paramLines ~= indent ~ line ~ param.find( "name" ).text;
+            }
+
+            if( sections[ "funcpointer" ].length )
+                appendSection( "funcpointer", "" );
+            appendSection( "funcpointer", paramLines.length
+                ? "alias %s = %s function(\n%s\n);".format( name, declPrefix( proto ).strip, paramLines.join( ",\n" ))
+                : "alias %s = %s function();".format( name, declPrefix( proto ).strip ));
+            return;
+        }
+
         string returnType = elem.text.pySlice( 8, -13 );
         string params = elem.iterText.drop( 2 ).join;
         auto paramLines = params.splitLines( KeepTerminator.yes );

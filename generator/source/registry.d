@@ -147,10 +147,11 @@ final class Registry {
     void parseTree() {
         stripNonmatchingAPIs( reg, genOpts.apiname );
 
-        // types, add name attribute from nested <name> where missing
+        // types, add name attribute from nested <name> where missing, funcpointers of newer registries nest it in <proto>
         foreach( typeElem; reg.findAll( "types/type" )) {
             if( !typeElem.has( "name" )) {
                 auto nameElem = typeElem.find( "name" );
+                if( nameElem is null ) nameElem = typeElem.find( "proto/name" );
                 if( nameElem is null || nameElem.text.length == 0 ) throw new Exception( "Type without a name!" );
                 typeElem.set( "name", nameElem.text );
             }

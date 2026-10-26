@@ -1,9 +1,9 @@
 name            "erupted"
 description     "Auto-generated D bindings for Vulkan"
-copyright       "Copyright 2015-2016 The Khronos Group Inc.; Copyright 2016 Alex Parrill; Copyright 2018 Peter Particle"
+copyright       "Copyright 2015-2026 The Khronos Group Inc.; Copyright 2016 Alex Parrill; Copyright 2016-2026 Peter Particle"
 authors         "Alex Parrill" "Peter Particle"
 targetType      "sourceLibrary"
-license         "BSD 2-clause"
+license         "MIT"
 
 // generator of the bindings in source/erupted from the Khronos vk.xml and video.xml registry, e.g.:
 // dub run :generate -- path/to/Vulkan-Headers source/erupted

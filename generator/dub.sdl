@@ -1,6 +1,6 @@
 name            "generate"
 description     "Generates the ErupteD Vulkan bindings from the Khronos vk.xml and video.xml registry"
-copyright       "Copyright 2015-2016 The Khronos Group Inc.; Copyright 2016 Alex Parrill; Copyright 2018 Peter Particle"
+copyright       "Copyright 2015-2026 The Khronos Group Inc.; Copyright 2016 Alex Parrill; Copyright 2016-2026 Peter Particle"
 authors         "Alex Parrill" "Peter Particle"
 license         "MIT"
 targetType      "executable"
