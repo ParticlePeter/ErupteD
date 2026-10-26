@@ -21,7 +21,7 @@ Additionally, DispatchDevice and the python generator have been extracted. The f
 
 Release note v3.x.x Generating Bindings
 ---------------------------------------
-Erupted got a DLang generator to become self-contained. The DLang modules will not be updated in this repository any more. If you would like to have the latest bindings, you have to fetch the latest [Vulkan-Docs](https://github.com/KhronosGroup/Vulkan-Docs) repo or [Vulkan-Headers](https://github.com/KhronosGroup/Vulkan-Headers) (smaller in size) and call `dub run :generate -- "Drive:/Path/to/Vulkan-Docs or -Headers" "source/erupted"` to generate the DLang Vulkan modules.
+ErupteD got a DLang generator to become self-contained. The DLang modules will not be updated in this repository any more. If you would like to have the latest bindings, you have to fetch the latest [Vulkan-Docs](https://github.com/KhronosGroup/Vulkan-Docs) repo or [Vulkan-Headers](https://github.com/KhronosGroup/Vulkan-Headers) (smaller in size) and call `dub run :generate -- "Drive:/Path/to/Vulkan-Docs or -Headers" "source/erupted"` to generate the DLang Vulkan modules.
 
 Breaking changes compared to v2.x.x: C array parameters are now passed as pointers like in C, hence `vkCmdSetBlendConstants`, `vkCmdSetFragmentShadingRateKHR` and `vkCmdSetFragmentShadingRateEnumNV` require e.g. `blendConstants.ptr`. `VkTransformMatrixKHR.matrix` is now `float[4][3]`, matching the C layout `float[3][4]`. Video structs consisting of bitfields and multi-dimensional arrays are now complete.
 
