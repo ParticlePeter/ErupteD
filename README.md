@@ -15,6 +15,14 @@ Additionally, DispatchDevice and the python generator have been extracted. The f
 
 
 
+Release note v3.x.x Generating Bindings
+---------------------------------------
+The generator for Erupted-V3 got a DLang generator to become self contained. The DLang modules will not be updated in this repository any more. If you like to have the latest bindings, you have to fetch the latest [Vulkan-Docs](https://github.com/KhronosGroup/Vulkan-Docs) repo or [Vulkan-Headers](https://github.com/KhronosGroup/Vulkan-Headers) (smaller in size) and call `dub run :generate -- "Drive:/Path/to/Vulkan-Docs or -Headers" "source/erupted"` to generate the DLang Vulkan modules.
+
+Breaking changes compared to v2.x.x: C array parameters are now passed as pointers like in C, hence `vkCmdSetBlendConstants`, `vkCmdSetFragmentShadingRateKHR` and `vkCmdSetFragmentShadingRateEnumNV` require e.g. `blendConstants.ptr`. `VkTransformMatrixKHR.matrix` is now `float[4][3]`, matching the C layout `float[3][4]`. Video structs consisting of bitfields and multi-dimensional arrays are now complete.
+
+
+
 Usage
 -----
 The easiest way to start is calling `loadGlobalLevelFunctions()` from module `erupted.vulkan_lib_loader`.This function automatically loads the Vulkan dynamic link library `Vulkan-1.dll` (Windows) or `libvulkan.so.1` (Posix), retrieves `vkGetInstanceProcAddr` from the lib and loads global functions from Vulkan implementation.  
@@ -118,11 +126,3 @@ Beta Extensins were introduced in vulkan v1.2.135 with the first three of them b
 ```
 mixin Platform_Extensions!ENABLE_BETA_EXTENSIONS;       // mixin all beta extensions
 ```
-
-
-
-Generating Bindings
--------------------
-The generator for Erupted-V2 was split off into its own github project [V-Erupt](https://github.com/ParticlePeter/V-Erupt). 
-Additionally, you'll need the [Vulkan-Docs](https://github.com/KhronosGroup/Vulkan-Docs) repo (Requires Python 3 and lxml.etree).  
-Finally, to erupt the dlang bindings, call `erupt_dlang.py` passing `path/to/Vulkan-docs` as first argument and an output folder for the D files as second argument. You will still need to manually the directory tree corresponding to the the module paths.

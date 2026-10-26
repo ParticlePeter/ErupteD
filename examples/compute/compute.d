@@ -1,14 +1,17 @@
 nothrow @nogc:
 
-// dub run erupted:computeBC --compiler=ldc2
+// dub run erupted:compute --compiler=ldc2
 // use Vulkan Configurator (on windows vkconfig.exe) to enable debug layers
 
+import core.stdc.stdlib;
 import core.stdc.stdio;
 import erupted;
 
+//pragma(lib, "msvcrt.lib");
 
+alias stderr_fprintf = printf;
 
-int main() {
+extern(C) int main() {
 
     version( D_BetterC )
         printf( "\n\nUsing betterC" );
@@ -24,6 +27,7 @@ int main() {
 
 
 
+
     //
     // Instance
     //
@@ -32,17 +36,23 @@ int main() {
     // but if a higher version is required this would be the way to check it (example with v1.2.0)
     uint32_t api_version;
     vkEnumerateInstanceVersion( & api_version );
-    printf( "\n\nAvailable Vulkan API version: v%u.%u.%u",
-        VK_VERSION_MAJOR( api_version ), VK_VERSION_MINOR( api_version ), VK_VERSION_PATCH( api_version ));
+    printf( "\n\nAvailable Vulkan API version: v%u.%u.%u.%u",
+        VK_API_VERSION_VARIANT( api_version ),
+        VK_API_VERSION_MAJOR( api_version ),
+        VK_API_VERSION_MINOR( api_version ),
+        VK_API_VERSION_PATCH( api_version ));
 
     {
         // change the version here to your needs
-        uint min_version = VK_MAKE_VERSION( 1, 0, 0 );
+        uint min_version = VK_MAKE_API_VERSION( 0, 1, 0, 0 );
         if( api_version >= min_version )
             api_version  = min_version;
         else {
-            printf( "\nAvailable Vulkan API version lower then required: v%u.%u.%u, quitting!\n",
-                VK_VERSION_MAJOR( min_version ), VK_VERSION_MINOR( min_version ), VK_VERSION_PATCH( min_version ));
+            printf( "\nAvailable Vulkan API version lower then required: v%u.%u.%u.%u, quitting!\n",
+                VK_API_VERSION_VARIANT( api_version ),
+                VK_API_VERSION_MAJOR( api_version ),
+                VK_API_VERSION_MINOR( api_version ),
+                VK_API_VERSION_PATCH( api_version ));
             return 1;
         }
     }
@@ -50,8 +60,8 @@ int main() {
     // prepare VkInstance creation
     VkApplicationInfo application_info = {
         pApplicationName    : "Vulkan Compute Example",
-        applicationVersion  : VK_MAKE_VERSION( 0, 1, 0 ),
-        apiVersion          : VK_MAKE_VERSION( 1, 2, 0 ),
+        applicationVersion  : VK_MAKE_API_VERSION( 0, 0, 1, 0 ),
+        apiVersion          : VK_MAKE_API_VERSION( 0, 1, 0, 0 ),
     };
 
     VkInstanceCreateInfo instance_ci = {
@@ -86,7 +96,7 @@ int main() {
         return 1;
 
     if( physical_device_count == 0 ) {
-        stderr.fprintf( "\nNo physical devices available." );
+        stderr_fprintf( "\nNo physical devices available." );
         return 1;
     }
 
@@ -111,7 +121,11 @@ int main() {
             VkPhysicalDeviceProperties properties;
             vkGetPhysicalDeviceProperties( phys_device, & properties );
             printf( "\nPhysical device %llu : %s", i, properties.deviceName.ptr );
-            printf( "\nAPI Version: %u.%u.%u", VK_VERSION_MAJOR( properties.apiVersion ), VK_VERSION_MINOR( properties.apiVersion ), VK_VERSION_PATCH( properties.apiVersion ) );
+            printf( "\nAPI Version: v%u.%u.%u.%u",
+                VK_API_VERSION_VARIANT( properties.apiVersion ),
+                VK_API_VERSION_MAJOR( properties.apiVersion ),
+                VK_API_VERSION_MINOR( properties.apiVersion ),
+                VK_API_VERSION_PATCH( properties.apiVersion ));
             printf( "\nDriver Version: %u", properties.driverVersion );
             printf( "\nDevice type: %s", properties.deviceType.toStringz );
             printf( "\n" );
@@ -127,8 +141,11 @@ int main() {
             printf( "\nCould not find suitable physical device matching requested version, qutting!\n" );
         }
 
-        printf( "\nChosing physical device closest to our selected API major.minor version: v%u.%u.%u\n",
-            VK_VERSION_MAJOR( selected_api_version ), VK_VERSION_MINOR( selected_api_version ), VK_VERSION_PATCH( selected_api_version ));
+        printf( "\nChosing physical device closest to our selected API major.minor version: v%u.%u.%u.%u\n",
+            VK_API_VERSION_VARIANT( selected_api_version ),
+            VK_API_VERSION_MAJOR( selected_api_version ),
+            VK_API_VERSION_MINOR( selected_api_version ),
+            VK_API_VERSION_PATCH( selected_api_version ));
     }
 
 
@@ -640,17 +657,17 @@ int main() {
 
 VkResult vkAssert( VkResult vk_result, const( char* ) fail_msg = null, const( char* ) success_msg = null, string file = __FILE__, size_t line = __LINE__ ) {
     if( vk_result != VK_SUCCESS ) {
-        char[ 256 ] file_stringz;
+        char[ 256 ] file_stringz = void;
         file_stringz[ 0 .. file.length ] = file;
         file_stringz[ file.length ] = '\0';
 
-        stderr.fprintf( "\n! ERROR !\n==============\n" );
-        stderr.fprintf( "\tVkResult : %s\n", vk_result.toStringz );
-        stderr.fprintf( "\tFile     : %s\n", file_stringz.ptr );
-        stderr.fprintf( "\tLine     : %llu\n", line );
+        stderr_fprintf( "\n! ERROR !\n==============\n" );
+        stderr_fprintf( "\tVkResult : %s\n", vk_result.toStringz );
+        stderr_fprintf( "\tFile     : %s\n", file_stringz.ptr );
+        stderr_fprintf( "\tLine     : %llu\n", line );
 
         if( fail_msg )
-            stderr.fprintf( "\n%s\n", fail_msg );
+            stderr_fprintf( "\n%s\n", fail_msg );
     }
     if( success_msg != null )
         printf( "\n%s", success_msg );

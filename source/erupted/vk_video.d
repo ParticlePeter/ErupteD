@@ -309,6 +309,21 @@ enum STD_VIDEO_H264_NON_VCL_NALU_TYPE_INVALID            = StdVideoH264NonVclNal
 enum STD_VIDEO_H2_64_NON_VCL_NALU_TYPE_MAX_ENUM          = StdVideoH264NonVclNaluType.STD_VIDEO_H2_64_NON_VCL_NALU_TYPE_MAX_ENUM;
 
 struct StdVideoH264SpsVuiFlags {
+    mixin( bitfields!(
+        uint32_t, "aspect_ratio_info_present_flag",  1,
+        uint32_t, "overscan_info_present_flag",      1,
+        uint32_t, "overscan_appropriate_flag",       1,
+        uint32_t, "video_signal_type_present_flag",  1,
+        uint32_t, "video_full_range_flag",           1,
+        uint32_t, "color_description_present_flag",  1,
+        uint32_t, "chroma_loc_info_present_flag",    1,
+        uint32_t, "timing_info_present_flag",        1,
+        uint32_t, "fixed_frame_rate_flag",           1,
+        uint32_t, "bitstream_restriction_flag",      1,
+        uint32_t, "nal_hrd_parameters_present_flag", 1,
+        uint32_t, "vcl_hrd_parameters_present_flag", 1,
+        uint32_t, "",                                20,
+    ));
 }
 
 struct StdVideoH264HrdParameters {
@@ -345,13 +360,32 @@ struct StdVideoH264SequenceParameterSetVui {
 }
 
 struct StdVideoH264SpsFlags {
+    mixin( bitfields!(
+        uint32_t, "constraint_set0_flag",                 1,
+        uint32_t, "constraint_set1_flag",                 1,
+        uint32_t, "constraint_set2_flag",                 1,
+        uint32_t, "constraint_set3_flag",                 1,
+        uint32_t, "constraint_set4_flag",                 1,
+        uint32_t, "constraint_set5_flag",                 1,
+        uint32_t, "direct_8x8_inference_flag",            1,
+        uint32_t, "mb_adaptive_frame_field_flag",         1,
+        uint32_t, "frame_mbs_only_flag",                  1,
+        uint32_t, "delta_pic_order_always_zero_flag",     1,
+        uint32_t, "separate_colour_plane_flag",           1,
+        uint32_t, "gaps_in_frame_num_value_allowed_flag", 1,
+        uint32_t, "qpprime_y_zero_transform_bypass_flag", 1,
+        uint32_t, "frame_cropping_flag",                  1,
+        uint32_t, "seq_scaling_matrix_present_flag",      1,
+        uint32_t, "vui_parameters_present_flag",          1,
+        uint32_t, "",                                     16,
+    ));
 }
 
 struct StdVideoH264ScalingLists {
-    uint16_t                                              scaling_list_present_mask;
-    uint16_t                                              use_default_scaling_matrix_mask;
-    uint8_t[ STD_VIDEO_H264_SCALING_LIST_4X4_NUM_LISTS ]  ScalingList4x4;
-    uint8_t[ STD_VIDEO_H264_SCALING_LIST_8X8_NUM_LISTS ]  ScalingList8x8;
+    uint16_t                                                                                              scaling_list_present_mask;
+    uint16_t                                                                                              use_default_scaling_matrix_mask;
+    uint8_t[ STD_VIDEO_H264_SCALING_LIST_4X4_NUM_ELEMENTS ][ STD_VIDEO_H264_SCALING_LIST_4X4_NUM_LISTS ]  ScalingList4x4;
+    uint8_t[ STD_VIDEO_H264_SCALING_LIST_8X8_NUM_ELEMENTS ][ STD_VIDEO_H264_SCALING_LIST_8X8_NUM_LISTS ]  ScalingList8x8;
 }
 
 struct StdVideoH264SequenceParameterSet {
@@ -383,6 +417,17 @@ struct StdVideoH264SequenceParameterSet {
 }
 
 struct StdVideoH264PpsFlags {
+    mixin( bitfields!(
+        uint32_t, "transform_8x8_mode_flag",                      1,
+        uint32_t, "redundant_pic_cnt_present_flag",               1,
+        uint32_t, "constrained_intra_pred_flag",                  1,
+        uint32_t, "deblocking_filter_control_present_flag",       1,
+        uint32_t, "weighted_pred_flag",                           1,
+        uint32_t, "bottom_field_pic_order_in_frame_present_flag", 1,
+        uint32_t, "entropy_coding_mode_flag",                     1,
+        uint32_t, "pic_scaling_matrix_present_flag",              1,
+        uint32_t, "",                                             24,
+    ));
 }
 
 struct StdVideoH264PictureParameterSet {
@@ -422,6 +467,15 @@ enum STD_VIDEO_DECODE_H264_FIELD_ORDER_COUNT_INVALID     = StdVideoDecodeH264Fie
 enum STD_VIDEO_DECODE_H2_64_FIELD_ORDER_COUNT_MAX_ENUM   = StdVideoDecodeH264FieldOrderCount.STD_VIDEO_DECODE_H2_64_FIELD_ORDER_COUNT_MAX_ENUM;
 
 struct StdVideoDecodeH264PictureInfoFlags {
+    mixin( bitfields!(
+        uint32_t, "field_pic_flag",           1,
+        uint32_t, "is_intra",                 1,
+        uint32_t, "IdrPicFlag",               1,
+        uint32_t, "bottom_field_flag",        1,
+        uint32_t, "is_reference",             1,
+        uint32_t, "complementary_field_pair", 1,
+        uint32_t, "",                         26,
+    ));
 }
 
 struct StdVideoDecodeH264PictureInfo {
@@ -436,6 +490,13 @@ struct StdVideoDecodeH264PictureInfo {
 }
 
 struct StdVideoDecodeH264ReferenceInfoFlags {
+    mixin( bitfields!(
+        uint32_t, "top_field_flag",               1,
+        uint32_t, "bottom_field_flag",            1,
+        uint32_t, "used_for_long_term_reference", 1,
+        uint32_t, "is_non_existing",              1,
+        uint32_t, "",                             28,
+    ));
 }
 
 struct StdVideoDecodeH264ReferenceInfo {
@@ -463,29 +524,51 @@ struct StdVideoEncodeH264WeightTableFlags {
 }
 
 struct StdVideoEncodeH264WeightTable {
-    StdVideoEncodeH264WeightTableFlags         flags;
-    uint8_t                                    luma_log2_weight_denom;
-    uint8_t                                    chroma_log2_weight_denom;
-    int8_t[ STD_VIDEO_H264_MAX_NUM_LIST_REF ]  luma_weight_l0;
-    int8_t[ STD_VIDEO_H264_MAX_NUM_LIST_REF ]  luma_offset_l0;
-    int8_t[ STD_VIDEO_H264_MAX_NUM_LIST_REF ]  chroma_weight_l0;
-    int8_t[ STD_VIDEO_H264_MAX_NUM_LIST_REF ]  chroma_offset_l0;
-    int8_t[ STD_VIDEO_H264_MAX_NUM_LIST_REF ]  luma_weight_l1;
-    int8_t[ STD_VIDEO_H264_MAX_NUM_LIST_REF ]  luma_offset_l1;
-    int8_t[ STD_VIDEO_H264_MAX_NUM_LIST_REF ]  chroma_weight_l1;
-    int8_t[ STD_VIDEO_H264_MAX_NUM_LIST_REF ]  chroma_offset_l1;
+    StdVideoEncodeH264WeightTableFlags                                             flags;
+    uint8_t                                                                        luma_log2_weight_denom;
+    uint8_t                                                                        chroma_log2_weight_denom;
+    int8_t[ STD_VIDEO_H264_MAX_NUM_LIST_REF ]                                      luma_weight_l0;
+    int8_t[ STD_VIDEO_H264_MAX_NUM_LIST_REF ]                                      luma_offset_l0;
+    int8_t[ STD_VIDEO_H264_MAX_CHROMA_PLANES ][ STD_VIDEO_H264_MAX_NUM_LIST_REF ]  chroma_weight_l0;
+    int8_t[ STD_VIDEO_H264_MAX_CHROMA_PLANES ][ STD_VIDEO_H264_MAX_NUM_LIST_REF ]  chroma_offset_l0;
+    int8_t[ STD_VIDEO_H264_MAX_NUM_LIST_REF ]                                      luma_weight_l1;
+    int8_t[ STD_VIDEO_H264_MAX_NUM_LIST_REF ]                                      luma_offset_l1;
+    int8_t[ STD_VIDEO_H264_MAX_CHROMA_PLANES ][ STD_VIDEO_H264_MAX_NUM_LIST_REF ]  chroma_weight_l1;
+    int8_t[ STD_VIDEO_H264_MAX_CHROMA_PLANES ][ STD_VIDEO_H264_MAX_NUM_LIST_REF ]  chroma_offset_l1;
 }
 
 struct StdVideoEncodeH264SliceHeaderFlags {
+    mixin( bitfields!(
+        uint32_t,  "direct_spatial_mv_pred_flag",      1,
+        uint32_t,  "num_ref_idx_active_override_flag", 1,
+        uint32_t,  "reserved",                         30,
+    ));
 }
 
 struct StdVideoEncodeH264PictureInfoFlags {
+    mixin( bitfields!(
+        uint32_t,  "IdrPicFlag",                         1,
+        uint32_t,  "is_reference",                       1,
+        uint32_t,  "no_output_of_prior_pics_flag",       1,
+        uint32_t,  "long_term_reference_flag",           1,
+        uint32_t,  "adaptive_ref_pic_marking_mode_flag", 1,
+        uint32_t,  "reserved",                           27,
+    ));
 }
 
 struct StdVideoEncodeH264ReferenceInfoFlags {
+    mixin( bitfields!(
+        uint32_t,  "used_for_long_term_reference", 1,
+        uint32_t,  "reserved",                     31,
+    ));
 }
 
 struct StdVideoEncodeH264ReferenceListsInfoFlags {
+    mixin( bitfields!(
+        uint32_t,  "ref_pic_list_modification_flag_l0", 1,
+        uint32_t,  "ref_pic_list_modification_flag_l1", 1,
+        uint32_t,  "reserved",                          30,
+    ));
 }
 
 struct StdVideoEncodeH264RefListModEntry {
@@ -506,8 +589,8 @@ struct StdVideoEncodeH264ReferenceListsInfo {
     StdVideoEncodeH264ReferenceListsInfoFlags       flags;
     uint8_t                                         num_ref_idx_l0_active_minus1;
     uint8_t                                         num_ref_idx_l1_active_minus1;
-    uint8_t[STD_VIDEO_H264_MAX_NUM_LIST_REF]        RefPicList0;
-    uint8_t[STD_VIDEO_H264_MAX_NUM_LIST_REF]        RefPicList1;
+    uint8_t[ STD_VIDEO_H264_MAX_NUM_LIST_REF ]      RefPicList0;
+    uint8_t[ STD_VIDEO_H264_MAX_NUM_LIST_REF ]      RefPicList1;
     uint8_t                                         refList0ModOpCount;
     uint8_t                                         refList1ModOpCount;
     uint8_t                                         refPicMarkingOpCount;
@@ -738,6 +821,16 @@ struct StdVideoH265SubLayerHrdParameters {
 }
 
 struct StdVideoH265HrdFlags {
+    mixin( bitfields!(
+        uint32_t, "nal_hrd_parameters_present_flag",           1,
+        uint32_t, "vcl_hrd_parameters_present_flag",           1,
+        uint32_t, "sub_pic_hrd_params_present_flag",           1,
+        uint32_t, "sub_pic_cpb_params_in_pic_timing_sei_flag", 1,
+        uint32_t, "fixed_pic_rate_general_flag",               8,
+        uint32_t, "fixed_pic_rate_within_cvs_flag",            8,
+        uint32_t, "low_delay_hrd_flag",                        8,
+        uint32_t, "",                                          4,
+    ));
 }
 
 struct StdVideoH265HrdParameters {
@@ -759,9 +852,24 @@ struct StdVideoH265HrdParameters {
 }
 
 struct StdVideoH265VpsFlags {
+    mixin( bitfields!(
+        uint32_t, "vps_temporal_id_nesting_flag",             1,
+        uint32_t, "vps_sub_layer_ordering_info_present_flag", 1,
+        uint32_t, "vps_timing_info_present_flag",             1,
+        uint32_t, "vps_poc_proportional_to_timing_flag",      1,
+        uint32_t, "",                                         28,
+    ));
 }
 
 struct StdVideoH265ProfileTierLevelFlags {
+    mixin( bitfields!(
+        uint32_t, "general_tier_flag",                  1,
+        uint32_t, "general_progressive_source_flag",    1,
+        uint32_t, "general_interlaced_source_flag",     1,
+        uint32_t, "general_non_packed_constraint_flag", 1,
+        uint32_t, "general_frame_only_constraint_flag", 1,
+        uint32_t, "",                                   27,
+    ));
 }
 
 struct StdVideoH265ProfileTierLevel {
@@ -786,15 +894,36 @@ struct StdVideoH265VideoParameterSet {
 }
 
 struct StdVideoH265ScalingLists {
-    uint8_t[ STD_VIDEO_H265_SCALING_LIST_4X4_NUM_LISTS ]    ScalingList4x4;
-    uint8_t[ STD_VIDEO_H265_SCALING_LIST_8X8_NUM_LISTS ]    ScalingList8x8;
-    uint8_t[ STD_VIDEO_H265_SCALING_LIST_16X16_NUM_LISTS ]  ScalingList16x16;
-    uint8_t[ STD_VIDEO_H265_SCALING_LIST_32X32_NUM_LISTS ]  ScalingList32x32;
-    uint8_t[ STD_VIDEO_H265_SCALING_LIST_16X16_NUM_LISTS ]  ScalingListDCCoef16x16;
-    uint8_t[ STD_VIDEO_H265_SCALING_LIST_32X32_NUM_LISTS ]  ScalingListDCCoef32x32;
+    uint8_t[ STD_VIDEO_H265_SCALING_LIST_4X4_NUM_ELEMENTS ][ STD_VIDEO_H265_SCALING_LIST_4X4_NUM_LISTS ]      ScalingList4x4;
+    uint8_t[ STD_VIDEO_H265_SCALING_LIST_8X8_NUM_ELEMENTS ][ STD_VIDEO_H265_SCALING_LIST_8X8_NUM_LISTS ]      ScalingList8x8;
+    uint8_t[ STD_VIDEO_H265_SCALING_LIST_16X16_NUM_ELEMENTS ][ STD_VIDEO_H265_SCALING_LIST_16X16_NUM_LISTS ]  ScalingList16x16;
+    uint8_t[ STD_VIDEO_H265_SCALING_LIST_32X32_NUM_ELEMENTS ][ STD_VIDEO_H265_SCALING_LIST_32X32_NUM_LISTS ]  ScalingList32x32;
+    uint8_t[ STD_VIDEO_H265_SCALING_LIST_16X16_NUM_LISTS ]                                                    ScalingListDCCoef16x16;
+    uint8_t[ STD_VIDEO_H265_SCALING_LIST_32X32_NUM_LISTS ]                                                    ScalingListDCCoef32x32;
 }
 
 struct StdVideoH265SpsVuiFlags {
+    mixin( bitfields!(
+        uint32_t, "aspect_ratio_info_present_flag",          1,
+        uint32_t, "overscan_info_present_flag",              1,
+        uint32_t, "overscan_appropriate_flag",               1,
+        uint32_t, "video_signal_type_present_flag",          1,
+        uint32_t, "video_full_range_flag",                   1,
+        uint32_t, "colour_description_present_flag",         1,
+        uint32_t, "chroma_loc_info_present_flag",            1,
+        uint32_t, "neutral_chroma_indication_flag",          1,
+        uint32_t, "field_seq_flag",                          1,
+        uint32_t, "frame_field_info_present_flag",           1,
+        uint32_t, "default_display_window_flag",             1,
+        uint32_t, "vui_timing_info_present_flag",            1,
+        uint32_t, "vui_poc_proportional_to_timing_flag",     1,
+        uint32_t, "vui_hrd_parameters_present_flag",         1,
+        uint32_t, "bitstream_restriction_flag",              1,
+        uint32_t, "tiles_fixed_structure_flag",              1,
+        uint32_t, "motion_vectors_over_pic_boundaries_flag", 1,
+        uint32_t, "restricted_ref_pic_lists_flag",           1,
+        uint32_t, "",                                        14,
+    ));
 }
 
 struct StdVideoH265SequenceParameterSetVui {
@@ -827,13 +956,51 @@ struct StdVideoH265SequenceParameterSetVui {
 }
 
 struct StdVideoH265PredictorPaletteEntries {
-    uint16_t[ STD_VIDEO_H265_PREDICTOR_PALETTE_COMPONENTS_LIST_SIZE ]  PredictorPaletteEntries;
+    uint16_t[ STD_VIDEO_H265_PREDICTOR_PALETTE_COMP_ENTRIES_LIST_SIZE ][ STD_VIDEO_H265_PREDICTOR_PALETTE_COMPONENTS_LIST_SIZE ]  PredictorPaletteEntries;
 }
 
 struct StdVideoH265SpsFlags {
+    mixin( bitfields!(
+        uint32_t, "sps_temporal_id_nesting_flag",                    1,
+        uint32_t, "separate_colour_plane_flag",                      1,
+        uint32_t, "conformance_window_flag",                         1,
+        uint32_t, "sps_sub_layer_ordering_info_present_flag",        1,
+        uint32_t, "scaling_list_enabled_flag",                       1,
+        uint32_t, "sps_scaling_list_data_present_flag",              1,
+        uint32_t, "amp_enabled_flag",                                1,
+        uint32_t, "sample_adaptive_offset_enabled_flag",             1,
+        uint32_t, "pcm_enabled_flag",                                1,
+        uint32_t, "pcm_loop_filter_disabled_flag",                   1,
+        uint32_t, "long_term_ref_pics_present_flag",                 1,
+        uint32_t, "sps_temporal_mvp_enabled_flag",                   1,
+        uint32_t, "strong_intra_smoothing_enabled_flag",             1,
+        uint32_t, "vui_parameters_present_flag",                     1,
+        uint32_t, "sps_extension_present_flag",                      1,
+        uint32_t, "sps_range_extension_flag",                        1,
+        uint32_t, "transform_skip_rotation_enabled_flag",            1,
+        uint32_t, "transform_skip_context_enabled_flag",             1,
+        uint32_t, "implicit_rdpcm_enabled_flag",                     1,
+        uint32_t, "explicit_rdpcm_enabled_flag",                     1,
+        uint32_t, "extended_precision_processing_flag",              1,
+        uint32_t, "intra_smoothing_disabled_flag",                   1,
+        uint32_t, "high_precision_offsets_enabled_flag",             1,
+        uint32_t, "persistent_rice_adaptation_enabled_flag",         1,
+        uint32_t, "cabac_bypass_alignment_enabled_flag",             1,
+        uint32_t, "sps_scc_extension_flag",                          1,
+        uint32_t, "sps_curr_pic_ref_enabled_flag",                   1,
+        uint32_t, "palette_mode_enabled_flag",                       1,
+        uint32_t, "sps_palette_predictor_initializers_present_flag", 1,
+        uint32_t, "intra_boundary_filtering_disabled_flag",          1,
+        uint32_t, "",                                                2,
+    ));
 }
 
 struct StdVideoH265ShortTermRefPicSetFlags {
+    mixin( bitfields!(
+        uint32_t, "inter_ref_pic_set_prediction_flag", 1,
+        uint32_t, "delta_rps_sign",                    1,
+        uint32_t, "",                                  30,
+    ));
 }
 
 struct StdVideoH265ShortTermRefPicSet {
@@ -901,6 +1068,40 @@ struct StdVideoH265SequenceParameterSet {
 }
 
 struct StdVideoH265PpsFlags {
+    mixin( bitfields!(
+        uint32_t, "dependent_slice_segments_enabled_flag",           1,
+        uint32_t, "output_flag_present_flag",                        1,
+        uint32_t, "sign_data_hiding_enabled_flag",                   1,
+        uint32_t, "cabac_init_present_flag",                         1,
+        uint32_t, "constrained_intra_pred_flag",                     1,
+        uint32_t, "transform_skip_enabled_flag",                     1,
+        uint32_t, "cu_qp_delta_enabled_flag",                        1,
+        uint32_t, "pps_slice_chroma_qp_offsets_present_flag",        1,
+        uint32_t, "weighted_pred_flag",                              1,
+        uint32_t, "weighted_bipred_flag",                            1,
+        uint32_t, "transquant_bypass_enabled_flag",                  1,
+        uint32_t, "tiles_enabled_flag",                              1,
+        uint32_t, "entropy_coding_sync_enabled_flag",                1,
+        uint32_t, "uniform_spacing_flag",                            1,
+        uint32_t, "loop_filter_across_tiles_enabled_flag",           1,
+        uint32_t, "pps_loop_filter_across_slices_enabled_flag",      1,
+        uint32_t, "deblocking_filter_control_present_flag",          1,
+        uint32_t, "deblocking_filter_override_enabled_flag",         1,
+        uint32_t, "pps_deblocking_filter_disabled_flag",             1,
+        uint32_t, "pps_scaling_list_data_present_flag",              1,
+        uint32_t, "lists_modification_present_flag",                 1,
+        uint32_t, "slice_segment_header_extension_present_flag",     1,
+        uint32_t, "pps_extension_present_flag",                      1,
+        uint32_t, "cross_component_prediction_enabled_flag",         1,
+        uint32_t, "chroma_qp_offset_list_enabled_flag",              1,
+        uint32_t, "pps_curr_pic_ref_enabled_flag",                   1,
+        uint32_t, "residual_adaptive_colour_transform_enabled_flag", 1,
+        uint32_t, "pps_slice_act_qp_offsets_present_flag",           1,
+        uint32_t, "pps_palette_predictor_initializers_present_flag", 1,
+        uint32_t, "monochrome_palette_flag",                         1,
+        uint32_t, "pps_range_extension_flag",                        1,
+        uint32_t, "",                                                1,
+    ));
 }
 
 struct StdVideoH265PictureParameterSet {
@@ -953,6 +1154,13 @@ enum VK_STD_VULKAN_VIDEO_CODEC_H265_DECODE_SPEC_VERSION = VK_STD_VULKAN_VIDEO_CO
 enum const( char )* VK_STD_VULKAN_VIDEO_CODEC_H265_DECODE_EXTENSION_NAME = "VK_STD_vulkan_video_codec_h265_decode";
 
 struct StdVideoDecodeH265PictureInfoFlags {
+    mixin( bitfields!(
+        uint32_t, "IrapPicFlag",                     1,
+        uint32_t, "IdrPicFlag",                      1,
+        uint32_t, "IsReference",                     1,
+        uint32_t, "short_term_ref_pic_set_sps_flag", 1,
+        uint32_t, "",                                28,
+    ));
 }
 
 struct StdVideoDecodeH265PictureInfo {
@@ -970,6 +1178,11 @@ struct StdVideoDecodeH265PictureInfo {
 }
 
 struct StdVideoDecodeH265ReferenceInfoFlags {
+    mixin( bitfields!(
+        uint32_t, "used_for_long_term_reference", 1,
+        uint32_t, "unused_for_reference",         1,
+        uint32_t, "",                             30,
+    ));
 }
 
 struct StdVideoDecodeH265ReferenceInfo {
@@ -995,20 +1208,35 @@ struct StdVideoEncodeH265WeightTableFlags {
 }
 
 struct StdVideoEncodeH265WeightTable {
-    StdVideoEncodeH265WeightTableFlags         flags;
-    uint8_t                                    luma_log2_weight_denom;
-    int8_t                                     delta_chroma_log2_weight_denom;
-    int8_t[ STD_VIDEO_H265_MAX_NUM_LIST_REF ]  delta_luma_weight_l0;
-    int8_t[ STD_VIDEO_H265_MAX_NUM_LIST_REF ]  luma_offset_l0;
-    int8_t[ STD_VIDEO_H265_MAX_NUM_LIST_REF ]  delta_chroma_weight_l0;
-    int8_t[ STD_VIDEO_H265_MAX_NUM_LIST_REF ]  delta_chroma_offset_l0;
-    int8_t[ STD_VIDEO_H265_MAX_NUM_LIST_REF ]  delta_luma_weight_l1;
-    int8_t[ STD_VIDEO_H265_MAX_NUM_LIST_REF ]  luma_offset_l1;
-    int8_t[ STD_VIDEO_H265_MAX_NUM_LIST_REF ]  delta_chroma_weight_l1;
-    int8_t[ STD_VIDEO_H265_MAX_NUM_LIST_REF ]  delta_chroma_offset_l1;
+    StdVideoEncodeH265WeightTableFlags                                             flags;
+    uint8_t                                                                        luma_log2_weight_denom;
+    int8_t                                                                         delta_chroma_log2_weight_denom;
+    int8_t[ STD_VIDEO_H265_MAX_NUM_LIST_REF ]                                      delta_luma_weight_l0;
+    int8_t[ STD_VIDEO_H265_MAX_NUM_LIST_REF ]                                      luma_offset_l0;
+    int8_t[ STD_VIDEO_H265_MAX_CHROMA_PLANES ][ STD_VIDEO_H265_MAX_NUM_LIST_REF ]  delta_chroma_weight_l0;
+    int8_t[ STD_VIDEO_H265_MAX_CHROMA_PLANES ][ STD_VIDEO_H265_MAX_NUM_LIST_REF ]  delta_chroma_offset_l0;
+    int8_t[ STD_VIDEO_H265_MAX_NUM_LIST_REF ]                                      delta_luma_weight_l1;
+    int8_t[ STD_VIDEO_H265_MAX_NUM_LIST_REF ]                                      luma_offset_l1;
+    int8_t[ STD_VIDEO_H265_MAX_CHROMA_PLANES ][ STD_VIDEO_H265_MAX_NUM_LIST_REF ]  delta_chroma_weight_l1;
+    int8_t[ STD_VIDEO_H265_MAX_CHROMA_PLANES ][ STD_VIDEO_H265_MAX_NUM_LIST_REF ]  delta_chroma_offset_l1;
 }
 
 struct StdVideoEncodeH265SliceSegmentHeaderFlags {
+    mixin( bitfields!(
+        uint32_t,  "first_slice_segment_in_pic_flag",              1,
+        uint32_t,  "dependent_slice_segment_flag",                 1,
+        uint32_t,  "slice_sao_luma_flag",                          1,
+        uint32_t,  "slice_sao_chroma_flag",                        1,
+        uint32_t,  "num_ref_idx_active_override_flag",             1,
+        uint32_t,  "mvd_l1_zero_flag",                             1,
+        uint32_t,  "cabac_init_flag",                              1,
+        uint32_t,  "cu_chroma_qp_offset_enabled_flag",             1,
+        uint32_t,  "deblocking_filter_override_flag",              1,
+        uint32_t,  "slice_deblocking_filter_disabled_flag",        1,
+        uint32_t,  "collocated_from_l0_flag",                      1,
+        uint32_t,  "slice_loop_filter_across_slices_enabled_flag", 1,
+        uint32_t,  "reserved",                                     20,
+    ));
 }
 
 struct StdVideoEncodeH265SliceSegmentHeader {
@@ -1030,19 +1258,36 @@ struct StdVideoEncodeH265SliceSegmentHeader {
 }
 
 struct StdVideoEncodeH265ReferenceListsInfoFlags {
+    mixin( bitfields!(
+        uint32_t,  "ref_pic_list_modification_flag_l0", 1,
+        uint32_t,  "ref_pic_list_modification_flag_l1", 1,
+        uint32_t,  "reserved",                          30,
+    ));
 }
 
 struct StdVideoEncodeH265ReferenceListsInfo {
-    StdVideoEncodeH265ReferenceListsInfoFlags  flags;
-    uint8_t                                    num_ref_idx_l0_active_minus1;
-    uint8_t                                    num_ref_idx_l1_active_minus1;
-    uint8_t[STD_VIDEO_H265_MAX_NUM_LIST_REF]   RefPicList0;
-    uint8_t[STD_VIDEO_H265_MAX_NUM_LIST_REF]   RefPicList1;
-    uint8_t[STD_VIDEO_H265_MAX_NUM_LIST_REF]   list_entry_l0;
-    uint8_t[STD_VIDEO_H265_MAX_NUM_LIST_REF]   list_entry_l1;
+    StdVideoEncodeH265ReferenceListsInfoFlags   flags;
+    uint8_t                                     num_ref_idx_l0_active_minus1;
+    uint8_t                                     num_ref_idx_l1_active_minus1;
+    uint8_t[ STD_VIDEO_H265_MAX_NUM_LIST_REF ]  RefPicList0;
+    uint8_t[ STD_VIDEO_H265_MAX_NUM_LIST_REF ]  RefPicList1;
+    uint8_t[ STD_VIDEO_H265_MAX_NUM_LIST_REF ]  list_entry_l0;
+    uint8_t[ STD_VIDEO_H265_MAX_NUM_LIST_REF ]  list_entry_l1;
 }
 
 struct StdVideoEncodeH265PictureInfoFlags {
+    mixin( bitfields!(
+        uint32_t,  "is_reference",                    1,
+        uint32_t,  "IrapPicFlag",                     1,
+        uint32_t,  "used_for_long_term_reference",    1,
+        uint32_t,  "discardable_flag",                1,
+        uint32_t,  "cross_layer_bla_flag",            1,
+        uint32_t,  "pic_output_flag",                 1,
+        uint32_t,  "no_output_of_prior_pics_flag",    1,
+        uint32_t,  "short_term_ref_pic_set_sps_flag", 1,
+        uint32_t,  "slice_temporal_mvp_enabled_flag", 1,
+        uint32_t,  "reserved",                        23,
+    ));
 }
 
 struct StdVideoEncodeH265LongTermRefPics {
@@ -1071,6 +1316,11 @@ struct StdVideoEncodeH265PictureInfo {
 }
 
 struct StdVideoEncodeH265ReferenceInfoFlags {
+    mixin( bitfields!(
+        uint32_t,  "used_for_long_term_reference", 1,
+        uint32_t,  "unused_for_reference",         1,
+        uint32_t,  "reserved",                     30,
+    ));
 }
 
 struct StdVideoEncodeH265ReferenceInfo {

@@ -762,7 +762,7 @@ struct DispatchDevice {
     void      CmdSetScissor( uint32_t firstScissor, uint32_t scissorCount, const( VkRect2D )* pScissors ) { vkCmdSetScissor( commandBuffer, firstScissor, scissorCount, pScissors ); }
     void      CmdSetLineWidth( float lineWidth ) { vkCmdSetLineWidth( commandBuffer, lineWidth ); }
     void      CmdSetDepthBias( float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor ) { vkCmdSetDepthBias( commandBuffer, depthBiasConstantFactor, depthBiasClamp, depthBiasSlopeFactor ); }
-    void      CmdSetBlendConstants( const float[4] blendConstants ) { vkCmdSetBlendConstants( commandBuffer, blendConstants ); }
+    void      CmdSetBlendConstants( const( float )* blendConstants ) { vkCmdSetBlendConstants( commandBuffer, blendConstants ); }
     void      CmdSetDepthBounds( float minDepthBounds, float maxDepthBounds ) { vkCmdSetDepthBounds( commandBuffer, minDepthBounds, maxDepthBounds ); }
     void      CmdSetStencilCompareMask( VkStencilFaceFlags faceMask, uint32_t compareMask ) { vkCmdSetStencilCompareMask( commandBuffer, faceMask, compareMask ); }
     void      CmdSetStencilWriteMask( VkStencilFaceFlags faceMask, uint32_t writeMask ) { vkCmdSetStencilWriteMask( commandBuffer, faceMask, writeMask ); }
@@ -923,7 +923,7 @@ struct DispatchDevice {
     void      ReleaseProfilingLockKHR() { vkReleaseProfilingLockKHR( vkDevice ); }
 
     // VK_KHR_fragment_shading_rate
-    void      CmdSetFragmentShadingRateKHR( const( VkExtent2D )* pFragmentSize, const VkFragmentShadingRateCombinerOpKHR[2] combinerOps ) { vkCmdSetFragmentShadingRateKHR( commandBuffer, pFragmentSize, combinerOps ); }
+    void      CmdSetFragmentShadingRateKHR( const( VkExtent2D )* pFragmentSize, const( VkFragmentShadingRateCombinerOpKHR )* combinerOps ) { vkCmdSetFragmentShadingRateKHR( commandBuffer, pFragmentSize, combinerOps ); }
 
     // VK_KHR_present_wait
     VkResult  WaitForPresentKHR( VkSwapchainKHR swapchain, uint64_t presentId, uint64_t timeout ) { return vkWaitForPresentKHR( vkDevice, swapchain, presentId, timeout ); }
@@ -1119,7 +1119,7 @@ struct DispatchDevice {
     VkResult  GetAccelerationStructureOpaqueCaptureDescriptorDataEXT( const( VkAccelerationStructureCaptureDescriptorDataInfoEXT )* pInfo, void* pData ) { return vkGetAccelerationStructureOpaqueCaptureDescriptorDataEXT( vkDevice, pInfo, pData ); }
 
     // VK_NV_fragment_shading_rate_enums
-    void      CmdSetFragmentShadingRateEnumNV( VkFragmentShadingRateNV shadingRate, const VkFragmentShadingRateCombinerOpKHR[2] combinerOps ) { vkCmdSetFragmentShadingRateEnumNV( commandBuffer, shadingRate, combinerOps ); }
+    void      CmdSetFragmentShadingRateEnumNV( VkFragmentShadingRateNV shadingRate, const( VkFragmentShadingRateCombinerOpKHR )* combinerOps ) { vkCmdSetFragmentShadingRateEnumNV( commandBuffer, shadingRate, combinerOps ); }
 
     // VK_EXT_device_fault
     VkResult  GetDeviceFaultInfoEXT( VkDeviceFaultCountsEXT* pFaultCounts, VkDeviceFaultInfoEXT* pFaultInfo ) { return vkGetDeviceFaultInfoEXT( vkDevice, pFaultCounts, pFaultInfo ); }

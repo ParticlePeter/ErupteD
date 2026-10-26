@@ -5,6 +5,10 @@ authors         "Alex Parrill" "Peter Particle"
 targetType      "sourceLibrary"
 license         "BSD 2-clause"
 
+// generator of the bindings in source/erupted from the Khronos vk.xml and video.xml registry, e.g.:
+// dub run :generate -- path/to/Vulkan-Headers source/erupted
+subPackage "generator"
+
 // example how to initialize a logical device
 subPackage {
     name                "devices"

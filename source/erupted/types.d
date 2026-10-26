@@ -55,7 +55,7 @@ pure {
 enum VK_API_VERSION_1_0 = VK_MAKE_API_VERSION( 0, 1, 0, 0 );	// Patch version should always be set to 0
 
 // Version of this file (corresponding c header)
-enum VK_HEADER_VERSION = 263;
+enum VK_HEADER_VERSION = 265;
 
 // Complete version of this file (corresponding c header)
 enum VK_HEADER_VERSION_COMPLETE = VK_MAKE_API_VERSION( 0, 1, 3, VK_HEADER_VERSION );
@@ -937,6 +937,8 @@ enum VkStructureType {
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_MEMORY_RDMA_FEATURES_NV                           = 1000371001,
     VK_STRUCTURE_TYPE_PIPELINE_PROPERTIES_IDENTIFIER_EXT                                         = 1000372000,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_PROPERTIES_FEATURES_EXT                           = 1000372001,
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAME_BOUNDARY_FEATURES_EXT                                = 1000375000,
+    VK_STRUCTURE_TYPE_FRAME_BOUNDARY_EXT                                                         = 1000375001,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTISAMPLED_RENDER_TO_SINGLE_SAMPLED_FEATURES_EXT         = 1000376000,
     VK_STRUCTURE_TYPE_SUBPASS_RESOLVE_PERFORMANCE_QUERY_EXT                                      = 1000376001,
     VK_STRUCTURE_TYPE_MULTISAMPLED_RENDER_TO_SINGLE_SAMPLED_INFO_EXT                             = 1000376002,
@@ -1062,6 +1064,7 @@ enum VkStructureType {
     VK_STRUCTURE_TYPE_IMPORT_SCREEN_BUFFER_INFO_QNX                                              = 1000529002,
     VK_STRUCTURE_TYPE_EXTERNAL_FORMAT_QNX                                                        = 1000529003,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_MEMORY_SCREEN_BUFFER_FEATURES_QNX                 = 1000529004,
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_LAYERED_DRIVER_PROPERTIES_MSFT                             = 1000530000,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_POOL_OVERALLOCATION_FEATURES_NV                 = 1000546000,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTER_FEATURES                                  = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTERS_FEATURES,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DRAW_PARAMETER_FEATURES                             = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DRAW_PARAMETERS_FEATURES,
@@ -1943,6 +1946,8 @@ enum VK_STRUCTURE_TYPE_MEMORY_GET_REMOTE_ADDRESS_INFO_NV                        
 enum VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_MEMORY_RDMA_FEATURES_NV                          = VkStructureType.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_MEMORY_RDMA_FEATURES_NV;
 enum VK_STRUCTURE_TYPE_PIPELINE_PROPERTIES_IDENTIFIER_EXT                                        = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_PROPERTIES_IDENTIFIER_EXT;
 enum VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_PROPERTIES_FEATURES_EXT                          = VkStructureType.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_PROPERTIES_FEATURES_EXT;
+enum VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAME_BOUNDARY_FEATURES_EXT                               = VkStructureType.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAME_BOUNDARY_FEATURES_EXT;
+enum VK_STRUCTURE_TYPE_FRAME_BOUNDARY_EXT                                                        = VkStructureType.VK_STRUCTURE_TYPE_FRAME_BOUNDARY_EXT;
 enum VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTISAMPLED_RENDER_TO_SINGLE_SAMPLED_FEATURES_EXT        = VkStructureType.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTISAMPLED_RENDER_TO_SINGLE_SAMPLED_FEATURES_EXT;
 enum VK_STRUCTURE_TYPE_SUBPASS_RESOLVE_PERFORMANCE_QUERY_EXT                                     = VkStructureType.VK_STRUCTURE_TYPE_SUBPASS_RESOLVE_PERFORMANCE_QUERY_EXT;
 enum VK_STRUCTURE_TYPE_MULTISAMPLED_RENDER_TO_SINGLE_SAMPLED_INFO_EXT                            = VkStructureType.VK_STRUCTURE_TYPE_MULTISAMPLED_RENDER_TO_SINGLE_SAMPLED_INFO_EXT;
@@ -2068,6 +2073,7 @@ enum VK_STRUCTURE_TYPE_SCREEN_BUFFER_FORMAT_PROPERTIES_QNX                      
 enum VK_STRUCTURE_TYPE_IMPORT_SCREEN_BUFFER_INFO_QNX                                             = VkStructureType.VK_STRUCTURE_TYPE_IMPORT_SCREEN_BUFFER_INFO_QNX;
 enum VK_STRUCTURE_TYPE_EXTERNAL_FORMAT_QNX                                                       = VkStructureType.VK_STRUCTURE_TYPE_EXTERNAL_FORMAT_QNX;
 enum VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_MEMORY_SCREEN_BUFFER_FEATURES_QNX                = VkStructureType.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_MEMORY_SCREEN_BUFFER_FEATURES_QNX;
+enum VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_LAYERED_DRIVER_PROPERTIES_MSFT                            = VkStructureType.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_LAYERED_DRIVER_PROPERTIES_MSFT;
 enum VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_POOL_OVERALLOCATION_FEATURES_NV                = VkStructureType.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_POOL_OVERALLOCATION_FEATURES_NV;
 enum VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTER_FEATURES                                 = VkStructureType.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTER_FEATURES;
 enum VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DRAW_PARAMETER_FEATURES                            = VkStructureType.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DRAW_PARAMETER_FEATURES;
@@ -13230,7 +13236,7 @@ struct VkPhysicalDeviceRayTracingPropertiesNV {
 }
 
 struct VkTransformMatrixKHR {
-    float[3][4]  matrix;
+    float[4][3]  matrix;
 }
 alias VkTransformMatrixNV = VkTransformMatrixKHR;
 
@@ -15935,6 +15941,42 @@ struct VkPhysicalDevicePipelinePropertiesFeaturesEXT {
 }
 
 
+// - VK_EXT_frame_boundary -
+enum VK_EXT_frame_boundary = 1;
+
+enum VK_EXT_FRAME_BOUNDARY_SPEC_VERSION = 1;
+enum const( char )* VK_EXT_FRAME_BOUNDARY_EXTENSION_NAME = "VK_EXT_frame_boundary";
+
+alias VkFrameBoundaryFlagsEXT = VkFlags;
+enum VkFrameBoundaryFlagBitsEXT : VkFrameBoundaryFlagsEXT {
+    VK_FRAME_BOUNDARY_FRAME_END_BIT_EXT  = 0x00000001,
+    VK_FRAME_BOUNDARY_FLAG_BITS_MAX_ENUM_EXT = 0x7FFFFFFF
+}
+
+enum VK_FRAME_BOUNDARY_FRAME_END_BIT_EXT = VkFrameBoundaryFlagBitsEXT.VK_FRAME_BOUNDARY_FRAME_END_BIT_EXT;
+enum VK_FRAME_BOUNDARY_FLAG_BITS_MAX_ENUM_EXT = VkFrameBoundaryFlagBitsEXT.VK_FRAME_BOUNDARY_FLAG_BITS_MAX_ENUM_EXT;
+
+struct VkPhysicalDeviceFrameBoundaryFeaturesEXT {
+    VkStructureType  sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAME_BOUNDARY_FEATURES_EXT;
+    void*            pNext;
+    VkBool32         frameBoundary;
+}
+
+struct VkFrameBoundaryEXT {
+    VkStructureType          sType = VK_STRUCTURE_TYPE_FRAME_BOUNDARY_EXT;
+    const( void )*           pNext;
+    VkFrameBoundaryFlagsEXT  flags;
+    uint64_t                 frameID;
+    uint32_t                 imageCount;
+    const( VkImage )*        pImages;
+    uint32_t                 bufferCount;
+    const( VkBuffer )*       pBuffers;
+    uint64_t                 tagName;
+    size_t                   tagSize;
+    const( void )*           pTag;
+}
+
+
 // - VK_EXT_multisampled_render_to_single_sampled -
 enum VK_EXT_multisampled_render_to_single_sampled = 1;
 
@@ -17452,6 +17494,29 @@ struct VkPhysicalDeviceAttachmentFeedbackLoopDynamicStateFeaturesEXT {
     VkStructureType  sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ATTACHMENT_FEEDBACK_LOOP_DYNAMIC_STATE_FEATURES_EXT;
     void*            pNext;
     VkBool32         attachmentFeedbackLoopDynamicState;
+}
+
+
+// - VK_MSFT_layered_driver -
+enum VK_MSFT_layered_driver = 1;
+
+enum VK_MSFT_LAYERED_DRIVER_SPEC_VERSION = 1;
+enum const( char )* VK_MSFT_LAYERED_DRIVER_EXTENSION_NAME = "VK_MSFT_layered_driver";
+
+enum VkLayeredDriverUnderlyingApiMSFT {
+    VK_LAYERED_DRIVER_UNDERLYING_API_NONE_MSFT   = 0,
+    VK_LAYERED_DRIVER_UNDERLYING_API_D3D12_MSFT  = 1,
+    VK_LAYERED_DRIVER_UNDERLYING_API_MAX_ENUM_MSFT = 0x7FFFFFFF
+}
+
+enum VK_LAYERED_DRIVER_UNDERLYING_API_NONE_MSFT  = VkLayeredDriverUnderlyingApiMSFT.VK_LAYERED_DRIVER_UNDERLYING_API_NONE_MSFT;
+enum VK_LAYERED_DRIVER_UNDERLYING_API_D3D12_MSFT = VkLayeredDriverUnderlyingApiMSFT.VK_LAYERED_DRIVER_UNDERLYING_API_D3D12_MSFT;
+enum VK_LAYERED_DRIVER_UNDERLYING_API_MAX_ENUM_MSFT = VkLayeredDriverUnderlyingApiMSFT.VK_LAYERED_DRIVER_UNDERLYING_API_MAX_ENUM_MSFT;
+
+struct VkPhysicalDeviceLayeredDriverPropertiesMSFT {
+    VkStructureType                   sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_LAYERED_DRIVER_PROPERTIES_MSFT;
+    void*                             pNext;
+    VkLayeredDriverUnderlyingApiMSFT  underlyingAPI;
 }
 
 

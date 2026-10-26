@@ -114,7 +114,7 @@ extern( System ) {
     alias PFN_vkCmdSetScissor                                                   = void      function( VkCommandBuffer commandBuffer, uint32_t firstScissor, uint32_t scissorCount, const( VkRect2D )* pScissors );
     alias PFN_vkCmdSetLineWidth                                                 = void      function( VkCommandBuffer commandBuffer, float lineWidth );
     alias PFN_vkCmdSetDepthBias                                                 = void      function( VkCommandBuffer commandBuffer, float depthBiasConstantFactor, float depthBiasClamp, float depthBiasSlopeFactor );
-    alias PFN_vkCmdSetBlendConstants                                            = void      function( VkCommandBuffer commandBuffer, const float[4] blendConstants );
+    alias PFN_vkCmdSetBlendConstants                                            = void      function( VkCommandBuffer commandBuffer, const( float )* blendConstants );
     alias PFN_vkCmdSetDepthBounds                                               = void      function( VkCommandBuffer commandBuffer, float minDepthBounds, float maxDepthBounds );
     alias PFN_vkCmdSetStencilCompareMask                                        = void      function( VkCommandBuffer commandBuffer, VkStencilFaceFlags faceMask, uint32_t compareMask );
     alias PFN_vkCmdSetStencilWriteMask                                          = void      function( VkCommandBuffer commandBuffer, VkStencilFaceFlags faceMask, uint32_t writeMask );
@@ -322,7 +322,7 @@ extern( System ) {
 
     // VK_KHR_fragment_shading_rate
     alias PFN_vkGetPhysicalDeviceFragmentShadingRatesKHR                        = VkResult  function( VkPhysicalDevice physicalDevice, uint32_t* pFragmentShadingRateCount, VkPhysicalDeviceFragmentShadingRateKHR* pFragmentShadingRates );
-    alias PFN_vkCmdSetFragmentShadingRateKHR                                    = void      function( VkCommandBuffer commandBuffer, const( VkExtent2D )* pFragmentSize, const VkFragmentShadingRateCombinerOpKHR[2] combinerOps );
+    alias PFN_vkCmdSetFragmentShadingRateKHR                                    = void      function( VkCommandBuffer commandBuffer, const( VkExtent2D )* pFragmentSize, const( VkFragmentShadingRateCombinerOpKHR )* combinerOps );
 
     // VK_KHR_present_wait
     alias PFN_vkWaitForPresentKHR                                               = VkResult  function( VkDevice device, VkSwapchainKHR swapchain, uint64_t presentId, uint64_t timeout );
@@ -559,7 +559,7 @@ extern( System ) {
     alias PFN_vkGetAccelerationStructureOpaqueCaptureDescriptorDataEXT          = VkResult  function( VkDevice device, const( VkAccelerationStructureCaptureDescriptorDataInfoEXT )* pInfo, void* pData );
 
     // VK_NV_fragment_shading_rate_enums
-    alias PFN_vkCmdSetFragmentShadingRateEnumNV                                 = void      function( VkCommandBuffer commandBuffer, VkFragmentShadingRateNV shadingRate, const VkFragmentShadingRateCombinerOpKHR[2] combinerOps );
+    alias PFN_vkCmdSetFragmentShadingRateEnumNV                                 = void      function( VkCommandBuffer commandBuffer, VkFragmentShadingRateNV shadingRate, const( VkFragmentShadingRateCombinerOpKHR )* combinerOps );
 
     // VK_EXT_device_fault
     alias PFN_vkGetDeviceFaultInfoEXT                                           = VkResult  function( VkDevice device, VkDeviceFaultCountsEXT* pFaultCounts, VkDeviceFaultInfoEXT* pFaultInfo );
