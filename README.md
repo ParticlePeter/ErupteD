@@ -25,6 +25,8 @@ The generator for Erupted-V3 got a DLang generator to become self contained. The
 
 Breaking changes compared to v2.x.x: C array parameters are now passed as pointers like in C, hence `vkCmdSetBlendConstants`, `vkCmdSetFragmentShadingRateKHR` and `vkCmdSetFragmentShadingRateEnumNV` require e.g. `blendConstants.ptr`. `VkTransformMatrixKHR.matrix` is now `float[4][3]`, matching the C layout `float[3][4]`. Video structs consisting of bitfields and multi-dimensional arrays are now complete.
 
+Changes in v3.0.1 (Vulkan 1.4.366): the generator supports the Vulkan 1.4 registry, in which function pointer types are described with `<proto>` and `<param>` elements. 64-Bit FlagBits without any bits (e.g. `VkFormatFeatureFlagBits4KHR`) are aliased to their Flags, as D does not allow empty enums, the C header typedefs both to `VkFlags64` as well. Breaking changes: `_MAX_ENUM` entries are now named like in the C header, e.g. `STD_VIDEO_H264_ASPECT_RATIO_IDC_MAX_ENUM` instead of `STD_VIDEO_H2_64_ASPECT_RATIO_IDC_MAX_ENUM` (37 entries). Promoted or removed by Khronos since v1.3.265: provisional extensions `VK_EXT_video_encode_h264` and `VK_EXT_video_encode_h265` were replaced by their KHR versions, and several `PFN_vk*EXT/KHR` function pointer types of promoted commands are gone, the commands themselves remain available as aliases, e.g. `vkCmdPushDescriptorSetKHR`.
+
 
 
 Usage
